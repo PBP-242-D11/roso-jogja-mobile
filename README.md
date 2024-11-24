@@ -56,7 +56,7 @@ RosoJogja adalah aplikasi kuliner yang dirancang khusus untuk membantu Anda mene
 | Peran       | Fitur                                                                                           |
 |-------------|-------------------------------------------------------------------------------------------------|
 | **Guest**   | Dapat membaca review yang terdapat di restoran                                                  |
-| **Pembeli** | Menambahkan review kepada restoran yang sebelumnya sudah pernah dipesan.                        |
+| **Pembeli** | Menambahkan dan menghapus reviewnya kepada restoran yang sebelumnya sudah pernah dipesan.       |
 | **Penjual** | Dapat membaca review yang terdapat di restorannya                                               |
 
 ## Role atau Peran
