@@ -76,6 +76,30 @@ Penjual dapat memodifikasi makanan yang terdapat di restoran yang dimilikinya.
 4. Untuk menyesuaikan return yang dibutuhkan app yang dibuat, kami memodifikasi beberapa views code web service kami (proyek TK UTS Django).
 5. Data yang didapat kemudian diolah atau dipetakan ke dalam suatu struktur data, baik Map maupun List. Kemudian, data yang sudah dikonversi ke aplikasi ditampilkan melalui FutureBuilder.
 
+Melalui langkah-langkah pengintegrasian tersebut, kita akan mendapatkan alur pengajuan request hingga mendapatkan response sebagai berikut:
+1. Request dari aplikasi Flutter:
+
+- Aplikasi Flutter mengirim request ke server Django melalui internet.
+- Request ditujukan ke endpoint yang ditentukan dalam konfigurasi urls.py Django.
+
+2. Pemrosesan Request di Django:
+
+- Django menangani request dengan melakukan mapping ke fungsi yang sesuai dalam views.py.
+- Fungsi ini memproses data, mengakses database melalui objek yang telah dibuat pada models.py, dan menjalankan logika bisnis yang diperlukan.
+
+3. Pembuatan Response:
+
+- Setelah pemrosesan selesai, Django menyusun response dalam format JSON atau XML sebelum mengembalikan data ke Flutter.
+
+4. Pengiriman Response kepada aplikasi Flutter:
+
+- Django mengirim response kembali ke aplikasi Flutter.
+- Flutter menerima response dan mengolah data yang diterima.
+
+5. Update tampilan di Flutter:
+
+- Data yang diterima dari response dapat digunakan untuk memperbarui tampilan, informasi, dan memicu aksi lain berdasarkan data tersebut.
+
 ---
 
 A new Flutter project.
