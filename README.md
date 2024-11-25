@@ -68,6 +68,10 @@ Peran utama di aplikasi, pembeli dapat membeli makanan dari sebuah restoran, men
 
 Penjual dapat memodifikasi makanan yang terdapat di restoran yang dimilikinya.
 
+## Sumber dataset kuliner Jogja
+
+[Kaggle](https://www.kaggle.com/datasets/yudhaislamisulistya/places-to-eat-in-the-jogja-region)
+
 ## Alur pengintegrasian dengan web service untuk terhubung dengan aplikasi web yang sudah dibuat saat Proyek Tengah Semester
 
 1. Menyesuaikan dan menyiapkan project Django untuk integrasi dengan menambahkan library `django-cors-headers` dan konfigurasi yang berkaitan dengannya. 
