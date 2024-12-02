@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'features/auth/pages/login.dart';
+import 'features/promo/pages/promo_home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // Page kalian yang ingin ditampilkan waktu app dimulai
-      home: const LoginPage(),
+      home: PromoHome(),
     );
   }
 }
