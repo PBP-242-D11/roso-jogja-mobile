@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:roso_jogja_mobile/features/auth/pages/register.dart';
 
 void main() {
   runApp(const LoginApp());
@@ -99,7 +100,13 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 36.0),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const RegisterPage()),
+                      );
+                    },
                     child: Text(
                       'Don\'t have an account? Register',
                       style: TextStyle(
