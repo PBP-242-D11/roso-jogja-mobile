@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'features/auth/pages/login.dart';
+import 'features/landing/pages/landing_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // Page kalian yang ingin ditampilkan waktu app dimulai
-      home: const LoginPage(),
+      home: const RosoJogjaLandingPage(),
     );
   }
 }
