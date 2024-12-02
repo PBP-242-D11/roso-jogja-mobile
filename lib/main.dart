@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'features/auth/pages/login.dart';
+import 'features/cart-and-order/pages/cart_screen.dart';
 
 void main() {
   runApp(const MyApp());
