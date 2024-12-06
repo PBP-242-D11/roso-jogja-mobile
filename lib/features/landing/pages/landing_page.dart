@@ -37,6 +37,7 @@ class RosoJogjaLandingPage extends StatelessWidget {
         children: [
           Image.asset(
             'assets/images/logo.png',
+            height: 70,
           )
         ],
       ),
