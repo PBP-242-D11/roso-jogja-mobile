@@ -86,11 +86,9 @@ class _LoginPageState extends State<LoginPage> {
                         String message = response['message'];
                         String uname = response['username'];
                         if (context.mounted) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RosoJogjaLandingPage()),
-                          );
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, '/landing', (route) => false);
+
                           ScaffoldMessenger.of(context)
                             ..hideCurrentSnackBar()
                             ..showSnackBar(
@@ -130,11 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 36.0),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const RegisterPage()),
-                      );
+                      Navigator.pushNamed(context, '/register');
                     },
                     child: Text(
                       'Don\'t have an account? Register',

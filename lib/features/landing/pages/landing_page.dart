@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:roso_jogja_mobile/features/auth/guards/auth_guard.dart';
 
 class RosoJogjaLandingPage extends StatelessWidget {
   const RosoJogjaLandingPage({super.key});
@@ -6,7 +7,8 @@ class RosoJogjaLandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      body: AuthGuard(
+          child: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,7 +27,7 @@ class RosoJogjaLandingPage extends StatelessWidget {
             ],
           ),
         ),
-      ),
+      )),
     );
   }
 

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:roso_jogja_mobile/features/auth/pages/login.dart';
+import 'package:roso_jogja_mobile/features/auth/pages/register.dart';
+import 'package:roso_jogja_mobile/features/landing/pages/landing_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,8 +42,12 @@ class MyApp extends StatelessWidget {
             ),
             useMaterial3: true,
           ),
-          // Page kalian yang ingin ditampilkan waktu app dimulai
-          home: const LoginPage(),
+          initialRoute: '/login',
+          routes: {
+            '/login': (context) => LoginPage(),
+            '/register': (context) => RegisterPage(),
+            '/landing': (context) => RosoJogjaLandingPage(),
+          },
         ));
   }
 }
