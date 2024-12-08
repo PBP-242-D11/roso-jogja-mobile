@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:roso_jogja_mobile/features/auth/pages/login.dart';
 import 'package:roso_jogja_mobile/features/auth/pages/register.dart';
 import 'package:roso_jogja_mobile/features/landing/pages/landing_page.dart';
+import 'package:roso_jogja_mobile/features/restaurant/pages/restaurant_list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
             '/login': (context) => LoginPage(),
             '/register': (context) => RegisterPage(),
             '/landing': (context) => RosoJogjaLandingPage(),
+            '/restaurants': (context) => RestaurantListPage(),
           },
         ));
   }

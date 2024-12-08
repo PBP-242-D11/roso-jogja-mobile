@@ -13,7 +13,7 @@ class AuthGuard extends StatelessWidget {
     final request = context.watch<CookieRequest>();
 
     if (!request.loggedIn) {
-      return LoginPage();
+      return child;
     }
 
     return child;

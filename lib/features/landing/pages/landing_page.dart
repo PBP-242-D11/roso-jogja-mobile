@@ -19,6 +19,8 @@ class RosoJogjaLandingPage extends StatelessWidget {
               // Hero Section
               _buildHeroSection(context),
 
+              _buildButtonsSection(context),
+
               // Features Section
               _buildFeaturesSection(context),
 
@@ -65,6 +67,47 @@ class RosoJogjaLandingPage extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Colors.grey[600],
                 ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButtonsSection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Get Started',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/restaurants');
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange[700], // Button color
+              padding: EdgeInsets.symmetric(
+                  vertical: 14.0, horizontal: 32.0), // Adjust button padding
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.circular(30), // Rounded corners for the button
+              ),
+              elevation: 5, // Button shadow
+            ),
+            child: Text(
+              'View Restaurants',
+              style: TextStyle(
+                color: Colors.white, // Text color
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
