@@ -20,8 +20,8 @@ class RosoJogjaLandingPage extends StatelessWidget {
               // Features Section
               _buildFeaturesSection(context),
 
-              // CTA Section
-              _buildCtaSection(context),
+              // About Section
+              _buildAboutSection(context),
             ],
           ),
         ),
@@ -37,7 +37,8 @@ class RosoJogjaLandingPage extends StatelessWidget {
         children: [
           Image.asset(
             'assets/images/logo.png',
-          )
+            height: 70,
+          ),
         ],
       ),
     );
@@ -50,7 +51,7 @@ class RosoJogjaLandingPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Discover Jogja\'s\nCulinary Delights',
+            'Welcome to RosoJogja',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -58,58 +59,12 @@ class RosoJogjaLandingPage extends StatelessWidget {
           ),
           SizedBox(height: 16),
           Text(
-            'Find, Order, and Review the Best Restaurants in Yogyakarta',
+            'Your ultimate guide to exploring Yogyakarta\'s diverse culinary scene. Discover hidden gems, plan your meals, and enjoy authentic local flavors.',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Colors.grey[600],
                 ),
           ),
-          SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange[700],
-              padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: Text(
-              'Get Started',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          SizedBox(height: 24),
-          _buildMockupImage(),
         ],
-      ),
-    );
-  }
-
-  Widget _buildMockupImage() {
-    return Center(
-      child: Container(
-        width: 250,
-        height: 500,
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 15,
-              offset: Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            'App Mockup',
-            style: TextStyle(color: Colors.grey[500]),
-          ),
-        ),
       ),
     );
   }
@@ -121,7 +76,7 @@ class RosoJogjaLandingPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'App Features',
+            'Explore Features',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -149,7 +104,7 @@ class RosoJogjaLandingPage extends StatelessWidget {
             icon: Icons.discount,
             title: 'Exclusive Promos',
             description:
-                'Get special discounts and offers from local restaurants',
+                'Discover special discounts and offers from local restaurants',
           ),
         ],
       ),
@@ -209,15 +164,14 @@ class RosoJogjaLandingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCtaSection(BuildContext context) {
+  Widget _buildAboutSection(BuildContext context) {
     return Container(
-      color: Colors.orange[50],
       padding: EdgeInsets.all(16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Ready to Explore Jogja\'s Cuisine?',
-            textAlign: TextAlign.center,
+            'About RosoJogja',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -225,8 +179,7 @@ class RosoJogjaLandingPage extends StatelessWidget {
           ),
           SizedBox(height: 16),
           Text(
-            'Download RosoJogja and start your culinary adventure today!',
-            textAlign: TextAlign.center,
+            'RosoJogja is designed to bring Yogyakarta\'s culinary experiences to your fingertips. Whether you\'re a local or a visitor, our app helps you navigate through the rich flavors and unique dining options the city has to offer. With intuitive features and user-friendly design, RosoJogja makes discovering and enjoying food simpler and more enjoyable.',
             style: TextStyle(
               color: Colors.grey[700],
             ),
