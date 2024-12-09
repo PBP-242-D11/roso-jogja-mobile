@@ -1,27 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:roso_jogja_mobile/features/auth/pages/register.dart';
-
-void main() {
-  runApp(const LoginApp());
-}
-
-class LoginApp extends StatelessWidget {
-  const LoginApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Login',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.deepPurple,
-        ).copyWith(secondary: Colors.deepPurple[400]),
-      ),
-      home: const LoginPage(),
-    );
-  }
-}
+import 'package:provider/provider.dart';
+import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
+import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -36,9 +16,11 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<AuthProvider>();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text('RosoJogja Login'),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -89,7 +71,51 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 24.0),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      String username = _usernameController.text;
+                      String password = _passwordController.text;
+
+                      final response = await request
+                          .login('${AppConfig.apiUrl}/mobile_login/', {
+                        'username': username,
+                        'password': password,
+                      });
+
+                      if (request.cookieRequest.loggedIn) {
+                        String message = response['message'];
+                        String uname = response['username'];
+                        if (context.mounted) {
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, '/landing', (route) => false);
+
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(
+                              SnackBar(
+                                  content:
+                                      Text("$message Selamat datang, $uname.")),
+                            );
+                        }
+                      } else {
+                        if (context.mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Login Gagal'),
+                              content: Text(response['message']),
+                              actions: [
+                                TextButton(
+                                  child: const Text('OK'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       minimumSize: const Size(double.infinity, 50),
@@ -101,11 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 36.0),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const RegisterPage()),
-                      );
+                      Navigator.pushNamed(context, '/register');
                     },
                     child: Text(
                       'Don\'t have an account? Register',
