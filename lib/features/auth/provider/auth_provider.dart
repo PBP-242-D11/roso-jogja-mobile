@@ -1,42 +1,57 @@
 import 'package:flutter/material.dart';
 import "package:pbp_django_auth/pbp_django_auth.dart";
+import 'package:roso_jogja_mobile/features/auth/models/user.dart';
 
 class AuthProvider extends ChangeNotifier {
   final CookieRequest _cookieRequest;
 
   CookieRequest get cookieRequest => _cookieRequest; // Expose CookieRequest
 
-  Map<String, dynamic>? _user;
+  User? _user;
   bool get isLoggedIn => _cookieRequest.loggedIn;
-  Map<String, dynamic>? get user => _user;
+  User? get user => _user;
 
   AuthProvider(this._cookieRequest);
 
   Future<void> init() async {
-    await _cookieRequest.init();
-    if (_cookieRequest.loggedIn) {
-      _user = _cookieRequest.getJsonData();
+    try {
+      await _cookieRequest.init();
+      if (_cookieRequest.loggedIn) {
+        _user = User.fromJson(_cookieRequest.getJsonData());
+      }
+    } catch (e) {
+      _user = null;
     }
     notifyListeners();
   }
 
   Future<dynamic> login(String url, dynamic data) async {
-    final response = await _cookieRequest.login(url, data);
-    if (_cookieRequest.loggedIn) {
-      _user = _cookieRequest.getJsonData();
-    } else {
+    try {
+      final response = await _cookieRequest.login(url, data);
+      if (_cookieRequest.loggedIn) {
+        _user = User.fromJson(_cookieRequest.getJsonData());
+      } else {
+        _user = null;
+      }
+      notifyListeners();
+      return response;
+    } catch (e) {
       _user = null;
+      notifyListeners();
+      return {'error': e.toString()};
     }
-    notifyListeners();
-    return response;
   }
 
   Future<dynamic> logout(String url) async {
-    final response = await _cookieRequest.logout(url);
-    if (!_cookieRequest.loggedIn) {
-      _user = null;
+    try {
+      final response = await _cookieRequest.logout(url);
+      if (!_cookieRequest.loggedIn) {
+        _user = null;
+      }
+      notifyListeners();
+      return response;
+    } catch (e) {
+      return {'error': e.toString()};
     }
-    notifyListeners();
-    return response;
   }
 }
