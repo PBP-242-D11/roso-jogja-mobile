@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:roso_jogja_mobile/features/auth/pages/login.dart';
-import 'package:roso_jogja_mobile/features/auth/pages/register.dart';
-import 'package:roso_jogja_mobile/features/landing/pages/landing_page.dart';
-import 'package:roso_jogja_mobile/features/restaurant/pages/restaurant_list.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import "package:roso_jogja_mobile/shared/config/route_generator.dart";
 
 void main() async {
   await dotenv.load();
@@ -46,12 +43,7 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
           ),
           initialRoute: '/login',
-          routes: {
-            '/login': (context) => LoginPage(),
-            '/register': (context) => RegisterPage(),
-            '/landing': (context) => RosoJogjaLandingPage(),
-            '/restaurants': (context) => RestaurantListPage(),
-          },
+          onGenerateRoute: RouteGenerator.generateRoute,
         ));
   }
 }
