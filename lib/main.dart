@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import "package:roso_jogja_mobile/shared/config/route_generator.dart";
 
 void main() async {
@@ -15,11 +16,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Provider(
-        create: (_) {
-          CookieRequest request = CookieRequest();
-          return request;
-        },
+    final cookieRequest = CookieRequest();
+    final authProvider = AuthProvider(cookieRequest);
+
+    return ChangeNotifierProvider(
+        create: (_) => authProvider,
         child: MaterialApp(
           title: 'Roso Jogja Mobile',
           theme: ThemeData(

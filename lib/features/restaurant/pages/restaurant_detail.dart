@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import 'package:roso_jogja_mobile/features/restaurant/models/restaurant.dart';
 import 'package:roso_jogja_mobile/features/restaurant/models/food.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
-import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
@@ -16,8 +16,8 @@ class RestaurantDetailPage extends StatefulWidget {
 
 class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   Future<Restaurant> fetchRestaurantDetail(String restaurantId) async {
-    final request = context.watch<CookieRequest>();
-    final response = await request
+    final request = context.watch<AuthProvider>();
+    final response = await request.cookieRequest
         .get('${AppConfig.apiUrl}/restaurant/api/restaurants/$restaurantId/');
     return Restaurant.fromJson(response);
   }

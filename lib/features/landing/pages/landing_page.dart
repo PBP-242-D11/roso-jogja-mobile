@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:roso_jogja_mobile/features/auth/guards/auth_guard.dart';
 import 'package:roso_jogja_mobile/shared/widgets/left_drawer.dart';
 
 class RosoJogjaLandingPage extends StatelessWidget {
@@ -7,32 +6,30 @@ class RosoJogjaLandingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AuthGuard(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Roso Jogja Mobile'),
-        ),
-        drawer: const LeftDrawer(),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // App Header
-                _buildHeader(context),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Roso Jogja Mobile'),
+      ),
+      drawer: const LeftDrawer(),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // App Header
+              _buildHeader(context),
 
-                // Hero Section
-                _buildHeroSection(context),
+              // Hero Section
+              _buildHeroSection(context),
 
-                _buildButtonsSection(context),
+              _buildButtonsSection(context),
 
-                // Features Section
-                _buildFeaturesSection(context),
+              // Features Section
+              _buildFeaturesSection(context),
 
-                // About Section
-                _buildAboutSection(context),
-              ],
-            ),
+              // About Section
+              _buildAboutSection(context),
+            ],
           ),
         ),
       ),

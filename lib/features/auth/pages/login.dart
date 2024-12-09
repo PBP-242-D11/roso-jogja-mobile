@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,7 +16,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final request = context.watch<CookieRequest>();
+    final request = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                         'password': password,
                       });
 
-                      if (request.loggedIn) {
+                      if (request.cookieRequest.loggedIn) {
                         String message = response['message'];
                         String uname = response['username'];
                         if (context.mounted) {

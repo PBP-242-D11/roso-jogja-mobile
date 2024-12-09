@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import 'package:roso_jogja_mobile/features/restaurant/models/restaurant.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 import 'package:roso_jogja_mobile/shared/widgets/left_drawer.dart';
@@ -20,8 +21,8 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
 
   // Define the Future as a getter
   Future<List<Restaurant>> get fetchRestaurantsFuture async {
-    final request = context.watch<CookieRequest>();
-    return fetchRestaurants(request);
+    final request = context.watch<AuthProvider>();
+    return fetchRestaurants(request.cookieRequest);
   }
 
   Future<List<Restaurant>> fetchRestaurants(CookieRequest request) async {
