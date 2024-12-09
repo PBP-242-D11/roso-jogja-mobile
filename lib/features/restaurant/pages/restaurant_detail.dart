@@ -4,6 +4,7 @@ import 'package:roso_jogja_mobile/features/restaurant/models/restaurant.dart';
 import 'package:roso_jogja_mobile/features/restaurant/models/food.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 import 'package:provider/provider.dart';
+import 'package:roso_jogja_mobile/features/review/widgets/list_review.dart'; // Impor widget ListReview
 
 class RestaurantDetailPage extends StatefulWidget {
   final String restaurantId; // The restaurantId is passed as an argument
@@ -45,7 +46,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Restaurant Image (optional)
+                  // Restaurant Image
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.asset(
@@ -171,6 +172,18 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     )
                   else
                     const Center(child: Text('No menu available')),
+                  const SizedBox(height: 24),
+                  // Reviews Section
+                  const Text(
+                    'Reviews:',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Add ListReview widget
+                  ListReview(restaurantId: widget.restaurantId),
                 ],
               ),
             );
