@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:roso_jogja_mobile/features/auth/pages/login.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -290,7 +291,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                       // Send registration request
                       final response = await request.postJson(
-                        "http://127.0.0.1:8000/mobile_register/",
+                        '${AppConfig.apiUrl}/mobile_register/',
                         jsonEncode({
                           "username": username,
                           "password1": password1,

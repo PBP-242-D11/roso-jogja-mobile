@@ -3,6 +3,7 @@ import 'package:roso_jogja_mobile/features/auth/pages/register.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:roso_jogja_mobile/features/landing/pages/landing_page.dart';
+import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -77,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                       String password = _passwordController.text;
 
                       final response = await request
-                          .login("http://127.0.0.1:8000/mobile_login/", {
+                          .login('${AppConfig.apiUrl}/mobile_login/', {
                         'username': username,
                         'password': password,
                       });

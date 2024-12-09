@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:roso_jogja_mobile/shared/widgets/left_drawer.dart';
 
 class RestaurantListPage extends StatefulWidget {
   const RestaurantListPage({super.key});
@@ -33,6 +34,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
       appBar: AppBar(
         title: Text('Available Restaurants'),
       ),
+      drawer: const LeftDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
