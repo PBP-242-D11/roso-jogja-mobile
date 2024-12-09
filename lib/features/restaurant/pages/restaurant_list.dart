@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:roso_jogja_mobile/features/restaurant/models/restaurant.dart';
+import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 import 'package:roso_jogja_mobile/shared/widgets/left_drawer.dart';
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
 
 class RestaurantListPage extends StatefulWidget {
   const RestaurantListPage({super.key});
@@ -9,6 +13,23 @@ class RestaurantListPage extends StatefulWidget {
 }
 
 class _RestaurantListPageState extends State<RestaurantListPage> {
+  Future<List<Restaurant>> fetchRestaurants(CookieRequest request) async {
+    final response = await request.get(
+        '${AppConfig.apiUrl}/restaurant/api/restaurants/?page=1&page_size=8');
+
+    var data = response;
+
+    List<Restaurant> restaurants = [];
+
+    for (var restaurant in data["results"]) {
+      if (restaurant != null) {
+        restaurants.add(Restaurant.fromJson(restaurant));
+      }
+    }
+
+    return restaurants;
+  }
+
   // Static data for restaurants
   final List<Map<String, String>> restaurants = List.generate(
     50,
@@ -30,6 +51,8 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
     final currentRestaurants = restaurants.sublist(startIndex,
         endIndex > restaurants.length ? restaurants.length : endIndex);
 
+    final request = context.watch<CookieRequest>();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Available Restaurants'),
@@ -37,35 +60,62 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
       drawer: const LeftDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: currentRestaurants.length,
-                itemBuilder: (context, index) {
-                  final restaurant = currentRestaurants[index];
-                  return _buildRestaurantCard(restaurant);
-                },
-              ),
-            ),
-            _buildPaginationControls(),
-          ],
-        ),
+        child: FutureBuilder(
+            future: fetchRestaurants(request),
+            builder: (context, snapshot) {
+              if (snapshot.data == null) {
+                return Center(child: CircularProgressIndicator());
+              } else {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  if (!snapshot.hasData) {
+                    return Center(child: Text('No data found.'));
+                  } else {
+                    return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                              child: ListView.builder(
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final restaurant = snapshot.data![index];
+                              return _buildRestaurantCard({
+                                'name': restaurant.name,
+                                'description': restaurant.address,
+                              });
+                            },
+                          )),
+                          _buildPaginationControls(),
+                        ]);
+                  }
+                }
+              }
+            }),
       ),
     );
   }
 
   Widget _buildRestaurantCard(Map<String, String> restaurant) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      margin: EdgeInsets.all(8.0),
       elevation: 5,
       child: ListTile(
-        title: Text(
-          restaurant['name']!,
-          style: TextStyle(fontWeight: FontWeight.bold),
+        contentPadding: EdgeInsets.all(8.0),
+        title: Text(restaurant['name']!,
+            style: TextStyle(fontWeight: FontWeight.bold),
+            overflow: TextOverflow.ellipsis, // Add this to handle overflow
+            maxLines: 2),
+        subtitle: Container(
+          constraints: BoxConstraints(
+              maxHeight: 50), // Set a fixed max height for subtitle
+          child: Text(
+            restaurant['description']!,
+            overflow: TextOverflow.ellipsis, // Add this to handle overflow
+            maxLines: 2, // Limit the number of lines for subtitle
+          ),
         ),
-        subtitle: Text(restaurant['description']!),
+        minTileHeight: 100,
       ),
     );
   }
