@@ -13,11 +13,26 @@ class RestaurantListPage extends StatefulWidget {
 }
 
 class _RestaurantListPageState extends State<RestaurantListPage> {
+  int currentPage = 1;
+  int itemsPerPage = 8;
+  bool hasNext = false;
+  bool hasPrevious = false;
+
+  // Define the Future as a getter
+  Future<List<Restaurant>> get fetchRestaurantsFuture async {
+    final request = context.watch<CookieRequest>();
+    return fetchRestaurants(request);
+  }
+
   Future<List<Restaurant>> fetchRestaurants(CookieRequest request) async {
     final response = await request.get(
-        '${AppConfig.apiUrl}/restaurant/api/restaurants/?page=1&page_size=8');
+        '${AppConfig.apiUrl}/restaurant/api/restaurants/?page=$currentPage&page_size=$itemsPerPage');
 
     var data = response;
+
+    currentPage = data["current_page"];
+    hasNext = data["has_next"];
+    hasPrevious = data["has_previous"];
 
     List<Restaurant> restaurants = [];
 
@@ -30,29 +45,25 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
     return restaurants;
   }
 
-  // Static data for restaurants
-  final List<Map<String, String>> restaurants = List.generate(
-    50,
-    (index) => {
-      'name': 'Restaurant ${index + 1}',
-      'description': 'This is the description of Restaurant ${index + 1}.',
-    },
-  );
+  // Pagination logic
+  void loadNextPage() {
+    if (hasNext) {
+      setState(() {
+        currentPage++;
+      });
+    }
+  }
 
-  // Pagination state
-  int currentPage = 0;
-  int itemsPerPage = 10;
+  void loadPreviousPage() {
+    if (hasPrevious) {
+      setState(() {
+        currentPage--;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Calculate the list of restaurants to display on the current page
-    final startIndex = currentPage * itemsPerPage;
-    final endIndex = (currentPage + 1) * itemsPerPage;
-    final currentRestaurants = restaurants.sublist(startIndex,
-        endIndex > restaurants.length ? restaurants.length : endIndex);
-
-    final request = context.watch<CookieRequest>();
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Available Restaurants'),
@@ -61,35 +72,35 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FutureBuilder(
-            future: fetchRestaurants(request),
+            future:
+                fetchRestaurantsFuture, // Use the getter to trigger a new Future
             builder: (context, snapshot) {
-              if (snapshot.data == null) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text("No restaurants found"));
               } else {
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else {
-                  if (!snapshot.hasData) {
-                    return Center(child: Text('No data found.'));
-                  } else {
-                    return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                              child: ListView.builder(
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              final restaurant = snapshot.data![index];
-                              return _buildRestaurantCard({
-                                'name': restaurant.name,
-                                'description': restaurant.address,
-                              });
-                            },
-                          )),
-                          _buildPaginationControls(),
-                        ]);
-                  }
-                }
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          final restaurant = snapshot.data![index];
+                          return _buildRestaurantCard({
+                            'name': restaurant.name,
+                            'description': restaurant.address,
+                          });
+                        },
+                      ),
+                    ),
+                    _buildPaginationControls(currentPage, hasNext, hasPrevious,
+                        currentPage - 1, currentPage + 1),
+                  ],
+                );
               }
             }),
       ),
@@ -102,10 +113,12 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
       elevation: 5,
       child: ListTile(
         contentPadding: EdgeInsets.all(8.0),
-        title: Text(restaurant['name']!,
-            style: TextStyle(fontWeight: FontWeight.bold),
-            overflow: TextOverflow.ellipsis, // Add this to handle overflow
-            maxLines: 2),
+        title: Text(
+          restaurant['name']!,
+          style: TextStyle(fontWeight: FontWeight.bold),
+          overflow: TextOverflow.ellipsis, // Add this to handle overflow
+          maxLines: 2,
+        ),
         subtitle: Container(
           constraints: BoxConstraints(
               maxHeight: 50), // Set a fixed max height for subtitle
@@ -120,28 +133,25 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
     );
   }
 
-  Widget _buildPaginationControls() {
+  Widget _buildPaginationControls(int currentPage, bool hasNext,
+      bool hasPrevious, int nextPage, int prevPage) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: currentPage > 0
+          onPressed: hasPrevious
               ? () {
-                  setState(() {
-                    currentPage--;
-                  });
+                  loadPreviousPage();
                 }
               : null,
         ),
-        Text('Page ${currentPage + 1}'),
+        Text('Page $currentPage'),
         IconButton(
           icon: Icon(Icons.arrow_forward),
-          onPressed: (currentPage + 1) * itemsPerPage < restaurants.length
+          onPressed: hasNext
               ? () {
-                  setState(() {
-                    currentPage++;
-                  });
+                  loadNextPage();
                 }
               : null,
         ),
