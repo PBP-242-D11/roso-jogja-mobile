@@ -3,6 +3,7 @@
 //     final restaurant = restaurantFromJson(jsonString);
 
 import 'dart:convert';
+import 'food.dart';
 
 List<Restaurant> restaurantFromJson(String str) =>
     List<Restaurant>.from(json.decode(str).map((x) => Restaurant.fromJson(x)));
@@ -18,6 +19,7 @@ class Restaurant {
   String address;
   String categories;
   int placeholderImage;
+  List<Food>? foods;
 
   Restaurant({
     required this.id,
@@ -27,6 +29,7 @@ class Restaurant {
     required this.address,
     required this.categories,
     required this.placeholderImage,
+    this.foods,
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
@@ -37,6 +40,9 @@ class Restaurant {
         address: json["address"],
         categories: json["categories"],
         placeholderImage: json["placeholder_image"],
+        foods: json["foods"] != null
+            ? List<Food>.from(json["foods"].map((x) => Food.fromJson(x)))
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -47,5 +53,8 @@ class Restaurant {
         "address": address,
         "categories": categories,
         "placeholder_image": placeholderImage,
+        "foods": foods != null
+            ? List<dynamic>.from(foods!.map((x) => x.toJson()))
+            : null,
       };
 }

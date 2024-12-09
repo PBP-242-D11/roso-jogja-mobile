@@ -93,7 +93,8 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                           return _buildRestaurantCard({
                             'name': restaurant.name,
                             'description': restaurant.address,
-                          });
+                            'id': restaurant.id,
+                          }, context);
                         },
                       ),
                     ),
@@ -107,30 +108,35 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
     );
   }
 
-  Widget _buildRestaurantCard(Map<String, String> restaurant) {
+  Widget _buildRestaurantCard(
+      Map<String, String> restaurant, BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(8.0),
-      elevation: 5,
-      child: ListTile(
-        contentPadding: EdgeInsets.all(8.0),
-        title: Text(
-          restaurant['name']!,
-          style: TextStyle(fontWeight: FontWeight.bold),
-          overflow: TextOverflow.ellipsis, // Add this to handle overflow
-          maxLines: 2,
-        ),
-        subtitle: Container(
-          constraints: BoxConstraints(
-              maxHeight: 50), // Set a fixed max height for subtitle
-          child: Text(
-            restaurant['description']!,
-            overflow: TextOverflow.ellipsis, // Add this to handle overflow
-            maxLines: 2, // Limit the number of lines for subtitle
+        elevation: 5,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/restaurant',
+                arguments: restaurant['id']!);
+          },
+          child: ListTile(
+            contentPadding: EdgeInsets.all(8.0),
+            title: Text(
+              restaurant['name']!,
+              style: TextStyle(fontWeight: FontWeight.bold),
+              overflow: TextOverflow.ellipsis, // Handle overflow
+              maxLines: 2,
+            ),
+            subtitle: Container(
+              constraints: BoxConstraints(
+                  maxHeight: 50), // Set a fixed max height for subtitle
+              child: Text(
+                restaurant['description']!,
+                overflow: TextOverflow.ellipsis, // Handle overflow
+                maxLines: 2, // Limit the number of lines for subtitle
+              ),
+            ),
+            minTileHeight: 100,
           ),
-        ),
-        minTileHeight: 100,
-      ),
-    );
+        ));
   }
 
   Widget _buildPaginationControls(int currentPage, bool hasNext,
