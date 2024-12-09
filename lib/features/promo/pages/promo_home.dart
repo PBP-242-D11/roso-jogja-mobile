@@ -1,41 +1,65 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:roso_jogja_mobile/shared/widgets/left_drawer.dart';
+import 'package:roso_jogja_mobile/features/promo/pages/promo_model.dart';
 
-void main() {
-  runApp(PromoHome());
-}
 
-class PromoHome extends StatelessWidget {
+class PromoHome extends StatefulWidget {
+  const PromoHome({super.key});
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: PromoOverviewPage(),
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.orange,
-          backgroundColor: Colors.white,
-          cardColor: Colors.white,
-          errorColor: Colors.red,
-          brightness: Brightness.light,
-        ),
-        fontFamily: 'Roboto',
-        textTheme: const TextTheme(
-          headlineMedium: TextStyle(
-            fontSize: 48.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        useMaterial3: true,
-      ),
-    );
-  }
+  State<PromoHome> createState() => _PromoHomePageState();
 }
 
-class PromoOverviewPage extends StatelessWidget {
-  final List<Promo> promos = [
-    Promo(promo_code: "SAVE20", value: 10, restaurant: "Restaurant 1", expiry_date: "2024-12-31"),
-    Promo(promo_code: "FREESHIP", value: 5000, restaurant: "Restaurant 2", expiry_date: "2024-11-30"),
-    Promo(promo_code: "WELCOME10", value: 5, restaurant: "Restaurant 3", expiry_date: "2024-10-05"),
-  ];
+class _PromoHomePageState extends State<PromoHome> {
+  late Future<List<PromoElement>> futurePromos;
+
+  Future<List<PromoElement>> fetchPromo(CookieRequest request) async {
+    final response = await request.get('http://127.0.0.1:8000/promo/mobile_promo_home/');
+
+    // Assuming response is correctly formatted JSON
+    List<PromoElement> listPromo = (json.decode(response.body) as List)
+        .map((item) => PromoElement.fromJson(item))
+        .toList();
+    return listPromo;
+  }
+  Future<void> viewPromo(CookieRequest request, String promoId) async {
+    final response = await request.get('http://127.0.0.1:8000/promo/mobile_promo_details/$promoId/');
+    if (response.statusCode == 200) {
+      print('View Promo: ${response.body}');
+    } else {
+      print('Failed to load promo details');
+    }
+  }
+
+  Future<void> editPromo(CookieRequest request, String promoId) async {
+    // For demonstration, assuming GET request to fetch data for editing
+    final response = await request.get('http://127.0.0.1:8000/promo/mobile_edit_promo/$promoId/');
+    if (response.statusCode == 200) {
+      print('Edit Promo: ${response.body}');
+    } else {
+      print('Failed to fetch promo for editing');
+    }
+  }
+
+  Future<void> deletePromo(CookieRequest request, String promoId) async {
+    final response = await request.get('http://127.0.0.1:8000/promo/mobile_delete_promo/$promoId/');
+    if (response.statusCode == 200) {
+      print('Promo Deleted Successfully');
+    } else {
+      print('Failed to delete promo');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Assuming CookieRequest is properly defined and instantiated
+    futurePromos = fetchPromo(CookieRequest());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,32 +78,48 @@ class PromoOverviewPage extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: promos.length,
-        itemBuilder: (context, index) {
-          return Card(
-            child: ListTile(
-              title: Text(promos[index].promo_code + " - " + promos[index].restaurant),
-              subtitle: Text('Value: \$${promos[index].value}, Expires: ${promos[index].expiry_date}'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () => print('Edit ${promos[index].promo_code}'),
+      body: FutureBuilder<List<PromoElement>>(
+        future: futurePromos,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+            return const Center(child: Text("No promos available"));
+          } else if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                PromoElement promo = snapshot.data![index];
+                return Card(
+                  child: ListTile(
+                    title: Text('${promo.promoCode} - Type: ${promo.type}'),
+                    subtitle: Text('Value: \$${promo.value}, Expires: ${promo.expiryDate.toString()}'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.visibility),
+                          onPressed: () => viewPromo(CookieRequest(), promo.id),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () => editPromo(CookieRequest(), promo.id),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () => deletePromo(CookieRequest(), promo.id),
+                        ),
+                      ],
+                    ),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () => print('Delete ${promos[index].promo_code}'),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.visibility),
-                    onPressed: () => print('View ${promos[index].promo_code}'),
-                  ),
-                ],
-              ),
-            ),
-          );
+                );
+              },
+            );
+          } else {
+            return const Center(child: Text("No data available"));
+          }
         },
       ),
     );
@@ -122,11 +162,3 @@ class AddPromoPage extends StatelessWidget {
   }
 }
 
-class Promo {
-  String promo_code;
-  String restaurant;
-  String expiry_date;
-  int value;
-
-  Promo({required this.promo_code, required this.value, required this.restaurant, required this.expiry_date});
-}

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:roso_jogja_mobile/features/auth/pages/login.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
+import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -52,17 +53,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final request = context.watch<CookieRequest>();
+    final request = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('RosoJogja Register'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -295,8 +290,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       }
 
                       // Send registration request
-                      final response = await request.postJson(
-                        "http://127.0.0.1:8000/mobile_register/",
+                      final response = await request.cookieRequest.postJson(
+                        '${AppConfig.apiUrl}/mobile_register/',
                         jsonEncode({
                           "username": username,
                           "password1": password1,
