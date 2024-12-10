@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:roso_jogja_mobile/features/auth/pages/register.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import 'package:roso_jogja_mobile/features/landing/pages/homepage.dart';
 import 'package:roso_jogja_mobile/features/landing/pages/landing_page.dart';
-import 'package:roso_jogja_mobile/features/auth/pages/login.dart';
-import 'package:roso_jogja_mobile/features/restaurant/pages/restaurant_detail.dart';
-import 'package:roso_jogja_mobile/features/restaurant/pages/restaurant_list.dart';
 import 'package:go_router/go_router.dart';
+import "package:roso_jogja_mobile/features/auth/routes.dart";
+import "package:roso_jogja_mobile/features/restaurant/routes.dart";
 
 void main() async {
   await dotenv.load();
@@ -50,24 +48,9 @@ final _router = GoRouter(
     },
     routes: [
       GoRoute(path: "/", builder: (context, state) => const LandingPage()),
-      GoRoute(
-        path: "/login",
-        builder: (context, state) => const LoginPage(),
-      ),
-      GoRoute(
-          path: "/register", builder: (context, state) => const RegisterPage()),
       GoRoute(path: "/home", builder: (context, state) => const Homepage()),
-      GoRoute(
-          path: "/restaurant",
-          builder: (context, state) => const RestaurantListPage(),
-          routes: [
-            GoRoute(
-                path: "/:id",
-                builder: (context, state) {
-                  final id = state.pathParameters['id'];
-                  return RestaurantDetailPage(restaurantId: id!);
-                }),
-          ]),
+      ...authRoutes,
+      ...restaurantRoutes,
     ]);
 
 class MyApp extends StatelessWidget {
