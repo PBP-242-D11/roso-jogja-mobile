@@ -42,6 +42,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
 
     try {
       final request = context.read<AuthProvider>().cookieRequest;
+      print(request.jsonData);
       final response =
           await request.get('${AppConfig.apiUrl}/restaurant/api/restaurants/'
               '?page=$currentPage&page_size=$itemsPerPage');

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:roso_jogja_mobile/features/auth/pages/register.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
+import 'package:roso_jogja_mobile/features/landing/pages/homepage.dart';
 import 'package:roso_jogja_mobile/features/landing/pages/landing_page.dart';
 import 'package:roso_jogja_mobile/features/auth/pages/login.dart';
 import 'package:roso_jogja_mobile/features/restaurant/pages/restaurant_detail.dart';
@@ -55,7 +56,7 @@ final _router = GoRouter(
       ),
       GoRoute(
           path: "/register", builder: (context, state) => const RegisterPage()),
-      GoRoute(path: "/home", builder: (context, state) => const LandingPage()),
+      GoRoute(path: "/home", builder: (context, state) => const Homepage()),
       GoRoute(
           path: "/restaurant",
           builder: (context, state) => const RestaurantListPage(),

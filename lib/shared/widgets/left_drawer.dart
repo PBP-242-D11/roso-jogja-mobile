@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import "package:go_router/go_router.dart";
 import 'package:provider/provider.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
+import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -9,6 +10,7 @@ class LeftDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.user;
 
     return Drawer(
       child: ListView(
@@ -46,6 +48,61 @@ class LeftDrawer extends StatelessWidget {
               ],
             ),
           ),
+          if (authProvider.isLoggedIn)
+            // Logged-in User Section
+            ListTile(
+              leading: user?.profilePicture == null
+                  ? CircleAvatar(
+                      radius: 20,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      child: Text(
+                        user!.username[
+                            0], // Use the first letter of the user's name
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  : CircleAvatar(
+                      radius: 20,
+                      backgroundImage: NetworkImage(
+                          '${AppConfig.apiUrl}${user!.profilePicture!}'),
+                    ),
+              title: Text(
+                user.username,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              subtitle: Text(
+                user.address,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+          if (!authProvider.isLoggedIn)
+            ListTile(
+              leading: Icon(
+                Icons.login,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              title: Text(
+                'Log In',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              onTap: () => context.push('/login'),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+          const Divider(),
+          // Motivational Text
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
@@ -69,7 +126,7 @@ class LeftDrawer extends StatelessWidget {
             icon: Icons.restaurant,
             title: 'Restaurants',
             onTap: () => context.go("/restaurant"),
-          )
+          ),
         ],
       ),
     );
