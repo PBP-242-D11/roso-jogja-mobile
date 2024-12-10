@@ -127,6 +127,33 @@ class LeftDrawer extends StatelessWidget {
             title: 'Restaurants',
             onTap: () => context.go("/restaurant"),
           ),
+          if (authProvider.isLoggedIn)
+            _buildDrawerItem(
+              context,
+              icon: Icons.logout,
+              title: 'Logout',
+              onTap: () async {
+                final response = await authProvider.cookieRequest.logout(
+                  '${AppConfig.apiUrl}/mobile_logout/',
+                );
+                String message = response["message"];
+                if (context.mounted) {
+                  if (response['status']) {
+                    String uname = response["username"];
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("$message. Sampai jumpa, $uname."),
+                    ));
+                    context.go('/');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(message),
+                      ),
+                    );
+                  }
+                }
+              },
+            ),
         ],
       ),
     );
