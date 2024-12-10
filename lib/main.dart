@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:roso_jogja_mobile/features/auth/pages/register.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
-import "package:roso_jogja_mobile/shared/config/route_generator.dart";
+import 'package:roso_jogja_mobile/features/landing/pages/landing_page.dart';
+import 'package:roso_jogja_mobile/features/auth/pages/login.dart';
+import 'package:roso_jogja_mobile/features/restaurant/pages/restaurant_detail.dart';
+import 'package:roso_jogja_mobile/features/restaurant/pages/restaurant_list.dart';
+import 'package:go_router/go_router.dart';
 
 void main() async {
   await dotenv.load();
@@ -21,12 +26,34 @@ void main() async {
   ));
 }
 
+final _router = GoRouter(initialLocation: "/login", routes: [
+  GoRoute(path: "/", builder: (context, state) => const RosoJogjaLandingPage()),
+  GoRoute(
+    path: "/login",
+    builder: (context, state) => const LoginPage(),
+  ),
+  GoRoute(path: "/register", builder: (context, state) => const RegisterPage()),
+  GoRoute(
+      path: "/home", builder: (context, state) => const RosoJogjaLandingPage()),
+  GoRoute(
+      path: "/restaurant",
+      builder: (context, state) => const RestaurantListPage(),
+      routes: [
+        GoRoute(
+            path: "/:id",
+            builder: (context, state) {
+              final id = state.pathParameters['id'];
+              return RestaurantDetailPage(restaurantId: id!);
+            }),
+      ]),
+]);
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Roso Jogja Mobile',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch(
@@ -45,9 +72,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      initialRoute: '/login',
-      onGenerateRoute: RouteGenerator.generateRoute,
-      navigatorKey: NavigatorKey.navigatorKey,
+      routerConfig: _router,
     );
   }
 }

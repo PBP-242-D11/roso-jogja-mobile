@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:roso_jogja_mobile/shared/widgets/left_drawer.dart';
+import 'package:go_router/go_router.dart';
 
 class RosoJogjaLandingPage extends StatelessWidget {
   const RosoJogjaLandingPage({super.key});
@@ -90,9 +91,7 @@ class RosoJogjaLandingPage extends StatelessWidget {
           ),
           SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/restaurants');
-            },
+            onPressed: () => context.push('/restaurant'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange[700], // Button color
               padding: EdgeInsets.symmetric(

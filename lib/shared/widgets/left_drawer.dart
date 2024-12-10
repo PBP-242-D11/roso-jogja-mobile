@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import "package:go_router/go_router.dart";
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -57,13 +58,13 @@ class LeftDrawer extends StatelessWidget {
             context,
             icon: Icons.home,
             title: 'Home',
-            onTap: () => Navigator.pushNamed(context, '/landing'),
+            onTap: () => context.go("/home"),
           ),
           _buildDrawerItem(
             context,
             icon: Icons.restaurant,
             title: 'Restaurants',
-            onTap: () => Navigator.pushNamed(context, '/restaurants'),
+            onTap: () => context.go("/restaurant"),
           )
         ],
       ),
