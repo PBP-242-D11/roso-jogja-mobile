@@ -26,26 +26,42 @@ void main() async {
   ));
 }
 
-final _router = GoRouter(initialLocation: "/login", routes: [
-  GoRoute(path: "/", builder: (context, state) => const LandingPage()),
-  GoRoute(
-    path: "/login",
-    builder: (context, state) => const LoginPage(),
-  ),
-  GoRoute(path: "/register", builder: (context, state) => const RegisterPage()),
-  GoRoute(path: "/home", builder: (context, state) => const LandingPage()),
-  GoRoute(
-      path: "/restaurant",
-      builder: (context, state) => const RestaurantListPage(),
-      routes: [
-        GoRoute(
-            path: "/:id",
-            builder: (context, state) {
-              final id = state.pathParameters['id'];
-              return RestaurantDetailPage(restaurantId: id!);
-            }),
-      ]),
-]);
+final _router = GoRouter(
+    initialLocation: "/login",
+    redirect: (context, state) {
+      final unprotectedRoutes = ["/", "/login", "/register"];
+      if (unprotectedRoutes.contains(state.fullPath)) {
+        return null;
+      }
+
+      final authProvider = context.read<AuthProvider>();
+      if (!authProvider.isLoggedIn) {
+        return "/login";
+      } else {
+        return null;
+      }
+    },
+    routes: [
+      GoRoute(path: "/", builder: (context, state) => const LandingPage()),
+      GoRoute(
+        path: "/login",
+        builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+          path: "/register", builder: (context, state) => const RegisterPage()),
+      GoRoute(path: "/home", builder: (context, state) => const LandingPage()),
+      GoRoute(
+          path: "/restaurant",
+          builder: (context, state) => const RestaurantListPage(),
+          routes: [
+            GoRoute(
+                path: "/:id",
+                builder: (context, state) {
+                  final id = state.pathParameters['id'];
+                  return RestaurantDetailPage(restaurantId: id!);
+                }),
+          ]),
+    ]);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
