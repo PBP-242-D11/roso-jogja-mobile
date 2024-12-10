@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import "package:go_router/go_router.dart";
+import 'package:provider/provider.dart';
+import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -58,7 +62,7 @@ class LeftDrawer extends StatelessWidget {
             context,
             icon: Icons.home,
             title: 'Home',
-            onTap: () => context.go("/home"),
+            onTap: () => context.go(authProvider.isLoggedIn ? "/home" : "/"),
           ),
           _buildDrawerItem(
             context,

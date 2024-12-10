@@ -27,9 +27,15 @@ void main() async {
 }
 
 final _router = GoRouter(
-    initialLocation: "/login",
+    initialLocation: "/",
     redirect: (context, state) {
-      final unprotectedRoutes = ["/", "/login", "/register"];
+      final unprotectedRoutes = [
+        "/",
+        "/login",
+        "/register",
+        "/restaurant",
+        "/restaurant/:id"
+      ];
       if (unprotectedRoutes.contains(state.fullPath)) {
         return null;
       }
