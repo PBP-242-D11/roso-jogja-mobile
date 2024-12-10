@@ -27,14 +27,13 @@ void main() async {
 }
 
 final _router = GoRouter(initialLocation: "/login", routes: [
-  GoRoute(path: "/", builder: (context, state) => const RosoJogjaLandingPage()),
+  GoRoute(path: "/", builder: (context, state) => const LandingPage()),
   GoRoute(
     path: "/login",
     builder: (context, state) => const LoginPage(),
   ),
   GoRoute(path: "/register", builder: (context, state) => const RegisterPage()),
-  GoRoute(
-      path: "/home", builder: (context, state) => const RosoJogjaLandingPage()),
+  GoRoute(path: "/home", builder: (context, state) => const LandingPage()),
   GoRoute(
       path: "/restaurant",
       builder: (context, state) => const RestaurantListPage(),

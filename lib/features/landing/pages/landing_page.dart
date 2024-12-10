@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:roso_jogja_mobile/shared/widgets/left_drawer.dart';
 import 'package:go_router/go_router.dart';
 
-class RosoJogjaLandingPage extends StatelessWidget {
-  const RosoJogjaLandingPage({super.key});
+class LandingPage extends StatelessWidget {
+  const LandingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
