@@ -114,7 +114,6 @@ class _CreateRestaurantPageState extends State<CreateRestaurantPage> {
                         });
 
                     if (context.mounted) {
-                      print(response);
                       if (response['status'] == 'success') {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(const SnackBar(

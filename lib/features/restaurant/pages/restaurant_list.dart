@@ -9,7 +9,6 @@ import '../../../shared/config/app_config.dart';
 import '../../../shared/widgets/left_drawer.dart';
 import '../../auth/provider/auth_provider.dart';
 import "package:go_router/go_router.dart";
-import 'dart:developer';
 
 class RestaurantListPage extends StatefulWidget {
   const RestaurantListPage({super.key});
@@ -48,8 +47,6 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
           hasNext: response["has_next"],
           hasPrevious: response["has_previous"],
           totalPages: response["num_pages"] ?? 1,
-          nextPage: response["current_page"] + 1,
-          prevPage: response["current_page"] - 1,
         );
 
         isLoading = false;
@@ -108,6 +105,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
           PaginationControls(
             metadata: paginationMetadata,
             currentPage: currentPage,
+            isLoading: isLoading,
             onPageChange: (newPage) {
               setState(() {
                 currentPage = newPage;
