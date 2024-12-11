@@ -152,15 +152,12 @@ class LeftDrawer extends StatelessWidget {
 
   Future<void> _handleLogout(
       BuildContext context, AuthProvider authProvider) async {
-    final response = await authProvider.cookieRequest.logout(
+    final response = await authProvider.logout(
       '${AppConfig.apiUrl}/mobile_logout/',
     );
     final message = response["message"];
 
     if (context.mounted) {
-      final snackBar = SnackBar(content: Text(message));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
       if (response['status']) {
         final uname = response["username"];
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -168,6 +165,10 @@ class LeftDrawer extends StatelessWidget {
         ));
         context.go('/');
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(message),
+      ));
     }
   }
 
