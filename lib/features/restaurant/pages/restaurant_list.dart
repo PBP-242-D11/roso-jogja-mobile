@@ -98,7 +98,12 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                 : ListView.builder(
                     itemCount: restaurants.length,
                     itemBuilder: (context, index) {
-                      return RestaurantCard(restaurant: restaurants[index]);
+                      return RestaurantCard(
+                          restaurant: restaurants[index],
+                          isRestaurantOwner: isRestaurantOwner,
+                          onDelete: () {
+                            fetchRestaurants();
+                          });
                     },
                   ),
           ),
