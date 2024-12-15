@@ -52,70 +52,126 @@ class RestaurantCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 5,
-      child: GestureDetector(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
         onTap: () => context.go('/restaurant/${restaurant.id}'),
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(8.0),
-          title: Text(
-            restaurant.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-          ),
-          subtitle: Text(
-            restaurant.address,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-          ),
-          minVerticalPadding: 20,
-          trailing: isRestaurantOwner
-              ? Row(
-                  mainAxisSize: MainAxisSize.min,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Placeholder for restaurant image (you can replace with network image later)
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.grey[200],
+                  image: DecorationImage(
+                    image: AssetImage(
+                        'assets/images/restaurant_placeholder_${restaurant.placeholderImage}.png'),
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Update button
+                    Text(
+                      restaurant.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      restaurant.address,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey[700],
+                          ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 4,
+                      runSpacing: 4,
+                      children: restaurant.categories
+                          .split(',')
+                          .map((category) => Chip(
+                                label: Text(
+                                  category.trim(),
+                                  style: const TextStyle(fontSize: 10),
+                                ),
+                                backgroundColor: Colors.grey[200],
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 4, vertical: 2),
+                              ))
+                          .toList(),
+                    ),
+                  ],
+                ),
+              ),
+              if (isRestaurantOwner)
+                Column(
+                  children: [
                     IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () async {
-                          bool? result = await context
-                              .push('/restaurant/update', extra: restaurant);
-                          if (result != null && result == true) {
-                            refreshRestaurantCallback?.call();
-                          }
-                        }),
-                    // Delete button
+                      icon: const Icon(Icons.edit, size: 20),
+                      color: Colors.blue,
+                      onPressed: () async {
+                        bool? result = await context.push('/restaurant/update',
+                            extra: restaurant);
+                        if (result != null && result == true) {
+                          refreshRestaurantCallback?.call();
+                        }
+                      },
+                    ),
                     IconButton(
-                      icon: const Icon(Icons.delete),
+                      icon: const Icon(Icons.delete, size: 20),
+                      color: Colors.red,
                       onPressed: () {
                         showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                                  title: const Text('Delete Restaurant'),
-                                  content: const Text(
-                                      'Are you sure you want to delete this restaurant?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => context.pop(),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        context.pop();
-                                        _deleteRestaurant(context);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.red),
-                                      child: const Text('Delete',
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                    ),
-                                  ],
-                                ));
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Delete Restaurant'),
+                            content: const Text(
+                                'Are you sure you want to delete this restaurant?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => context.pop(),
+                                child: const Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  context.pop();
+                                  _deleteRestaurant(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                ),
+                                child: const Text(
+                                  'Delete',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
                       },
                     ),
                   ],
-                )
-              : null,
+                ),
+            ],
+          ),
         ),
       ),
     );
