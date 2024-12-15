@@ -165,10 +165,6 @@ class LeftDrawer extends StatelessWidget {
         ));
         context.go('/');
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(message),
-      ));
     }
   }
 

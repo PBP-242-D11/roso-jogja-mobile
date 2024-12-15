@@ -40,10 +40,12 @@ class RestaurantCard extends StatelessWidget {
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Failed to delete restaurant'),
-        backgroundColor: Colors.red,
-      ));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Failed to delete restaurant'),
+          backgroundColor: Colors.red,
+        ));
+      }
     }
   }
 
