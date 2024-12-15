@@ -20,105 +20,116 @@ class RestaurantListPage extends StatefulWidget {
 class _RestaurantListPageState extends State<RestaurantListPage> {
   int currentPage = 1;
   static const int itemsPerPage = 8;
-  bool isLoading = false;
-  PaginationMetadata? paginationMetadata;
-  List<Restaurant> restaurants = [];
 
-  Future<void> fetchRestaurants() async {
-    setState(() {
-      isLoading = true;
-    });
+  Future<Map<String, dynamic>> fetchRestaurants() async {
+    final authProvider = context.read<AuthProvider>();
+    final request = authProvider.cookieRequest;
 
-    try {
-      final authProvider = context.read<AuthProvider>();
-      final request = authProvider.cookieRequest;
-      final response = await request.get(
-          '${AppConfig.apiUrl}/restaurant/api/restaurants/?page=$currentPage&page_size=$itemsPerPage');
+    final response = await request.get(
+        '${AppConfig.apiUrl}/restaurant/api/restaurants/?page=$currentPage&page_size=$itemsPerPage');
 
-      if (!mounted) return;
-
-      setState(() {
-        restaurants = (response["results"] as List)
-            .map((restaurant) => Restaurant.fromJson(restaurant))
-            .toList();
-
-        paginationMetadata = PaginationMetadata(
-          currentPage: response["current_page"],
-          hasNext: response["has_next"],
-          hasPrevious: response["has_previous"],
-          totalPages: response["num_pages"] ?? 1,
-        );
-
-        isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-
-      setState(() {
-        isLoading = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load restaurants: $e')),
-      );
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchRestaurants();
+    return {
+      'restaurants': (response["results"] as List)
+          .map((restaurant) => Restaurant.fromJson(restaurant))
+          .toList(),
+      'pagination': PaginationMetadata(
+        currentPage: response["current_page"],
+        hasNext: response["has_next"],
+        hasPrevious: response["has_previous"],
+        totalPages: response["num_pages"] ?? 1,
+      )
+    };
   }
 
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().user;
-
     final isRestaurantOwner = user != null && user.role == "R";
 
     return Scaffold(
       appBar: AppBar(title: const Text('Available Restaurants')),
       drawer: const LeftDrawer(),
-      body: Column(
-        children: [
-          if (isLoading) const LoadingIndicator(),
-          if (isRestaurantOwner)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                onPressed: () => context.push('/restaurant/create'),
-                child: const Text('Create Restaurant'),
+      body: FutureBuilder(
+        future: fetchRestaurants(),
+        builder: (context, snapshot) {
+          // Handle loading state
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const LoadingIndicator();
+          }
+
+          // Handle error state
+          if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Failed to load restaurants: ${snapshot.error}'),
+                  ElevatedButton(
+                    onPressed: () => setState(() {}),
+                    child: const Text('Retry'),
+                  )
+                ],
               ),
-            ),
-          Expanded(
-            child: restaurants.isEmpty && !isLoading
-                ? Center(
-                    child: Text(
-                        'No restaurants found. ${isRestaurantOwner ? "Create one!" : ""}'))
-                : ListView.builder(
-                    itemCount: restaurants.length,
-                    itemBuilder: (context, index) {
-                      return RestaurantCard(
-                          restaurant: restaurants[index],
-                          isRestaurantOwner: isRestaurantOwner,
-                          onDelete: () {
-                            fetchRestaurants();
-                          });
+            );
+          }
+
+          // Handle data state
+          if (!snapshot.hasData) {
+            return const Center(child: Text('No data available'));
+          }
+
+          // Extract data from snapshot
+          final data = snapshot.data!;
+          final List<Restaurant> restaurants = data['restaurants'];
+          final PaginationMetadata? paginationMetadata = data['pagination'];
+
+          return Column(
+            children: [
+              if (isRestaurantOwner)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      bool? result = await context.push('/restaurant/create');
+
+                      if (result != null && result == true) {
+                        setState(() {});
+                      }
                     },
+                    child: const Text('Create Restaurant'),
                   ),
-          ),
-          PaginationControls(
-            metadata: paginationMetadata,
-            currentPage: currentPage,
-            isLoading: isLoading,
-            onPageChange: (newPage) {
-              setState(() {
-                currentPage = newPage;
-              });
-              fetchRestaurants();
-            },
-          ),
-        ],
+                ),
+              Expanded(
+                child: restaurants.isEmpty
+                    ? Center(
+                        child: Text(
+                            'No restaurants found. ${isRestaurantOwner ? "Create one!" : ""}'))
+                    : ListView.builder(
+                        itemCount: restaurants.length,
+                        itemBuilder: (context, index) {
+                          return RestaurantCard(
+                            restaurant: restaurants[index],
+                            isRestaurantOwner: isRestaurantOwner,
+                            onDelete: () {
+                              setState(() {}); // Trigger a refresh
+                            },
+                          );
+                        },
+                      ),
+              ),
+              PaginationControls(
+                metadata: paginationMetadata,
+                currentPage: currentPage,
+                isLoading: snapshot.connectionState == ConnectionState.waiting,
+                onPageChange: (newPage) {
+                  setState(() {
+                    currentPage = newPage;
+                  });
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }

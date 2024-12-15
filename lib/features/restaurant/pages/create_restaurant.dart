@@ -117,7 +117,7 @@ class _CreateRestaurantPageState extends State<CreateRestaurantPage> {
                             .showSnackBar(const SnackBar(
                           content: Text("Restaurant created successfully."),
                         ));
-                        context.go('/restaurant');
+                        context.pop(true);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                             content: Text(
