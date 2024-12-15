@@ -110,7 +110,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                           return RestaurantCard(
                             restaurant: restaurants[index],
                             isRestaurantOwner: isRestaurantOwner,
-                            onDelete: () {
+                            refreshRestaurantCallback: () {
                               setState(() {}); // Trigger a refresh
                             },
                           );

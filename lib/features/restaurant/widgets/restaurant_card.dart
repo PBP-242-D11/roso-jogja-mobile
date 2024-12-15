@@ -7,14 +7,14 @@ import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 class RestaurantCard extends StatelessWidget {
   final Restaurant restaurant;
-  final VoidCallback? onDelete;
+  final VoidCallback? refreshRestaurantCallback;
   final bool isRestaurantOwner;
 
   const RestaurantCard(
       {super.key,
       required this.restaurant,
       required this.isRestaurantOwner,
-      this.onDelete});
+      this.refreshRestaurantCallback});
 
   Future<void> _deleteRestaurant(BuildContext context) async {
     final authProvider = context.read<AuthProvider>();
@@ -31,7 +31,7 @@ class RestaurantCard extends StatelessWidget {
             backgroundColor: Colors.green,
           ));
 
-          onDelete?.call();
+          refreshRestaurantCallback?.call();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('Failed to delete restaurant'),
@@ -70,33 +70,50 @@ class RestaurantCard extends StatelessWidget {
           ),
           minVerticalPadding: 20,
           trailing: isRestaurantOwner
-              ? IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                              title: const Text('Delete Restaurant'),
-                              content: const Text(
-                                  'Are you sure you want to delete this restaurant?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => context.pop(),
-                                  child: const Text('Cancel'),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    context.pop();
-                                    _deleteRestaurant(context);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red),
-                                  child: const Text('Delete',
-                                      style: TextStyle(color: Colors.white)),
-                                ),
-                              ],
-                            ));
-                  },
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Update button
+                    IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () async {
+                          bool? result = await context
+                              .push('/restaurant/update', extra: restaurant);
+                          if (result != null && result == true) {
+                            refreshRestaurantCallback?.call();
+                          }
+                        }),
+                    // Delete button
+                    IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: const Text('Delete Restaurant'),
+                                  content: const Text(
+                                      'Are you sure you want to delete this restaurant?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => context.pop(),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        context.pop();
+                                        _deleteRestaurant(context);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red),
+                                      child: const Text('Delete',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ),
+                                  ],
+                                ));
+                      },
+                    ),
+                  ],
                 )
               : null,
         ),
