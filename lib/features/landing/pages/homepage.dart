@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:roso_jogja_mobile/shared/widgets/left_drawer.dart';
 import 'package:go_router/go_router.dart';
 
-class LandingPage extends StatelessWidget {
-  const LandingPage({super.key});
+class Homepage extends StatelessWidget {
+  const Homepage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -105,31 +105,6 @@ class LandingPage extends StatelessWidget {
               ),
               child: Text(
                 'View Restaurants',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-          SizedBox(height: 16),
-          Center(
-            // Center the button
-            child: ElevatedButton(
-              onPressed: () => context.push('/login'),
-              style: ElevatedButton.styleFrom(
-                alignment: Alignment.center,
-                backgroundColor: Colors.orange[700],
-                padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 32.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                elevation: 5,
-              ),
-              child: Text(
-                'Login',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
