@@ -25,7 +25,7 @@ class FoodCard extends StatelessWidget {
 
     try {
       final response = await request.get(
-        '${AppConfig.apiUrl}/restaurant/api/foods/delete/${food.id}/',
+        '${AppConfig.apiUrl}/restaurant/api/restaurants/$restaurantId/delete_food/${food.id}/',
       );
 
       if (context.mounted) {

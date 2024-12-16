@@ -155,7 +155,9 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                             food: restaurant.foods![index],
                             isRestaurantOwner: isRestaurantOwner,
                             restaurantId: restaurant.id,
-                            refreshRestaurantDetailsCallback: () {});
+                            refreshRestaurantDetailsCallback: () {
+                              setState(() {});
+                            });
                       },
                     )
                   else
