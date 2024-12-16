@@ -33,7 +33,7 @@ final _router = GoRouter(
         "/login",
         "/register",
         "/restaurant",
-        "/restaurant/:id"
+        "/restaurant/:restaurantId"
       ];
       if (unprotectedRoutes.contains(state.fullPath)) {
         return null;
