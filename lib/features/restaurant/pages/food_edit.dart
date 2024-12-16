@@ -1,23 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
-import 'package:go_router/go_router.dart';
+import '../models/food.dart';
 
-class CreateFoodPage extends StatefulWidget {
+class EditFoodPage extends StatefulWidget {
+  final Food food;
   final String restaurantId;
 
-  const CreateFoodPage({super.key, required this.restaurantId});
+  const EditFoodPage(
+      {super.key, required this.food, required this.restaurantId});
 
   @override
-  State<CreateFoodPage> createState() => _CreateFoodPageState();
+  State<EditFoodPage> createState() => _EditFoodPageState();
 }
 
-class _CreateFoodPageState extends State<CreateFoodPage> {
+class _EditFoodPageState extends State<EditFoodPage> {
   final _formKey = GlobalKey<FormState>();
-  String _foodName = '';
-  String _foodDescription = '';
-  String _foodPrice = '';
+  late String _foodName;
+  late String _foodDescription;
+  late String _foodPrice;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize form fields with the passed food's data
+    _foodName = widget.food.name;
+    _foodDescription = widget.food.description;
+    _foodPrice = widget.food.price.toString();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +37,7 @@ class _CreateFoodPageState extends State<CreateFoodPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Food Item'),
+        title: const Text('Update Food Item'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -35,6 +47,7 @@ class _CreateFoodPageState extends State<CreateFoodPage> {
             child: Column(
               children: [
                 TextFormField(
+                  initialValue: _foodName,
                   decoration: const InputDecoration(
                     labelText: 'Name',
                     hintText: 'Enter the food name',
@@ -51,12 +64,13 @@ class _CreateFoodPageState extends State<CreateFoodPage> {
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
+                  initialValue: _foodPrice,
                   decoration: const InputDecoration(
                     labelText: 'Price',
                     hintText: 'Enter the food price',
                     prefixText: 'Rp ',
                   ),
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter the food price';
@@ -77,6 +91,7 @@ class _CreateFoodPageState extends State<CreateFoodPage> {
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
+                  initialValue: _foodDescription,
                   decoration: const InputDecoration(
                     labelText: 'Description',
                     hintText: 'Enter the food description',
@@ -98,33 +113,41 @@ class _CreateFoodPageState extends State<CreateFoodPage> {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
 
-                      // Call the API to create the food item
-                      final response = await authProvider.cookieRequest.post(
-                          '${AppConfig.apiUrl}/restaurant/api/restaurants/${widget.restaurantId}/create_food/',
+                      try {
+                        // Call the API to update the food item
+                        final response = await authProvider.cookieRequest.post(
+                          '${AppConfig.apiUrl}/restaurant/api/restaurants/${widget.restaurantId}/update_food/${widget.food.id}/',
                           {
-                            'restaurant': widget.restaurantId.toString(),
                             'name': _foodName,
                             'price': _foodPrice,
                             'description': _foodDescription,
-                          });
+                          },
+                        );
 
-                      if (context.mounted) {
-                        if (response['status'] == 'success') {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                            content: Text("Food item created successfully."),
-                          ));
-                          context.pop(true);
-                        } else {
+                        if (context.mounted) {
+                          if (response['status'] == 'success') {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text("Food item updated successfully."),
+                            ));
+                            context.pop(true);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(response['message'] ??
+                                  "Failed to update food item. Please try again."),
+                            ));
+                          }
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(response['message'] ??
-                                "Failed to create food item. Please try again."),
+                            content: Text("Error updating food item: $e"),
                           ));
                         }
                       }
                     }
                   },
-                  child: const Text('Create Food Item'),
+                  child: const Text('Update Food Item'),
                 ),
               ],
             ),

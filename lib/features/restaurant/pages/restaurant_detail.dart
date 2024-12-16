@@ -135,7 +135,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                       child: ElevatedButton(
                         onPressed: () async {
                           bool? result = await context.push(
-                              '/restaurant/${widget.restaurantId}/create');
+                              '/restaurant/${widget.restaurantId}/create_food');
 
                           if (result != null && result == true) {
                             setState(() {});

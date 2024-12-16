@@ -126,7 +126,7 @@ class FoodCard extends StatelessWidget {
                     onPressed: () async {
                       // Navigate to food update screen
                       bool? result = await context.push(
-                        '/restaurant/$restaurantId/food/update',
+                        '/restaurant/$restaurantId/update_food',
                         extra: food,
                       );
 
