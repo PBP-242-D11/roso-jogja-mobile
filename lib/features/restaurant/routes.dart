@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import "package:roso_jogja_mobile/features/restaurant/pages/food_create.dart";
 import "package:roso_jogja_mobile/features/restaurant/pages/restaurant_create.dart";
 import "package:roso_jogja_mobile/features/restaurant/pages/restaurant_detail.dart";
 import "package:roso_jogja_mobile/features/restaurant/pages/restaurant_list.dart";
@@ -32,6 +33,14 @@ final restaurantRoutes = [
             builder: (context, state) {
               final id = state.pathParameters['id'];
               return RestaurantDetailPage(restaurantId: id!);
-            }),
+            },
+            routes: [
+              GoRoute(
+                  path: "/create",
+                  builder: (context, state) {
+                    final restaurantId = state.pathParameters['id'];
+                    return CreateFoodPage(restaurantId: restaurantId!);
+                  }),
+            ]),
       ])
 ];

@@ -5,6 +5,7 @@ import 'package:roso_jogja_mobile/features/restaurant/models/restaurant.dart';
 import 'package:roso_jogja_mobile/features/restaurant/widgets/food_card.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   final String restaurantId;
@@ -128,6 +129,22 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   ),
                   const SizedBox(height: 16),
 
+                  if (isRestaurantOwner)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          bool? result = await context.push(
+                              '/restaurant/${widget.restaurantId}/create');
+
+                          if (result != null && result == true) {
+                            setState(() {});
+                          }
+                        },
+                        child: const Text('Add Food'),
+                      ),
+                    ),
+
                   if (restaurant.foods != null && restaurant.foods!.isNotEmpty)
                     ListView.builder(
                       shrinkWrap: true,
@@ -137,6 +154,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                         return FoodCard(
                             food: restaurant.foods![index],
                             isRestaurantOwner: isRestaurantOwner,
+                            restaurantId: restaurant.id,
                             refreshRestaurantDetailsCallback: () {});
                       },
                     )
