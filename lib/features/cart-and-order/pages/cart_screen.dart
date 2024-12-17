@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:roso_jogja_mobile/shared/widgets/left_drawer.dart';
 
 void main() => runApp(const MyApp());
 
@@ -22,8 +23,9 @@ class ShoppingCartPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shopping Cart'),
-        backgroundColor: const Color(0xFFFF7043), // Match the button color
+        backgroundColor: const Color(0xFFFF7043),
       ),
+      drawer: const LeftDrawer(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

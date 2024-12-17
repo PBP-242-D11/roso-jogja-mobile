@@ -11,6 +11,8 @@ class LeftDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
+    final isRestaurantOwner =
+        authProvider.user != null && authProvider.user!.role == "R";
 
     return Drawer(
       child: ListView(
@@ -33,6 +35,20 @@ class LeftDrawer extends StatelessWidget {
             title: 'Restaurants',
             onTap: () => context.go("/restaurant"),
           ),
+          if(!isRestaurantOwner)
+            _buildDrawerItem(
+              context,
+              icon: Icons.shopping_cart,
+              title: 'Your Cart',
+              onTap: () => context.go("/cart"),
+            ),
+          if(!isRestaurantOwner)
+            _buildDrawerItem(
+              context,
+              icon: Icons.history,
+              title: 'History',
+              onTap: () => context.go("/order_history"),
+            ),
           if (authProvider.isLoggedIn)
             _buildDrawerItem(
               context,
