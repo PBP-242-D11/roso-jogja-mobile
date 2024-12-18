@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
+import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 class Review {
   final int id;
@@ -28,27 +30,79 @@ class Review {
   }
 }
 
-class ListReview extends StatelessWidget {
+class ListReview extends StatefulWidget {
   final String restaurantId;
+  final VoidCallback? refreshRestaurantDetailsCallback;
 
   const ListReview({
     super.key,
     required this.restaurantId,
+    this.refreshRestaurantDetailsCallback,
   });
 
+  @override
+  _ListReviewState createState() => _ListReviewState();
+}
+
+class _ListReviewState extends State<ListReview> {
+  late Future<List<Review>> _reviewsFuture;
+
   Future<List<Review>> fetchReviews(String restaurantId) async {
-    final url = 'http://localhost:8000/review/json_reviews/$restaurantId/';
+    final authProvider = context.read<AuthProvider>();
+    final request = authProvider.cookieRequest;
 
-    final response = await http.get(Uri.parse(url));
+    final response = await request.get('${AppConfig.apiUrl}/review/json_reviews/$restaurantId/');
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final List<Review> reviews = List<Review>.from(
-        data['reviews'].map((review) => Review.fromJson(review)),
+    if (response['reviews'] != null) {
+      return List<Review>.from(
+        response['reviews'].map((review) => Review.fromJson(review)),
       );
-      return reviews;
     } else {
       throw Exception('Failed to load reviews');
+    }
+  }
+
+  Future<void> _deleteReview(BuildContext context, int reviewId) async {
+    final authProvider = context.read<AuthProvider>();
+    final request = authProvider.cookieRequest;
+
+    try {
+      final response = await request.get(
+        '${AppConfig.apiUrl}/review/api/delete_review/$reviewId/',
+      );
+
+      if (context.mounted) {
+        if (response["success"] == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Review berhasil dihapus'),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          // Refresh setelah berhasil menghapus review
+          widget.refreshRestaurantDetailsCallback?.call();
+          setState(() {
+            _reviewsFuture = fetchReviews(widget.restaurantId);
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Gagal menghapus review'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Terjadi kesalahan saat menghapus review'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -66,21 +120,25 @@ class ListReview extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _reviewsFuture = fetchReviews(widget.restaurantId);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Review>>(
-      future: fetchReviews(restaurantId),
+      future: _reviewsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
+          return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(
             child: Text(
-              'Belum ada review untuk restoran ini.',
-              style: TextStyle(fontSize: 18, color: Color(0xff59A5D8)),
+              'There are no reviews yet.',
+              style: TextStyle(fontSize: 18, color: Color(0xFFA8A8A8)),
             ),
           );
         } else {
@@ -95,7 +153,7 @@ class ListReview extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
-                  color: Colors.white, // Mengatur latar belakang menjadi putih
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
@@ -119,6 +177,40 @@ class ListReview extends StatelessWidget {
                         ),
                         const Spacer(),
                         buildStars(review.rating),
+                        IconButton(
+                          icon: const Icon(Icons.delete, size: 20),
+                          color: Colors.red,
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Delete Review'),
+                                content: const Text(
+                                  'Are you sure you want to delete this review?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      _deleteReview(context, review.id);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                    ),
+                                    child: const Text(
+                                      'Delete',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     ),
                     const SizedBox(height: 10),
