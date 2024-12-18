@@ -3,10 +3,10 @@ import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:roso_jogja_mobile/features/auth/pages/login.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -310,12 +310,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               content: Text('Successfully registered!'),
                             ),
                           );
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LoginPage(),
-                            ),
-                          );
+                          context.go('/login');
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

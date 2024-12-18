@@ -3,7 +3,11 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
-import "package:roso_jogja_mobile/shared/config/route_generator.dart";
+import 'package:roso_jogja_mobile/features/landing/pages/homepage.dart';
+import 'package:roso_jogja_mobile/features/landing/pages/landing_page.dart';
+import 'package:go_router/go_router.dart';
+import "package:roso_jogja_mobile/features/auth/routes.dart";
+import "package:roso_jogja_mobile/features/restaurant/routes.dart";
 
 void main() async {
   await dotenv.load();
@@ -21,12 +25,40 @@ void main() async {
   ));
 }
 
+final _router = GoRouter(
+    initialLocation: "/",
+    redirect: (context, state) {
+      final unprotectedRoutes = [
+        "/",
+        "/login",
+        "/register",
+        "/restaurant",
+        "/restaurant/:restaurantId"
+      ];
+      if (unprotectedRoutes.contains(state.fullPath)) {
+        return null;
+      }
+
+      final authProvider = context.read<AuthProvider>();
+      if (!authProvider.isLoggedIn) {
+        return "/login";
+      } else {
+        return null;
+      }
+    },
+    routes: [
+      GoRoute(path: "/", builder: (context, state) => const LandingPage()),
+      GoRoute(path: "/home", builder: (context, state) => const Homepage()),
+      ...authRoutes,
+      ...restaurantRoutes,
+    ]);
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Roso Jogja Mobile',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch(
@@ -45,9 +77,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      initialRoute: '/login',
-      onGenerateRoute: RouteGenerator.generateRoute,
-      navigatorKey: NavigatorKey.navigatorKey,
+      routerConfig: _router,
     );
   }
 }

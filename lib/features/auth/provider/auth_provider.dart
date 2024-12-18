@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import "package:pbp_django_auth/pbp_django_auth.dart";
 import 'package:roso_jogja_mobile/features/auth/models/user.dart';
+import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 class AuthProvider extends ChangeNotifier {
   final CookieRequest _cookieRequest;
@@ -18,6 +19,10 @@ class AuthProvider extends ChangeNotifier {
       await _cookieRequest.init();
       if (_cookieRequest.loggedIn) {
         _user = User.fromJson(_cookieRequest.getJsonData());
+      } else {
+        await _cookieRequest.logout(
+          '${AppConfig.apiUrl}/mobile_logout/',
+        );
       }
     } catch (e) {
       _user = null;
