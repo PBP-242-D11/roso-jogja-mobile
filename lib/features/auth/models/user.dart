@@ -14,7 +14,7 @@ class User {
   String username;
   String phoneNumber;
   String address;
-  String profilePicture;
+  String? profilePicture;
 
   User({
     required this.id,
@@ -22,7 +22,7 @@ class User {
     required this.username,
     required this.phoneNumber,
     required this.address,
-    required this.profilePicture,
+    this.profilePicture,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(

@@ -33,8 +33,8 @@ class Promo {
 }
 
 class PromoElement {
-    String userId;
     String id;
+    String userId;
     String type;
     int value;
     int minPayment;
@@ -42,10 +42,11 @@ class PromoElement {
     DateTime expiryDate;
     int maxUsage;
     bool shownToPublic;
+    List<String> restaurants;
 
     PromoElement({
-        required this.userId,
         required this.id,
+        required this.userId,
         required this.type,
         required this.value,
         required this.minPayment,
@@ -53,11 +54,12 @@ class PromoElement {
         required this.expiryDate,
         required this.maxUsage,
         required this.shownToPublic,
+        required this.restaurants,
     });
 
     factory PromoElement.fromJson(Map<String, dynamic> json) => PromoElement(
-        userId: json["user_id"],
         id: json["id"],
+        userId: json["user_id"],
         type: json["type"],
         value: json["value"],
         minPayment: json["min_payment"],
@@ -65,11 +67,12 @@ class PromoElement {
         expiryDate: DateTime.parse(json["expiry_date"]),
         maxUsage: json["max_usage"],
         shownToPublic: json["shown_to_public"],
+        restaurants: List<String>.from(json["restaurants"].map((x) => x)),
     );
 
     Map<String, dynamic> toJson() => {
-        "user_id": userId,
         "id": id,
+        "user_id": userId,
         "type": type,
         "value": value,
         "min_payment": minPayment,
@@ -77,5 +80,6 @@ class PromoElement {
         "expiry_date": "${expiryDate.year.toString().padLeft(4, '0')}-${expiryDate.month.toString().padLeft(2, '0')}-${expiryDate.day.toString().padLeft(2, '0')}",
         "max_usage": maxUsage,
         "shown_to_public": shownToPublic,
+        "restaurants": List<dynamic>.from(restaurants.map((x) => x)),
     };
 }

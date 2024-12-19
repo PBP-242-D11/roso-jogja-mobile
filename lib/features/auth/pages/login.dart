@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -82,11 +83,10 @@ class _LoginPageState extends State<LoginPage> {
                       });
 
                       if (request.cookieRequest.loggedIn) {
-                        String message = response["message"];
-                        String uname = response["username"];
+                        String message = response['message'];
+                        String uname = response['username'];
                         if (context.mounted) {
-                          Navigator.pushNamedAndRemoveUntil(
-                              context, '/landing', (route) => false);
+                          context.go("/home");
 
                           ScaffoldMessenger.of(context)
                             ..hideCurrentSnackBar()
@@ -107,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                                 TextButton(
                                   child: const Text('OK'),
                                   onPressed: () {
-                                    Navigator.pop(context);
+                                    context.pop();
                                   },
                                 ),
                               ],
@@ -126,9 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 36.0),
                   GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/register');
-                    },
+                    onTap: () => context.push('/register'),
                     child: Text(
                       'Don\'t have an account? Register',
                       style: TextStyle(
