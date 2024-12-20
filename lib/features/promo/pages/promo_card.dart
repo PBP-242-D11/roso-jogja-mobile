@@ -73,14 +73,6 @@ class PromoCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.grey[200],
-                ),
-              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Row(
@@ -155,10 +147,10 @@ class PromoCard extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                                   )),
                               // Add a "+ X more" chip if there are more restaurants
-                              if (promo.restaurants.length > 0)
+                              if (promo.restaurants.length > 3)
                                 Chip(
                                   label: Text(
-                                    "+ ${promo.restaurants.length} more",
+                                    "+ ${promo.restaurants.length - 3} more",
                                     style: const TextStyle(fontSize: 10),
                                   ),
                                   backgroundColor: Colors.grey[400],
@@ -338,10 +330,10 @@ class OtherPromoCard extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                                   )),
                               // Add a "+ X more" chip if there are more restaurants
-                              if (promo.restaurants.length > 0)
+                              if (promo.restaurants.length > 3)
                                 Chip(
                                   label: Text(
-                                    "+ ${promo.restaurants.length} more",
+                                    "+ ${promo.restaurants.length - 3} more",
                                     style: const TextStyle(fontSize: 10),
                                   ),
                                   backgroundColor: Colors.grey[400],

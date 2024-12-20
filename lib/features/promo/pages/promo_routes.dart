@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:roso_jogja_mobile/features/promo/pages/promo_detail.dart';
 import "package:roso_jogja_mobile/features/promo/pages/promo_home.dart";
+import "package:roso_jogja_mobile/features/promo/pages/promo_form.dart";
 
 final promoRoutes = [
   GoRoute(
@@ -9,7 +10,7 @@ final promoRoutes = [
       routes: [
         GoRoute(
             path: "/add",
-            builder: (context, state) => AddPromoPage()),
+            builder: (context, state) => CreatePromoPage()),
         // GoRoute(
         //   path: '/update',
         //   builder: (context, state) {
