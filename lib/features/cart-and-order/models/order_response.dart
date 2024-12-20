@@ -1,4 +1,3 @@
-// order_response.dart (Model baru untuk hasil dari show_order_flutter)
 import 'dart:convert';
 
 OrderResponse orderResponseFromJson(String str) => OrderResponse.fromJson(json.decode(str));

@@ -22,312 +22,149 @@ class _RegisterPageState extends State<RegisterPage> {
   final _phoneNumberController = TextEditingController();
   final _addressController = TextEditingController();
 
-  // Dropdown for role selection
   List<String> roles = ['Customer', 'Restaurant Owner'];
   String? selectedRole;
 
-  // Profile picture
   dynamic _profileImage;
   final ImagePicker _picker = ImagePicker();
 
-  // Method to pick image
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
-      // Add this to improve web compatibility
-      imageQuality: 50,
+      imageQuality: 70, // Moderate quality to balance performance and size
     );
 
     if (pickedFile != null) {
       setState(() {
-        if (kIsWeb) {
-          // For web, use memory image
-          _profileImage = pickedFile;
-        } else {
-          // For mobile, use File
-          _profileImage = File(pickedFile.path);
-        }
+        _profileImage = kIsWeb ? pickedFile : File(pickedFile.path);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final request = context.watch<AuthProvider>();
+    final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('RosoJogja Register'),
+        centerTitle: true,
+        title: const Text(
+          'Register',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Card(
-            elevation: 8,
+            elevation: 6,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.0),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
                   const Text(
-                    'Register',
-                    style: TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    'Create an Account',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 30.0),
+                  const SizedBox(height: 20),
 
-                  // Username Field
-                  TextFormField(
-                    controller: _usernameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Username',
-                      hintText: 'Enter your username',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                      ),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your username';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 12.0),
-
-                  // Phone Number Field
-                  TextFormField(
-                    controller: _phoneNumberController,
-                    keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone Number',
-                      hintText: 'Enter your phone number',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                      ),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your phone number';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 12.0),
-
-                  // Address Field
-                  TextFormField(
-                    controller: _addressController,
-                    decoration: const InputDecoration(
-                      labelText: 'Address',
-                      hintText: 'Enter your address',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                      ),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your address';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 12.0),
-
-                  // Role Dropdown
-                  DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                      labelText: 'Role',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                      ),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                    ),
-                    hint: const Text('Select Role'),
-                    value: selectedRole,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedRole = newValue;
-                      });
-                    },
-                    items: roles.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Please select a role';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 12.0),
-
-                  // Profile Picture Upload
                   // Profile Picture Upload
                   GestureDetector(
                     onTap: _pickImage,
-                    child: Column(
-                      children: [
-                        _profileImage != null
-                            ? kIsWeb
-                                ? Image.network(
-                                    _profileImage.path,
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Image.file(
-                                    _profileImage,
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover,
-                                  )
-                            : Container(
-                                width: double.infinity,
-                                height: 100,
+                    child: Center(
+                      child: Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Colors.grey[200],
+                            backgroundImage: _profileImage != null
+                                ? kIsWeb
+                                    ? NetworkImage(_profileImage.path)
+                                    : FileImage(_profileImage) as ImageProvider
+                                : null,
+                            child: _profileImage == null
+                                ? const Icon(Icons.camera_alt,
+                                    size: 40, color: Colors.grey)
+                                : null,
+                          ),
+                          if (_profileImage != null)
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: Container(
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(12.0),
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
                                 ),
-                                child: const Center(
-                                  child: Text('Tap to Upload Profile Picture'),
-                                ),
+                                child: const Icon(Icons.edit,
+                                    size: 20, color: Colors.blueAccent),
                               ),
-                      ],
+                            ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 12.0),
+                  const SizedBox(height: 24),
 
-                  // Password Fields (existing code remains the same)
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                      hintText: 'Enter your password',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                      ),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                    ),
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      return null;
+                  // Input Fields
+                  _buildInputField(
+                      _usernameController, 'Username', Icons.person),
+                  const SizedBox(height: 12),
+                  _buildInputField(
+                      _phoneNumberController, 'Phone Number', Icons.phone,
+                      inputType: TextInputType.phone),
+                  const SizedBox(height: 12),
+                  _buildInputField(_addressController, 'Address', Icons.home),
+                  const SizedBox(height: 12),
+
+                  // Role Dropdown
+                  DropdownButtonFormField<String>(
+                    decoration: _inputDecoration('Role', Icons.work_outline),
+                    value: selectedRole,
+                    hint: const Text('Select Role'),
+                    onChanged: (String? newValue) {
+                      setState(() => selectedRole = newValue);
                     },
+                    items: roles.map((String role) {
+                      return DropdownMenuItem<String>(
+                        value: role,
+                        child: Text(role),
+                      );
+                    }).toList(),
                   ),
-                  const SizedBox(height: 12.0),
-                  TextFormField(
-                    controller: _confirmPasswordController,
-                    decoration: const InputDecoration(
-                      labelText: 'Confirm Password',
-                      hintText: 'Confirm your password',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                      ),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                    ),
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please confirm your password';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 24.0),
+                  const SizedBox(height: 12),
+
+                  // Password Fields
+                  _buildInputField(_passwordController, 'Password', Icons.lock,
+                      isPassword: true),
+                  const SizedBox(height: 12),
+                  _buildInputField(_confirmPasswordController,
+                      'Confirm Password', Icons.lock_outline,
+                      isPassword: true),
+                  const SizedBox(height: 24),
 
                   // Register Button
                   ElevatedButton(
-                    onPressed: () async {
-                      // Validate inputs
-                      if (_profileImage == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Please upload a profile picture'),
-                          ),
-                        );
-                        return;
-                      }
-
-                      // Prepare data for registration
-                      String username = _usernameController.text;
-                      String password1 = _passwordController.text;
-                      String password2 = _confirmPasswordController.text;
-                      String phoneNumber = _phoneNumberController.text;
-                      String address = _addressController.text;
-
-                      // Convert image to base64
-                      String? base64Image;
-                      if (_profileImage != null) {
-                        List<int> imageBytes;
-                        if (kIsWeb) {
-                          // For web, use the XFile to read bytes
-                          imageBytes = await _profileImage.readAsBytes();
-                        } else {
-                          // For mobile, use File
-                          imageBytes = await _profileImage.readAsBytes();
-                        }
-                        base64Image = base64Encode(imageBytes);
-                      }
-
-                      // Send registration request
-                      final response = await request.cookieRequest.postJson(
-                        '${AppConfig.apiUrl}/mobile_register/',
-                        jsonEncode({
-                          "username": username,
-                          "password1": password1,
-                          "password2": password2,
-                          "phone_number": phoneNumber,
-                          "address": address,
-                          "role": selectedRole,
-                          "profile_picture": base64Image,
-                        }),
-                      );
-
-                      if (context.mounted) {
-                        if (response['status'] == 'success') {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Successfully registered!'),
-                            ),
-                          );
-                          context.go('/login');
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                  response['message'] ?? 'Failed to register!'),
-                            ),
-                          );
-                        }
-                      }
-                    },
+                    onPressed: () => _registerUser(context, authProvider),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      minimumSize: const Size(double.infinity, 50),
                       backgroundColor: Theme.of(context).colorScheme.primary,
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14.0),
                     ),
-                    child: const Text('Register'),
+                    child: const Text(
+                      'Register',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
@@ -336,5 +173,90 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
+  }
+
+  InputDecoration _inputDecoration(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon),
+      border: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12.0)),
+      ),
+    );
+  }
+
+  Widget _buildInputField(
+      TextEditingController controller, String label, IconData icon,
+      {TextInputType inputType = TextInputType.text, bool isPassword = false}) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: inputType,
+      obscureText: isPassword,
+      decoration: _inputDecoration(label, icon),
+    );
+  }
+
+  void _registerUser(BuildContext context, AuthProvider authProvider) async {
+    // Validate inputs
+    if (_profileImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please upload a profile picture'),
+        ),
+      );
+      return;
+    }
+
+    // Prepare data for registration
+    String username = _usernameController.text;
+    String password1 = _passwordController.text;
+    String password2 = _confirmPasswordController.text;
+    String phoneNumber = _phoneNumberController.text;
+    String address = _addressController.text;
+
+    // Convert image to base64
+    String? base64Image;
+    if (_profileImage != null) {
+      List<int> imageBytes;
+      if (kIsWeb) {
+        // For web, use the XFile to read bytes
+        imageBytes = await _profileImage.readAsBytes();
+      } else {
+        // For mobile, use File
+        imageBytes = await _profileImage.readAsBytes();
+      }
+      base64Image = base64Encode(imageBytes);
+    }
+
+    // Send registration request
+    final response = await authProvider.cookieRequest.postJson(
+      '${AppConfig.apiUrl}/mobile_register/',
+      jsonEncode({
+        "username": username,
+        "password1": password1,
+        "password2": password2,
+        "phone_number": phoneNumber,
+        "address": address,
+        "role": selectedRole,
+        "profile_picture": base64Image,
+      }),
+    );
+
+    if (context.mounted) {
+      if (response['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Successfully registered!'),
+          ),
+        );
+        context.go('/login');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message'] ?? 'Failed to register!'),
+          ),
+        );
+      }
+    }
   }
 }

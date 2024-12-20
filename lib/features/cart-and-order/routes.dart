@@ -7,5 +7,5 @@ final orderRoutes = [
     path: "/order_history",
     builder: (context, state) => const OrderHistoryPage(),
   ),
-  GoRoute(path: "/cart", builder: (context, state) => const ShoppingCartPage()),
+  GoRoute(path: "/cart", builder: (context, state) => const CartPage()),
 ];
