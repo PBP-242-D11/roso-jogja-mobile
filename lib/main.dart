@@ -9,7 +9,6 @@ import 'package:go_router/go_router.dart';
 import "package:roso_jogja_mobile/features/auth/routes.dart";
 import "package:roso_jogja_mobile/features/restaurant/routes.dart";
 import "package:roso_jogja_mobile/features/cart-and-order/routes.dart";
-import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 void main() async {
   await dotenv.load();
@@ -20,11 +19,6 @@ void main() async {
 
   // Initialize authProvider
   await authProvider.init();
-
-  await authProvider.login('${AppConfig.apiUrl}/mobile_login/', {
-    'username' : "akhdan",
-    'password' : "Halohalo",
-  });
 
   runApp(ChangeNotifierProvider(
     create: (_) => authProvider,
