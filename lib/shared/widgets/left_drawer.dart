@@ -224,8 +224,8 @@ class LeftDrawer extends StatelessWidget {
           _buildDrawerItem(
             context,
             icon: Icons.favorite_border,
-            title: 'Favorites',
-            onTap: () => context.push('/favorites'),
+            title: 'Wishlist',
+            onTap: () => context.push('/wishlist'),
           ),
       ],
     );
