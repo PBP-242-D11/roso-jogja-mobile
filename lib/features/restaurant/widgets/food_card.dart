@@ -112,7 +112,7 @@ class FoodCard extends StatelessWidget {
         if (shouldReplace == true) {
           final clearResponse = await request.get('${AppConfig.apiUrl}/order/api/cart/clear/');
 
-          if (clearResponse['status'] == 'success') {
+          if (clearResponse['message'] == 'Successfully cleared the cart') {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Cart has been cleared. Adding new item.'),
