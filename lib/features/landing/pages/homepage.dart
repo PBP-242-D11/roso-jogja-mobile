@@ -76,12 +76,26 @@ class Homepage extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundImage:
-                NetworkImage('${AppConfig.apiUrl}${user.profilePicture}'),
-            backgroundColor: Colors.white,
-          ),
+          user.profilePicture == null
+              ? CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.orange[700],
+                  child: Text(
+                    user.username[0].toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              : CircleAvatar(
+                  radius: 40,
+                  backgroundImage: NetworkImage(
+                    '${AppConfig.apiUrl}${user.profilePicture}',
+                  ),
+                  backgroundColor: Colors.white,
+                ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
