@@ -3,6 +3,8 @@ import 'package:roso_jogja_mobile/features/promo/pages/promo_detail.dart';
 import "package:roso_jogja_mobile/features/promo/pages/promo_home.dart";
 import "package:roso_jogja_mobile/features/promo/pages/promo_form.dart";
 import "package:roso_jogja_mobile/features/promo/pages/promo_use.dart";
+import "package:roso_jogja_mobile/features/promo/pages/promo_edit.dart";
+import "package:roso_jogja_mobile/features/promo/pages/promo_model.dart";
 
 final promoRoutes = [
   GoRoute(
@@ -12,20 +14,20 @@ final promoRoutes = [
         GoRoute(
             path: "/add",
             builder: (context, state) => CreatePromoPage()),
-        // GoRoute(
-        //   path: '/update',
-        //   builder: (context, state) {
-        //     final restaurant = state.extra as Restaurant;
-        //     return EditRestaurantPage(restaurant: restaurant);
-        //   },
-        //   redirect: (context, state) {
-        //     if (state.extra == null) {
-        //       return "/restaurant";
-        //     }
+        GoRoute(
+          path: '/edit',
+          builder: (context, state) {
+            final promo = state.extra as PromoElement;
+            return EditPromoPage(promo: promo);
+          },
+          redirect: (context, state) {
+            if (state.extra == null) {
+              return "/promo";
+            }
 
-        //     return null;
-        //   },
-        // ),
+            return null;
+          },
+        ),
         GoRoute(
           path: "use/:restoId", // Include restoId as a path parameter
           builder: (context, state) {

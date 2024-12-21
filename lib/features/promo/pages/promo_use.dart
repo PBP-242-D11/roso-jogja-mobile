@@ -172,13 +172,68 @@ class _UsePromoPageState extends State<UsePromo> {
                         context: context,
                         builder: (context) => AlertDialog(
                           title: const Text('Promo Found'),
-                          content: Text('Promo Code: ${promoDetails['promo_code']}\n'
-                              'Discount: ${promoDetails['value']}'),
+                          content: Text(
+                            'Promo Code: ${promoDetails['promo_code']}\n'
+                            'Discount: ${promoDetails['type'] == 'Percentage' ? '${promoDetails['value']}%' : 'Rp ${promoDetails['value']}'}',
+                          ),
                           actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('OK'),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: Colors.black, // Black box
+                                    foregroundColor: Colors.white, // White text
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  ),
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Back'),
+                                ),
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: Colors.orange, // Orange box
+                                    foregroundColor: Colors.white, // White text
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  ),
+                                  onPressed: () async {
+                                    final authProvider = context.read<AuthProvider>();
+                                    final request = authProvider.cookieRequest;
+
+                                    try {
+                                      // Send the request to tag the promo
+                                      final response = await request.get('${AppConfig.apiUrl}/promo/tag_promo/?promo_id=${promoDetails['id']}');
+
+                                      if (response['status'] == 'success') {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Promo tagged successfully!'),
+                                            backgroundColor: Colors.green,
+                                          ),
+                                        );
+                                        // Redirect to /cart
+                                        context.go('/cart');
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Failed to tag promo'),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('An error occurred while tagging the promo'),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: const Text('Apply Promo'),
+                                ),
+                              ],
                             ),
+
                           ],
                         ),
                       );
@@ -190,7 +245,7 @@ class _UsePromoPageState extends State<UsePromo> {
                   },
                   child: const Text('Find Promo'),
                 ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
 
               // Render the first list only if promos are available
               if (promos.isNotEmpty)

@@ -229,7 +229,7 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
                 // Max Usage
                 TextFormField(
                   decoration: const InputDecoration(
-                    labelText: 'Max Usage',
+                    labelText: 'Max Usage (-1 for unlimited usage)',
                     hintText: 'Enter the maximum usage',
                   ),
                   keyboardType: TextInputType.number,

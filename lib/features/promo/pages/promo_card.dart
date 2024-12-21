@@ -97,7 +97,7 @@ class PromoCard extends StatelessWidget {
                             : promo.type == "Currency"
                                 ? Icons.attach_money
                                 : Icons.money, // Default to a generic money icon
-                        color: Colors.green,
+                        color: Colors.orange,
                       ),
                     ),
                     Expanded(
@@ -177,7 +177,7 @@ class PromoCard extends StatelessWidget {
                       icon: const Icon(Icons.edit, size: 20),
                       color: Colors.blue,
                       onPressed: () async {
-                        bool? result = await context.push('/promo/update', //HARUS DI SETTING DI PROMO_ROUTES
+                        bool? result = await context.push('/promo/edit', //HARUS DI SETTING DI PROMO_ROUTES
                             extra: promo);
                         if (result != null && result == true) {
                           refreshPromoCallback?.call();
@@ -222,7 +222,7 @@ class PromoCard extends StatelessWidget {
               if (use)
                 IconButton(
                   icon: const Icon(Icons.add_circle, size: 25),
-                  color: Colors.green,
+                  color: Colors.orange,
                   onPressed: () async {
                     final authProvider = context.read<AuthProvider>();
                     final request = authProvider.cookieRequest;
@@ -321,7 +321,7 @@ class OtherPromoCard extends StatelessWidget {
                             : promo.type == "Currency"
                                 ? Icons.attach_money
                                 : Icons.money, // Default to a generic money icon
-                        color: Colors.green,
+                        color: Colors.orange,
                       ),
                     ),
                     Expanded(
