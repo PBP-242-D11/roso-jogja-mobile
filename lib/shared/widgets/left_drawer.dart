@@ -6,6 +6,7 @@ import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
@@ -13,47 +14,44 @@ class LeftDrawer extends StatelessWidget {
     final user = authProvider.user;
 
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          _buildDrawerHeader(context),
-          if (authProvider.isLoggedIn) _buildLoggedInUserTile(context, user!),
-          if (!authProvider.isLoggedIn) _buildLoginTile(context),
-          const Divider(),
-          _buildMotivationalText(),
-          _buildDrawerItem(
-            context,
-            icon: Icons.home,
-            title: 'Home',
-            onTap: () => context.go(authProvider.isLoggedIn ? "/home" : "/"),
-          ),
-          _buildDrawerItem(
-            context,
-            icon: Icons.restaurant,
-            title: 'Restaurants',
-            onTap: () => context.go("/restaurant"),
-          ),
-          if (authProvider.isLoggedIn)
-            _buildDrawerItem(
-              context,
-              icon: Icons.logout,
-              title: 'Logout',
-              onTap: () => _handleLogout(context, authProvider),
-            ),
-        ],
+      child: Container(
+        color: Colors.white,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            _buildDrawerHeader(context),
+
+            // User Profile Section
+            if (authProvider.isLoggedIn) _buildLoggedInUserTile(context, user!),
+
+            // Login Prompt for Non-Logged In Users
+            if (!authProvider.isLoggedIn) _buildLoginTile(context),
+
+            const Divider(thickness: 1, indent: 16, endIndent: 16),
+
+            // Navigation Sections
+            _buildNavigationSection(context, authProvider),
+
+            const Divider(thickness: 1, indent: 16, endIndent: 16),
+
+            // App Information and Additional Options
+            _buildAdditionalOptionsSection(context, authProvider),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildDrawerHeader(BuildContext context) {
+    
     return DrawerHeader(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Theme.of(context).colorScheme.primary,
-            Theme.of(context).colorScheme.primary.withOpacity(0.7),
+            Colors.orange[700]!,
+            Colors.orange[500]!,
           ],
         ),
       ),
@@ -63,16 +61,24 @@ class LeftDrawer extends StatelessWidget {
         children: [
           Image.asset(
             'assets/images/logo.png',
-            height: 70,
+            height: 80,
+            width: 80,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
-            "Roso Jogja Mobile",
-            style: const TextStyle(
+            "Roso Jogja",
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
               letterSpacing: 1.1,
+              shadows: [
+                Shadow(
+                  blurRadius: 10.0,
+                  color: Colors.black26,
+                  offset: Offset(1.0, 1.0),
+                ),
+              ],
             ),
           ),
         ],
@@ -81,72 +87,185 @@ class LeftDrawer extends StatelessWidget {
   }
 
   Widget _buildLoggedInUserTile(BuildContext context, dynamic user) {
-    return ListTile(
-      leading: user.profilePicture == null
-          ? CircleAvatar(
-              radius: 20,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              child: Text(
-                user.username[0],
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            )
-          : CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage(
-                '${AppConfig.apiUrl}${user.profilePicture}',
-              ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ListTile(
+          contentPadding: const EdgeInsets.all(12),
+          leading: Hero(
+            tag: 'profile_picture',
+            child: user.profilePicture == null
+                ? CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.orange[700],
+                    child: Text(
+                      user.username[0].toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
+                : CircleAvatar(
+                    radius: 30,
+                    backgroundImage: NetworkImage(
+                      '${AppConfig.apiUrl}${user.profilePicture}',
+                    ),
+                  ),
+          ),
+          title: Text(
+            user.username,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-      title: Text(
-        user.username,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
+          ),
+          subtitle: Text(
+            user.address,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+            ),
+          ),
         ),
       ),
-      subtitle: Text(
-        user.address,
-        style: const TextStyle(
-          fontSize: 14,
-          color: Colors.grey,
-        ),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
     );
   }
 
   Widget _buildLoginTile(BuildContext context) {
-    return ListTile(
-      leading: Icon(
-        Icons.login,
-        color: Theme.of(context).colorScheme.primary,
-      ),
-      title: const Text(
-        'Log In',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ListTile(
+          leading: Icon(
+            Icons.login,
+            color: Colors.orange[700],
+            size: 30,
+          ),
+          title: const Text(
+            'Log In to RosoJogja',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          subtitle: Text(
+            'Discover more features',
+            style: TextStyle(
+              color: Colors.grey[600],
+            ),
+          ),
+          trailing: Icon(
+            Icons.arrow_forward_ios,
+            color: Colors.orange[700],
+            size: 20,
+          ),
+          onTap: () => context.push('/login'),
         ),
       ),
-      onTap: () => context.push('/login'),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
     );
   }
 
-  Widget _buildMotivationalText() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Text(
-        'Ayo makan-makan!',
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          color: Colors.grey,
-          fontWeight: FontWeight.w500,
+  Widget _buildNavigationSection(
+    
+      BuildContext context, AuthProvider authProvider) {
+    final isRestaurantOwner =
+    authProvider.user != null && authProvider.user!.role == "R";
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            'Navigation',
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-      ),
+        _buildDrawerItem(
+          context,
+          icon: Icons.home_outlined,
+          title: 'Home',
+          onTap: () => context.go(authProvider.isLoggedIn ? "/home" : "/"),
+        ),
+        _buildDrawerItem(
+          context,
+          icon: Icons.restaurant_menu_outlined,
+          title: 'Restaurants',
+          onTap: () => context.go("/restaurant"),
+        ),
+        _buildDrawerItem(
+          context,
+          icon: Icons.discount,
+          title: 'Offers',
+          onTap: () => context.go("/promo"),
+        ),
+        if(!isRestaurantOwner)
+          _buildDrawerItem(
+            context,
+            icon: Icons.shopping_cart,
+            title: 'Your Cart',
+            onTap: () => context.go("/cart"),
+          ),
+        if(!isRestaurantOwner)
+          _buildDrawerItem(
+            context,
+            icon: Icons.history,
+            title: 'History',
+            onTap: () => context.go("/order_history"),
+          ),
+        if (authProvider.isLoggedIn)
+          _buildDrawerItem(
+            context,
+            icon: Icons.favorite_border,
+            title: 'Favorites',
+            onTap: () => context.push('/favorites'),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildAdditionalOptionsSection(
+      BuildContext context, AuthProvider authProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            'More',
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        if (authProvider.isLoggedIn)
+          _buildDrawerItem(
+            context,
+            icon: Icons.logout_outlined,
+            title: 'Logout',
+            onTap: () => _handleLogout(context, authProvider),
+          ),
+        _buildDrawerItem(
+          context,
+          icon: Icons.info_outline,
+          title: 'The Team',
+          onTap: () => context.push('/about'),
+        ),
+      ],
     );
   }
 
@@ -160,9 +279,12 @@ class LeftDrawer extends StatelessWidget {
     if (context.mounted) {
       if (response['status']) {
         final uname = response["username"];
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("$message. Sampai jumpa, $uname."),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("$message. Sampai jumpa, $uname."),
+            backgroundColor: Colors.orange[700],
+          ),
+        );
         context.go('/');
       }
     }
@@ -177,7 +299,8 @@ class LeftDrawer extends StatelessWidget {
     return ListTile(
       leading: Icon(
         icon,
-        color: Theme.of(context).colorScheme.primary,
+        color: Colors.orange[700],
+        size: 24,
       ),
       title: Text(
         title,
@@ -191,7 +314,7 @@ class LeftDrawer extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
-      hoverColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+      hoverColor: Colors.orange.withOpacity(0.1),
     );
   }
 }

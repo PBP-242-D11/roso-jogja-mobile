@@ -9,27 +9,36 @@ class LandingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Roso Jogja Mobile'),
+        title: const Text('Roso Jogja',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.orange[700],
+        elevation: 0,
       ),
       drawer: const LeftDrawer(),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // App Header
-              _buildHeader(context),
+              // Gradient Header
+              _buildGradientHeader(context),
 
-              // Hero Section
-              _buildHeroSection(context),
-
-              _buildButtonsSection(context),
-
-              // Features Section
-              _buildFeaturesSection(context),
-
-              // About Section
-              _buildAboutSection(context),
+              // Main Content
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeroSection(context),
+                    const SizedBox(height: 24),
+                    _buildButtonsSection(context),
+                    const SizedBox(height: 24),
+                    _buildFeaturesSection(context),
+                    const SizedBox(height: 24),
+                    _buildAboutSection(context),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -37,15 +46,27 @@ class LandingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+  Widget _buildGradientHeader(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.orange[700]!,
+            Colors.orange[500]!,
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
             'assets/images/logo.png',
-            height: 160,
+            height: 100,
+            width: 100,
+            fit: BoxFit.contain,
           ),
         ],
       ),
@@ -53,136 +74,107 @@ class LandingPage extends StatelessWidget {
   }
 
   Widget _buildHeroSection(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Welcome to RosoJogja',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-          ),
-          SizedBox(height: 16),
-          Text(
-            'Your ultimate guide to exploring Yogyakarta\'s diverse culinary scene. Discover hidden gems, plan your meals, and enjoy authentic local flavors.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
-                ),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Discover Jogja\'s Flavors',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'Embark on a culinary journey through Yogyakarta. Explore hidden gems, savor local delicacies, and create unforgettable dining memories.',
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Colors.grey[700],
+                height: 1.5,
+              ),
+        ),
+      ],
     );
   }
 
   Widget _buildButtonsSection(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Get Started',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          SizedBox(height: 16),
-          Center(
-            // Center the button
-            child: ElevatedButton(
-              onPressed: () => context.push('/restaurant'),
-              style: ElevatedButton.styleFrom(
-                alignment: Alignment.center,
-                backgroundColor: Colors.orange[700],
-                padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 32.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                elevation: 5,
-              ),
-              child: Text(
-                'View Restaurants',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-          SizedBox(height: 16),
-          Center(
-            // Center the button
-            child: ElevatedButton(
-              onPressed: () => context.push('/login'),
-              style: ElevatedButton.styleFrom(
-                alignment: Alignment.center,
-                backgroundColor: Colors.orange[700],
-                padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 32.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                elevation: 5,
-              ),
-              child: Text(
-                'Login',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-        ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildStyledButton(
+          context,
+          'View Restaurants',
+          () => context.push('/restaurant'),
+        ),
+        const SizedBox(height: 16),
+        _buildStyledButton(
+          context,
+          'Login',
+          () => context.push('/login'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStyledButton(
+      BuildContext context, String text, VoidCallback onPressed) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.orange[700],
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 6,
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.1,
+        ),
       ),
     );
   }
 
   Widget _buildFeaturesSection(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Explore Features',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          SizedBox(height: 16),
-          _buildFeatureCard(
-            icon: Icons.restaurant_menu,
-            title: 'Restaurant Search',
-            description: 'Find the best culinary spots in Jogja with ease',
-          ),
-          SizedBox(height: 12),
-          _buildFeatureCard(
-            icon: Icons.shopping_cart,
-            title: 'Easy Ordering',
-            description: 'Order your favorite meals directly from the app',
-          ),
-          SizedBox(height: 12),
-          _buildFeatureCard(
-            icon: Icons.rate_review,
-            title: 'Restaurant Reviews',
-            description: 'Share and read authentic restaurant experiences',
-          ),
-          SizedBox(height: 12),
-          _buildFeatureCard(
-            icon: Icons.discount,
-            title: 'Exclusive Promos',
-            description:
-                'Discover special discounts and offers from local restaurants',
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'App Features',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        const SizedBox(height: 16),
+        _buildFeatureCard(
+          icon: Icons.search,
+          title: 'Discover Restaurants',
+          description:
+              'Explore a curated selection of Jogja\'s best dining spots',
+        ),
+        const SizedBox(height: 12),
+        _buildFeatureCard(
+          icon: Icons.menu_book,
+          title: 'Digital Menu',
+          description: 'Browse menus, prices, and specialties with ease',
+        ),
+        const SizedBox(height: 12),
+        _buildFeatureCard(
+          icon: Icons.reviews,
+          title: 'Community Reviews',
+          description: 'Read and share authentic dining experiences',
+        ),
+        const SizedBox(height: 12),
+        _buildFeatureCard(
+          icon: Icons.local_offer,
+          title: 'Special Offers',
+          description: 'Uncover exclusive deals and promotions',
+        ),
+      ],
     );
   }
 
@@ -192,71 +184,71 @@ class LandingPage extends StatelessWidget {
     required String description,
   }) {
     return Container(
-      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(0, 3),
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 1,
+            blurRadius: 7,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Icon(
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.orange[100],
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
             icon,
             color: Colors.orange[700],
-            size: 40,
+            size: 30,
           ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  description,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
           ),
-        ],
+        ),
+        subtitle: Text(
+          description,
+          style: TextStyle(
+            color: Colors.grey[600],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildAboutSection(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.orange[50],
+        borderRadius: BorderRadius.circular(15),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'About RosoJogja',
+            'Our Mission',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
-            'RosoJogja is designed to bring Yogyakarta\'s culinary experiences to your fingertips. Whether you\'re a local or a visitor, our app helps you navigate through the rich flavors and unique dining options the city has to offer. With intuitive features and user-friendly design, RosoJogja makes discovering and enjoying food simpler and more enjoyable.',
+            'RosoJogja is more than an app – it\'s your digital companion to Yogyakarta\'s vibrant culinary landscape. We\'re passionate about connecting food lovers with authentic local experiences, making every meal an adventure.',
             style: TextStyle(
-              color: Colors.grey[700],
+              color: Colors.grey[800],
+              height: 1.5,
             ),
           ),
         ],

@@ -8,6 +8,7 @@ import 'package:roso_jogja_mobile/features/landing/pages/landing_page.dart';
 import 'package:go_router/go_router.dart';
 import "package:roso_jogja_mobile/features/auth/routes.dart";
 import "package:roso_jogja_mobile/features/restaurant/routes.dart";
+import "package:roso_jogja_mobile/features/cart-and-order/routes.dart";
 import "package:roso_jogja_mobile/features/promo/pages/promo_routes.dart";
 
 void main() async {
@@ -35,6 +36,7 @@ final _router = GoRouter(
         "/register",
         "/restaurant",
         "/restaurant/:restaurantId"
+        "/"
       ];
       if (unprotectedRoutes.contains(state.fullPath)) {
         return null;
@@ -52,6 +54,7 @@ final _router = GoRouter(
       GoRoute(path: "/home", builder: (context, state) => const Homepage()),
       ...authRoutes,
       ...restaurantRoutes,
+      ...orderRoutes,
       ...promoRoutes,
     ]);
 

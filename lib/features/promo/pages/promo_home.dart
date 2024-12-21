@@ -69,6 +69,7 @@ class _PromoHomePageState extends State<PromoHome> {
           ),
         ],
       ),
+      drawer: const LeftDrawer(),
       body: FutureBuilder<Map<String, dynamic>?>(
       future: fetchPromo(),
       builder: (context, snapshot) {
@@ -134,16 +135,17 @@ class _PromoHomePageState extends State<PromoHome> {
 
                     // Choose the appropriate card type
                     return isPromo
-                        ? PromoCard(
-                            promo: PromoElement.fromJson(promo),
-                            isRestaurantOwner: isRestaurantOwner,
-                            refreshPromoCallback: () {
-                              setState(() {});
-                            },
-                          )
-                        : OtherPromoCard(
-                            promo: PromoElement.fromJson(promo),
-                          );
+                    ? PromoCard(
+                        promo: PromoElement.fromJson(promo),
+                        isRestaurantOwner: isRestaurantOwner,
+                        use: false,
+                        refreshPromoCallback: () {
+                          setState(() {});
+                        },
+                      )
+                    : OtherPromoCard(
+                        promo: PromoElement.fromJson(promo),
+                      );
                   },
                 ),
               ),
@@ -226,6 +228,7 @@ class AddPromoPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Add Promo'),
       ),
+      drawer: const LeftDrawer(),
       body: Container(
         padding: EdgeInsets.all(16),
         child: Column(

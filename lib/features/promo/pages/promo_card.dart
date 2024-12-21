@@ -9,12 +9,17 @@ class PromoCard extends StatelessWidget {
   final PromoElement promo;
   final VoidCallback? refreshPromoCallback;
   final bool isRestaurantOwner;
+  final bool use;
+  final String? promoId;
 
-  const PromoCard(
-      {super.key,
-      required this.promo,
-      required this.isRestaurantOwner,
-      this.refreshPromoCallback});
+  const PromoCard({
+    super.key,
+    required this.promo,
+    required this.isRestaurantOwner,
+    required this.use,
+    this.promoId,
+    this.refreshPromoCallback,
+  });
 
   Future<void> _deletePromo(BuildContext context) async {
     final authProvider = context.read<AuthProvider>();
@@ -214,6 +219,47 @@ class PromoCard extends StatelessWidget {
                     ),
                   ],
                 ),
+              if (use)
+                IconButton(
+                  icon: const Icon(Icons.add_circle, size: 25),
+                  color: Colors.green,
+                  onPressed: () async {
+                    final authProvider = context.read<AuthProvider>();
+                    final request = authProvider.cookieRequest;
+                    
+                    try {
+                      // Send the request to tag the promo
+                      final response = await request.get('${AppConfig.apiUrl}/promo/tag_promo/?promo_id=${promoId}');
+
+                      if (response['status'] == 'success') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Promo tagged successfully!'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                        // Redirect to /cart
+                        context.go('/cart');
+                        refreshPromoCallback?.call();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to tag promo'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('An error occurred while tagging the promo'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  },
+                ),
+
             ],
           ),
         ),

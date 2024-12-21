@@ -67,7 +67,9 @@ class PromoElement {
         expiryDate: DateTime.parse(json["expiry_date"]),
         maxUsage: json["max_usage"],
         shownToPublic: json["shown_to_public"],
-        restaurants: List<String>.from(json["restaurants"].map((x) => x)),
+        restaurants: json["restaurants"] != null && json["restaurants"] is List
+          ? List<String>.from(json["restaurants"].map((x) => x.toString()))
+          : [],
     );
 
     Map<String, dynamic> toJson() => {
