@@ -22,7 +22,7 @@ class LeftDrawer extends StatelessWidget {
             _buildDrawerHeader(context),
 
             // User Profile Section
-            if (authProvider.isLoggedIn) _buildLoggedInUserTile(context, user!),
+            if (user != null) _buildLoggedInUserTile(context, user),
 
             // Login Prompt for Non-Logged In Users
             if (!authProvider.isLoggedIn) _buildLoginTile(context),
