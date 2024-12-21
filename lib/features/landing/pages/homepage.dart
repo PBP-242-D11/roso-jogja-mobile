@@ -19,14 +19,6 @@ class Homepage extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.orange[700],
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              // TODO: Implement notifications page
-            },
-          ),
-        ],
       ),
       drawer: const LeftDrawer(),
       body: SafeArea(
@@ -51,6 +43,7 @@ class Homepage extends StatelessWidget {
                     _buildRecommendedRestaurantsSection(context),
                     const SizedBox(height: 16),
                     _buildLocalOffersSection(context),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),

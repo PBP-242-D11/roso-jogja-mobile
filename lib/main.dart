@@ -3,6 +3,7 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
+import 'package:roso_jogja_mobile/features/landing/pages/about_page.dart';
 import 'package:roso_jogja_mobile/features/landing/pages/homepage.dart';
 import 'package:roso_jogja_mobile/features/landing/pages/landing_page.dart';
 import 'package:go_router/go_router.dart';
@@ -34,8 +35,8 @@ final _router = GoRouter(
         "/login",
         "/register",
         "/restaurant",
-        "/restaurant/:restaurantId"
-        "/"
+        "/restaurant/:restaurantId",
+        "/about"
       ];
       if (unprotectedRoutes.contains(state.fullPath)) {
         return null;
@@ -51,6 +52,7 @@ final _router = GoRouter(
     routes: [
       GoRoute(path: "/", builder: (context, state) => const LandingPage()),
       GoRoute(path: "/home", builder: (context, state) => const Homepage()),
+      GoRoute(path: "/about", builder: (context, state) => const AboutPage()),
       ...authRoutes,
       ...restaurantRoutes,
       ...orderRoutes,

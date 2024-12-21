@@ -36,6 +36,7 @@ class LandingPage extends StatelessWidget {
                     _buildFeaturesSection(context),
                     const SizedBox(height: 24),
                     _buildAboutSection(context),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),

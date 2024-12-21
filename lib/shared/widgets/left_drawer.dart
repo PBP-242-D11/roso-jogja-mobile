@@ -6,7 +6,6 @@ import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
-  
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +42,6 @@ class LeftDrawer extends StatelessWidget {
   }
 
   Widget _buildDrawerHeader(BuildContext context) {
-    
     return DrawerHeader(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -176,11 +174,12 @@ class LeftDrawer extends StatelessWidget {
   }
 
   Widget _buildNavigationSection(
-    
       BuildContext context, AuthProvider authProvider) {
     final isRestaurantOwner =
-    authProvider.user != null && authProvider.user!.role == "R";
-    
+        authProvider.user != null && authProvider.user!.role == "R";
+
+    final isGuest = !authProvider.isLoggedIn;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -206,21 +205,21 @@ class LeftDrawer extends StatelessWidget {
           title: 'Restaurants',
           onTap: () => context.go("/restaurant"),
         ),
-        if(!isRestaurantOwner)
+        if (!isGuest && !isRestaurantOwner)
           _buildDrawerItem(
             context,
             icon: Icons.shopping_cart,
             title: 'Your Cart',
             onTap: () => context.go("/cart"),
           ),
-        if(!isRestaurantOwner)
+        if (!isGuest && !isRestaurantOwner)
           _buildDrawerItem(
             context,
             icon: Icons.history,
             title: 'History',
             onTap: () => context.go("/order_history"),
           ),
-        if (authProvider.isLoggedIn)
+        if (!isGuest && !isRestaurantOwner)
           _buildDrawerItem(
             context,
             icon: Icons.favorite_border,
@@ -233,6 +232,8 @@ class LeftDrawer extends StatelessWidget {
 
   Widget _buildAdditionalOptionsSection(
       BuildContext context, AuthProvider authProvider) {
+    final isGuest = !authProvider.isLoggedIn;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -246,19 +247,19 @@ class LeftDrawer extends StatelessWidget {
             ),
           ),
         ),
-        if (authProvider.isLoggedIn)
+        _buildDrawerItem(
+          context,
+          icon: Icons.info_outline,
+          title: 'The Team',
+          onTap: () => context.go('/about'),
+        ),
+        if (!isGuest)
           _buildDrawerItem(
             context,
             icon: Icons.logout_outlined,
             title: 'Logout',
             onTap: () => _handleLogout(context, authProvider),
           ),
-        _buildDrawerItem(
-          context,
-          icon: Icons.info_outline,
-          title: 'The Team',
-          onTap: () => context.push('/about'),
-        ),
       ],
     );
   }
