@@ -1,6 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
+import 'package:roso_jogja_mobile/features/cart-and-order/models/cart_response.dart';
 import 'package:roso_jogja_mobile/features/restaurant/models/food.dart';
 import 'package:provider/provider.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
@@ -57,6 +61,103 @@ class FoodCard extends StatelessWidget {
         );
       }
     }
+  }
+
+  Future<void> addToCart(BuildContext context) async {
+    final authProvider = context.read<AuthProvider>();
+    final request = authProvider.cookieRequest;
+
+      final cartResponse = await request.get('${AppConfig.apiUrl}/order/api/mobile_cart/');
+
+      if (cartResponse == null || cartResponse.isEmpty) {
+        throw Exception('Failed to fetch cart details.');
+      }
+
+      if (cartResponse is! Map<String, dynamic>) {
+        throw Exception('Invalid cart response format.');
+      }
+
+      final CartResponse currentCart = CartResponse.fromJson(cartResponse);
+      final String? currentRestaurantId = currentCart.restaurant?.id;
+
+      if (currentRestaurantId == null || currentRestaurantId == restaurantId) {
+        await _proceedToAddToCart(context, request);
+      } else {
+        bool? shouldReplace = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Replace Cart'),
+            content: const Text(
+              'Your cart contains items from another restaurant. Do you want to replace the cart with items from this restaurant?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                child: const Text(
+                  'Replace',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
+
+        if (shouldReplace == true) {
+          final clearResponse = await request.get('${AppConfig.apiUrl}/order/api/cart/clear/');
+
+          if (clearResponse['status'] == 'success') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Cart has been cleared. Adding new item.'),
+                backgroundColor: Colors.green,
+              ),
+            );
+
+            await _proceedToAddToCart(context, request);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(clearResponse['message'] ?? 'Failed to clear the cart.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      }
+  }
+
+  Future<void> _proceedToAddToCart(BuildContext context, CookieRequest request) async {
+      final response = await request.get(
+        '${AppConfig.apiUrl}/order/api/cart/add/${food.id}/?quantity=1',
+      );
+
+      if (response['message'] == 'Food added successfully' ||
+          response['message'] == 'Item quantity updated successfully') {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Food item added to cart successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(response['error'] ?? 'Failed to add food item to cart'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
   }
 
   @override
@@ -171,6 +272,32 @@ class FoodCard extends StatelessWidget {
                     },
                   ),
                 ],
+              ),
+            
+            if (!isRestaurantOwner)
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0), 
+                child: SizedBox(
+                  width: 36,
+                  height: 36, 
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await addToCart(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange, 
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: EdgeInsets.zero, 
+                    ),
+                    child: const Icon(
+                      Icons.add_shopping_cart,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
               ),
           ],
         ),
