@@ -11,6 +11,15 @@ import "package:roso_jogja_mobile/features/auth/routes.dart";
 import "package:roso_jogja_mobile/features/restaurant/routes.dart";
 import "package:roso_jogja_mobile/features/cart-and-order/routes.dart";
 
+final unprotectedRoutes = [
+  "/",
+  "/login",
+  "/register",
+  "/restaurant",
+  "/restaurant/:restaurantId",
+  "/about"
+];
+
 void main() async {
   await dotenv.load();
 
@@ -30,14 +39,6 @@ void main() async {
 final _router = GoRouter(
     initialLocation: "/",
     redirect: (context, state) {
-      final unprotectedRoutes = [
-        "/",
-        "/login",
-        "/register",
-        "/restaurant",
-        "/restaurant/:restaurantId",
-        "/about"
-      ];
       if (unprotectedRoutes.contains(state.fullPath)) {
         return null;
       }
