@@ -17,8 +17,9 @@ class AboutPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // App Logo and Header
+            // App Logo and Header with horizontal layout
             Container(
+              width: double.infinity,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -30,27 +31,36 @@ class AboutPage extends StatelessWidget {
                 ),
               ),
               padding: const EdgeInsets.all(24),
-              child: Column(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Image.asset(
-                    'assets/images/logo.png', // Make sure to add your logo
-                    height: 120,
-                    width: 120,
+                    'assets/images/logo.png',
+                    height: 100,
+                    width: 100,
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'RosoJogja',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const Text(
-                    'Your Ultimate Jogja Food Guide',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
+                  const SizedBox(width: 24),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'RosoJogja',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Your Ultimate Jogja Food Guide',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -85,24 +95,29 @@ class AboutPage extends StatelessWidget {
 
                   // Team Members
                   _buildTeamMemberCard(
-                    'John Doe',
-                    'Project Manager',
-                    'Responsible for overall project coordination and development strategy.',
+                    'Akhdan Taufiq Syofyan',
+                    '2306152475',
+                    'Responsible for developing the Cart and Order features.',
                   ),
                   _buildTeamMemberCard(
-                    'Jane Smith',
-                    'UI/UX Designer',
-                    'Creates intuitive and beautiful user interfaces for the best user experience.',
+                    'Fadhli Raihan Ardiansyah',
+                    '2306207594',
+                    'Responsible for developing the Review and Rating features.',
                   ),
                   _buildTeamMemberCard(
-                    'Mike Johnson',
-                    'Backend Developer',
-                    'Manages server infrastructure and database operations.',
+                    'Makarim Zufar Prambudyo',
+                    '2306241751',
+                    'Responsible for developing the Wishlist feature.',
                   ),
                   _buildTeamMemberCard(
-                    'Sarah Wilson',
-                    'Frontend Developer',
-                    'Implements responsive and interactive user interfaces.',
+                    'Nadia Rahmadina Aristawati ',
+                    '2306207972',
+                    'Responsible for developing the Promo and Discount features.',
+                  ),
+                  _buildTeamMemberCard(
+                    'Yudayana Arif Prasojo',
+                    '2306215160',
+                    'Responsible for developing the Restaurant and Food features, managing infrastructure and deployment, and leading the team.',
                   ),
 
                   // Version Info
