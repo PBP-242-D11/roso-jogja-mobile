@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
-import 'package:roso_jogja_mobile/features/promo/pages/promo_model.dart';
+import 'package:roso_jogja_mobile/features/promo/models/promo_model.dart';
 
 class EditPromoPage extends StatefulWidget {
   final PromoElement promo;

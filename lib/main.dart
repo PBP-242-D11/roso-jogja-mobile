@@ -10,7 +10,7 @@ import 'package:roso_jogja_mobile/features/landing/pages/about_page.dart';
 import "package:roso_jogja_mobile/features/auth/routes.dart";
 import "package:roso_jogja_mobile/features/restaurant/routes.dart";
 import "package:roso_jogja_mobile/features/cart-and-order/routes.dart";
-import "package:roso_jogja_mobile/features/promo/pages/promo_routes.dart";
+import "package:roso_jogja_mobile/features/promo/promo_routes.dart";
 final unprotectedRoutes = [
   "/",
   "/login",

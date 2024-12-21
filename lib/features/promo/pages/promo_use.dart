@@ -5,10 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
-import 'package:roso_jogja_mobile/features/promo/pages/promo_card.dart';
+import 'package:roso_jogja_mobile/features/promo/widgets/promo_card.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 import 'package:roso_jogja_mobile/shared/widgets/left_drawer.dart';
-import 'package:roso_jogja_mobile/features/promo/pages/promo_model.dart';
+import 'package:roso_jogja_mobile/features/promo/models/promo_model.dart';
 
 
 class UsePromo extends StatefulWidget {

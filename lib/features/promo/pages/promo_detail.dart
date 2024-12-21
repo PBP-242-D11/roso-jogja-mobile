@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
-import 'package:roso_jogja_mobile/features/promo/pages/promo_model.dart';
+import 'package:roso_jogja_mobile/features/promo/models/promo_model.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 class PromoDetailPage extends StatefulWidget {
