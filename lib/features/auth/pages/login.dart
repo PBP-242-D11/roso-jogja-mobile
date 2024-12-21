@@ -93,6 +93,7 @@ class _LoginPageState extends State<LoginPage> {
     final request = context.watch<AuthProvider>();
 
     return Scaffold(
+      appBar: AppBar(),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

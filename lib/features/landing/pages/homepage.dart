@@ -19,14 +19,6 @@ class Homepage extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.orange[700],
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              // TODO: Implement notifications page
-            },
-          ),
-        ],
       ),
       drawer: const LeftDrawer(),
       body: SafeArea(
@@ -35,7 +27,7 @@ class Homepage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // User Profile Header
-              _buildUserProfileHeader(context, user!),
+              if (user != null) _buildUserProfileHeader(context, user),
 
               // Quick Actions Section
               Padding(
@@ -51,6 +43,7 @@ class Homepage extends StatelessWidget {
                     _buildRecommendedRestaurantsSection(context),
                     const SizedBox(height: 16),
                     _buildLocalOffersSection(context),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -76,12 +69,26 @@ class Homepage extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundImage:
-                NetworkImage('${AppConfig.apiUrl}${user.profilePicture}'),
-            backgroundColor: Colors.white,
-          ),
+          user.profilePicture == null
+              ? CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.orange[700],
+                  child: Text(
+                    user.username[0].toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              : CircleAvatar(
+                  radius: 40,
+                  backgroundImage: NetworkImage(
+                    '${AppConfig.apiUrl}${user.profilePicture}',
+                  ),
+                  backgroundColor: Colors.white,
+                ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import "package:go_router/go_router.dart";
 import 'package:provider/provider.dart';
+import 'package:roso_jogja_mobile/features/auth/models/user.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
@@ -86,7 +87,7 @@ class LeftDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildLoggedInUserTile(BuildContext context, dynamic user) {
+  Widget _buildLoggedInUserTile(BuildContext context, User user) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Card(
@@ -178,8 +179,8 @@ class LeftDrawer extends StatelessWidget {
   Widget _buildNavigationSection(
     
       BuildContext context, AuthProvider authProvider) {
-    final isRestaurantOwner =
-    authProvider.user != null && authProvider.user!.role == "R";
+    final isRestaurantOwner = authProvider.user != null && authProvider.user!.role == "R";
+    final isGuest = !authProvider.isLoggedIn;
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,21 +213,21 @@ class LeftDrawer extends StatelessWidget {
           title: 'Offers',
           onTap: () => context.go("/promo"),
         ),
-        if(!isRestaurantOwner)
+        if (!isGuest && !isRestaurantOwner)
           _buildDrawerItem(
             context,
             icon: Icons.shopping_cart,
             title: 'Your Cart',
             onTap: () => context.go("/cart"),
           ),
-        if(!isRestaurantOwner)
+        if (!isGuest && !isRestaurantOwner)
           _buildDrawerItem(
             context,
             icon: Icons.history,
             title: 'History',
             onTap: () => context.go("/order_history"),
           ),
-        if (authProvider.isLoggedIn)
+        if (!isGuest && !isRestaurantOwner)
           _buildDrawerItem(
             context,
             icon: Icons.favorite_border,
@@ -238,7 +239,8 @@ class LeftDrawer extends StatelessWidget {
   }
 
   Widget _buildAdditionalOptionsSection(
-      BuildContext context, AuthProvider authProvider) {
+    BuildContext context, AuthProvider authProvider) {
+    final isGuest = !authProvider.isLoggedIn;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -252,19 +254,19 @@ class LeftDrawer extends StatelessWidget {
             ),
           ),
         ),
-        if (authProvider.isLoggedIn)
+        _buildDrawerItem(
+          context,
+          icon: Icons.info_outline,
+          title: 'The Team',
+          onTap: () => context.go('/about'),
+        ),
+        if (!isGuest)
           _buildDrawerItem(
             context,
             icon: Icons.logout_outlined,
             title: 'Logout',
             onTap: () => _handleLogout(context, authProvider),
           ),
-        _buildDrawerItem(
-          context,
-          icon: Icons.info_outline,
-          title: 'The Team',
-          onTap: () => context.push('/about'),
-        ),
       ],
     );
   }

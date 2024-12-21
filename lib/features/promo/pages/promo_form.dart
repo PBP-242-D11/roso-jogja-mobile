@@ -46,7 +46,7 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
   Future<bool> isPromoCodeUnique(String promoCode) async {
     final authProvider = context.read<AuthProvider>();
     final request = authProvider.cookieRequest;
-    final response = await request.get('${AppConfig.apiUrl}/promo/check_promo_code/${promoCode}');
+    final response = await request.get('${AppConfig.apiUrl}/promo/check_promo_code/${promoCode}/');
 
     if (response['exists'] == true) {
       return false; // Promo code already exists
@@ -285,16 +285,17 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
                           );
                           return;
                         }
-                        return;
                       }
 
                       // Validate promo code uniqueness
-                      bool isUnique = await isPromoCodeUnique(_promoCode!);
-                      if (!isUnique) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Promo code already exists. Please enter a different one.')),
-                        );
-                        return;
+                      if (_promoCode != null && _promoCode != ""){
+                        bool isUnique = await isPromoCodeUnique(_promoCode!);
+                        if (!isUnique) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Promo code already exists. Please enter a different one.')),
+                          );
+                          return;
+                        }
                       }
 
                       final response = await authProvider.cookieRequest.post(

@@ -336,7 +336,6 @@ class _CartPageState extends State<CartPage> {
                   future: _promoFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      // Show loading indicator while waiting
                       return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Center(
@@ -347,10 +346,10 @@ class _CartPageState extends State<CartPage> {
                       );
                     } else if (snapshot.hasData) {
                       final data = snapshot.data!;
-                      if (data.containsKey('message')) {
-                        return const Center(
+                      if (data.containsKey('message') && data['status'] != 'success') {
+                        return Center(
                           child: Text(
-                            'No promo applied.',
+                            data['message'] ?? 'An error occurred',
                             style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                         );
@@ -550,11 +549,13 @@ class _CartPageState extends State<CartPage> {
                         onUpdate: () {
                           setState(() {
                             _futureCart = fetchCartItems(context);
+                            _promoFuture = fetchPromoApplied();
                           });
                         },
                         onRemove: () {
                           setState(() {
                             _futureCart = fetchCartItems(context);
+                            _promoFuture = fetchPromoApplied();
                           });
                         },
                       );

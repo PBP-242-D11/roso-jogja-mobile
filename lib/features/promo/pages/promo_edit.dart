@@ -68,7 +68,7 @@ class _EditPromoPageState extends State<EditPromoPage> {
     final request = authProvider.cookieRequest;
 
     final response =
-        await request.get('${AppConfig.apiUrl}/promo/check_promo_code/$promoCode/');
+        await request.get('${AppConfig.apiUrl}/promo/check_promo_code/$promoCode/?promo_id=${widget.promo.id}');
     return response['exists'] != true;
   }
 
@@ -80,8 +80,38 @@ class _EditPromoPageState extends State<EditPromoPage> {
         );
         return;
       }
+      if (_selectedRestaurants.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Select at least one restaurant')),
+        );
+        return;
+      }
 
       _formKey.currentState!.save();
+
+      if (_shownToPublic == null) {
+        _shownToPublic = false;
+      }
+
+      if ((_promoCode == null || _promoCode!.isEmpty)) {
+        if (!_shownToPublic) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Enter a promo code if not public')),
+          );
+          return;
+        }
+      }
+
+      // Validate promo code uniqueness
+      if (_promoCode != null && _promoCode != ""){
+        bool isUnique = await isPromoCodeUnique(_promoCode!);
+        if (!isUnique) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Promo code already exists. Please enter a different one.')),
+          );
+          return;
+        }
+      }
 
       final authProvider = context.read<AuthProvider>();
       final request = authProvider.cookieRequest;
@@ -217,6 +247,7 @@ class _EditPromoPageState extends State<EditPromoPage> {
                   onPressed: _submitForm,
                   child: const Text('Update Promo'),
                 ),
+
               ],
             ),
           ),

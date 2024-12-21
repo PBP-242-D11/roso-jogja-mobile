@@ -177,7 +177,7 @@ class PromoCard extends StatelessWidget {
                       icon: const Icon(Icons.edit, size: 20),
                       color: Colors.blue,
                       onPressed: () async {
-                        bool? result = await context.push('/promo/edit', //HARUS DI SETTING DI PROMO_ROUTES
+                        bool? result = await context.push('/promo/edit', 
                             extra: promo);
                         if (result != null && result == true) {
                           refreshPromoCallback?.call();
@@ -228,7 +228,6 @@ class PromoCard extends StatelessWidget {
                     final request = authProvider.cookieRequest;
                     
                     try {
-                      // Send the request to tag the promo
                       final response = await request.get('${AppConfig.apiUrl}/promo/tag_promo/?promo_id=${promoId}');
 
                       if (response['status'] == 'success') {
@@ -238,13 +237,12 @@ class PromoCard extends StatelessWidget {
                             backgroundColor: Colors.green,
                           ),
                         );
-                        // Redirect to /cart
                         context.go('/cart');
                         refreshPromoCallback?.call();
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Failed to tag promo'),
+                          SnackBar(
+                            content: Text(response['message'] ?? 'An error occurred'),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -296,7 +294,7 @@ class OtherPromoCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.go('/promo/${promo.id}'), // INI HARUS DIBIKIN DI PROMO_ROUTES
+        onTap: () => context.go('/promo/${promo.id}'), 
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(
@@ -307,7 +305,6 @@ class OtherPromoCard extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Replace square image with a dynamic icon based on promo.type
                     Container(
                       margin: const EdgeInsets.only(right: 8),
                       padding: const EdgeInsets.all(8),
@@ -320,7 +317,7 @@ class OtherPromoCard extends StatelessWidget {
                             ? Icons.percent
                             : promo.type == "Currency"
                                 ? Icons.attach_money
-                                : Icons.money, // Default to a generic money icon
+                                : Icons.money,
                         color: Colors.orange,
                       ),
                     ),

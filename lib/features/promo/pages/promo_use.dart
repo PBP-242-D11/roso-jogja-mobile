@@ -129,19 +129,20 @@ class _UsePromoPageState extends State<UsePromo> {
             return const Center(child: Text("No promos available"));
           }
 
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: promoCodeController,
-                  decoration: const InputDecoration(
-                    labelText: 'Input your promo code',
-                    border: OutlineInputBorder(),
+          return SingleChildScrollView( 
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: promoCodeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Input your promo code',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
+                const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () async {
                     final promoCode = promoCodeController.text.trim();
@@ -153,7 +154,6 @@ class _UsePromoPageState extends State<UsePromo> {
                     }
 
                     try {
-                      // Send the promo code to the backend
                       final authProvider = context.read<AuthProvider>();
                       final request = authProvider.cookieRequest;
 
@@ -166,7 +166,6 @@ class _UsePromoPageState extends State<UsePromo> {
                         return;
                       }
 
-                      // Display promo details
                       final promoDetails = response['promo'];
                       showDialog(
                         context: context,
@@ -200,7 +199,6 @@ class _UsePromoPageState extends State<UsePromo> {
                                     final request = authProvider.cookieRequest;
 
                                     try {
-                                      // Send the request to tag the promo
                                       final response = await request.get('${AppConfig.apiUrl}/promo/tag_promo/?promo_id=${promoDetails['id']}');
 
                                       if (response['status'] == 'success') {
@@ -210,7 +208,6 @@ class _UsePromoPageState extends State<UsePromo> {
                                             backgroundColor: Colors.green,
                                           ),
                                         );
-                                        // Redirect to /cart
                                         context.go('/cart');
                                       } else {
                                         ScaffoldMessenger.of(context).showSnackBar(
@@ -233,7 +230,6 @@ class _UsePromoPageState extends State<UsePromo> {
                                 ),
                               ],
                             ),
-
                           ],
                         ),
                       );
@@ -245,14 +241,15 @@ class _UsePromoPageState extends State<UsePromo> {
                   },
                   child: const Text('Find Promo'),
                 ),
-              const SizedBox(height: 12),
+                const SizedBox(height: 12),
 
-              // Render the first list only if promos are available
-              if (promos.isNotEmpty)
-                const Text('Available Promos', style: TextStyle(fontWeight: FontWeight.bold)),
-                Expanded(
-                  child: ListView.builder(
+                if (promos.isNotEmpty)
+                  const Text('Available Promos', style: TextStyle(fontWeight: FontWeight.bold)),
+                if (promos.isNotEmpty)
+                  ListView.builder(
                     itemCount: promos.length,
+                    shrinkWrap: true, // To make ListView respect its parent
+                    physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       final promo = promos[index];
                       return PromoCard(
@@ -266,15 +263,13 @@ class _UsePromoPageState extends State<UsePromo> {
                       );
                     },
                   ),
-                ),
-              // Display the "Other Promos" section if available promos exist
-              if (otherPromos.isNotEmpty)
-                const Text('Other Promos', style: TextStyle(fontWeight: FontWeight.bold)),
-              // Render the second list only if otherPromos are available
-              if (otherPromos.isNotEmpty)
-                Expanded(
-                  child: ListView.builder(
+                if (otherPromos.isNotEmpty)
+                  const Text('Other Promos', style: TextStyle(fontWeight: FontWeight.bold)),
+                if (otherPromos.isNotEmpty)
+                  ListView.builder(
                     itemCount: otherPromos.length,
+                    shrinkWrap: true, 
+                    physics: NeverScrollableScrollPhysics(), 
                     itemBuilder: (context, index) {
                       final promo = otherPromos[index];
                       return OtherPromoCard(
@@ -282,12 +277,13 @@ class _UsePromoPageState extends State<UsePromo> {
                       );
                     },
                   ),
-                ),
-              // Default fallback if neither list is available
-              if (promos.isEmpty && otherPromos.isEmpty)
-                const Center(child: Text("No data available")),
-            ],
+                // Default fallback if neither list is available
+                if (promos.isEmpty && otherPromos.isEmpty)
+                  const Center(child: Text("No data available")),
+              ],
+            ),
           );
+
 
 
           } else {

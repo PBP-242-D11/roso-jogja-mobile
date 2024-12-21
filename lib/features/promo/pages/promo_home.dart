@@ -57,17 +57,6 @@ class _PromoHomePageState extends State<PromoHome> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Promo Overview'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddPromoPage()),
-              );
-            },
-          ),
-        ],
       ),
       drawer: const LeftDrawer(),
       body: FutureBuilder<Map<String, dynamic>?>(
@@ -153,63 +142,6 @@ class _PromoHomePageState extends State<PromoHome> {
           );
 
 
-
-  //           return ListView.builder(
-  //             itemCount: (promos.length + otherPromos.length),
-  //             itemBuilder: (context, index) {
-  //               // Determine if the item belongs to promos or otherPromos
-  //               final isPromo = index < promos.length;
-  //               final promo = isPromo ? promos[index] : otherPromos[index - promos.length];
-
-  //               // Ensure the promo has the expected fields
-  //               if (!promo.containsKey('value') || !promo.containsKey('type')) {
-  //                 return const Card(
-  //                   child: ListTile(
-  //                     title: Text("Invalid promo data"),
-  //                     subtitle: Text("This promo could not be loaded"),
-  //                   ),
-  //                 );
-  //               }
-
-  //               return Container(
-  //                 color: isPromo ? Colors.white : Colors.grey[200], // Gray background for otherPromos
-  //                 child: Card(
-  //                   elevation: isPromo ? 4 : 1, // Slightly different elevation for visual distinction
-  //                   child: ListTile(
-  //                     title: Text(
-  //                       promo['type'] == 'Percentage'
-  //                           ? 'Value: ${promo['value']}% - Type: ${promo['type']}'
-  //                           : 'Value: Rp${promo['value']} - Type: ${promo['type']}',
-  //                     ),
-  //                     subtitle: Text(
-  //                       'Expires: ${promo['expiry_date']}',
-  //                     ),
-  //                     trailing: isPromo
-  //                         ? Row(
-  //                             mainAxisSize: MainAxisSize.min,
-  //                             children: <Widget>[
-  //                               IconButton(
-  //                                 icon: const Icon(Icons.visibility),
-  //                                 onPressed: () => viewPromo(CookieRequest(), promo['id']),
-  //                               ),
-  //                               IconButton(
-  //                                 icon: const Icon(Icons.edit),
-  //                                 onPressed: () => editPromo(CookieRequest(), promo['id']),
-  //                               ),
-  //                               IconButton(
-  //                                 icon: const Icon(Icons.delete),
-  //                                 onPressed: () => deletePromo(CookieRequest(), promo['id']),
-  //                               ),
-  //                             ],
-  //                           )
-  //                         : null, // No trailing buttons for otherPromos
-  //                   ),
-  //                 ),
-  //               );
-  //             },
-  //           );
-
-
           } else {
             // Default fallback if none of the above conditions match
             return const Center(child: Text("No data available"));
@@ -221,40 +153,6 @@ class _PromoHomePageState extends State<PromoHome> {
   }
   }
 
-class AddPromoPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Promo'),
-      ),
-      drawer: const LeftDrawer(),
-      body: Container(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TextField(
-              decoration: InputDecoration(labelText: 'Promo Code'),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Value'),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Restaurant'),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Expiry Date'),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Save Promo'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+
+
 

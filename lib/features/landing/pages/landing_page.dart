@@ -36,6 +36,7 @@ class LandingPage extends StatelessWidget {
                     _buildFeaturesSection(context),
                     const SizedBox(height: 24),
                     _buildAboutSection(context),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -103,7 +104,7 @@ class LandingPage extends StatelessWidget {
         _buildStyledButton(
           context,
           'View Restaurants',
-          () => context.push('/restaurant'),
+          () => context.go('/restaurant'),
         ),
         const SizedBox(height: 16),
         _buildStyledButton(
