@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import "package:go_router/go_router.dart";
 import 'package:provider/provider.dart';
+import 'package:roso_jogja_mobile/features/auth/models/user.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
@@ -84,7 +85,7 @@ class LeftDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildLoggedInUserTile(BuildContext context, dynamic user) {
+  Widget _buildLoggedInUserTile(BuildContext context, User user) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Card(

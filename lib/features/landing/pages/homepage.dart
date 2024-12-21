@@ -27,7 +27,7 @@ class Homepage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // User Profile Header
-              _buildUserProfileHeader(context, user!),
+              if (user != null) _buildUserProfileHeader(context, user),
 
               // Quick Actions Section
               Padding(
