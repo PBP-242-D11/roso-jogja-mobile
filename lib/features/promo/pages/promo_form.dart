@@ -79,7 +79,9 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Theme.of(context).primaryColor.withOpacity(0.1),
+                    Theme.of(context)
+                        .primaryColor
+                        .withAlpha(204), // change to from rgb
                     Colors.white,
                   ],
                 ),
