@@ -11,6 +11,7 @@ import "package:roso_jogja_mobile/features/auth/routes.dart";
 import "package:roso_jogja_mobile/features/restaurant/routes.dart";
 import "package:roso_jogja_mobile/features/cart-and-order/routes.dart";
 import "package:roso_jogja_mobile/features/wishlist/routes.dart";
+import "package:roso_jogja_mobile/features/promo/promo_routes.dart";
 
 final unprotectedRoutes = [
   "/",
@@ -59,6 +60,7 @@ final _router = GoRouter(
       ...restaurantRoutes,
       ...orderRoutes,
       ...wishlistRoutes,
+      ...promoRoutes,
     ]);
 
 class MyApp extends StatelessWidget {
