@@ -6,6 +6,7 @@ import 'package:roso_jogja_mobile/features/restaurant/widgets/food_card.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:roso_jogja_mobile/features/review/widgets/list_review.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   final String restaurantId;
@@ -167,6 +168,16 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                         style: TextStyle(color: Colors.grey),
                       ),
                     ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Reviews',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  ListReview(restaurantId: widget.restaurantId),
                 ],
               ),
             );
