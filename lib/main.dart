@@ -57,7 +57,6 @@ final _router = GoRouter(
       ...authRoutes,
       ...restaurantRoutes,
       ...orderRoutes,
-      ...promoRoutes,
     ]);
 
 class MyApp extends StatelessWidget {
