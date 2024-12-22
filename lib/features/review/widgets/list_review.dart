@@ -54,7 +54,6 @@ class _ListReviewState extends State<ListReview> {
   }
 
   Future<List<Review>> fetchReviews(String restaurantId) async {
-    // Accessing context before any await is safe
     final authProvider = context.read<AuthProvider>();
     final request = authProvider.cookieRequest;
 
@@ -62,7 +61,6 @@ class _ListReviewState extends State<ListReview> {
       '${AppConfig.apiUrl}/review/json_reviews/$restaurantId/',
     );
 
-    // Check if the widget is still mounted after the asynchronous operation
     if (!mounted) return [];
 
     if (response['reviews'] != null) {
@@ -84,7 +82,6 @@ class _ListReviewState extends State<ListReview> {
         '${AppConfig.apiUrl}/review/api/delete_review_mobile/$reviewId/',
       );
 
-      // Check if the widget is still mounted after the asynchronous operation
       if (!context.mounted) return;
 
       if (response["success"] == true) {
@@ -97,7 +94,6 @@ class _ListReviewState extends State<ListReview> {
 
         widget.refreshRestaurantDetailsCallback?.call();
 
-        // Ensure the widget is still mounted before calling setState
         if (context.mounted) {
           setState(() {
             _reviewsFuture = fetchReviews(widget.restaurantId);
@@ -112,7 +108,6 @@ class _ListReviewState extends State<ListReview> {
         );
       }
     } catch (e) {
-      // Check if the widget is still mounted before showing the SnackBar
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -146,7 +141,6 @@ class _ListReviewState extends State<ListReview> {
         ),
       ),
     ).then((_) {
-      // Check if the widget is still mounted before calling setState
       if (mounted) {
         setState(() {
           _reviewsFuture = fetchReviews(widget.restaurantId);
