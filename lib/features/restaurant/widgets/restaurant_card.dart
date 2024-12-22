@@ -191,7 +191,7 @@ class RestaurantCard extends StatelessWidget {
                 ),
               ),
               // Icon Love (Wishlist)
-              if (authProvider.user != null)
+              if (authProvider.user != null && !isRestaurantOwner)
                 IconButton(
                   icon: Icon(
                     isOnWishlist ? Icons.favorite : Icons.favorite_border,
