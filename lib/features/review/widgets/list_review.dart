@@ -29,26 +29,29 @@ class _ListReviewState extends State<ListReview> {
   }
 
   Future<List<Review>> fetchReviews(String restaurantId) async {
-    final authProvider = context.read<AuthProvider>();
-    final request = authProvider.cookieRequest;
+    try {
+      final authProvider = context.read<AuthProvider>();
+      final request = authProvider.cookieRequest;
 
-    final response = await request.get(
-      '${AppConfig.apiUrl}/review/json_reviews/$restaurantId/',
-    );
-
-    if (!mounted) return [];
-
-    if (response['reviews'] != null) {
-      return List<Review>.from(
-        response['reviews'].map((json) => Review.fromJson(json)),
+      final response = await request.get(
+        '${AppConfig.apiUrl}/review/json_reviews/$restaurantId/',
       );
-    } else {
-      throw Exception('Failed to load reviews');
+
+      if (!mounted) return [];
+
+      if (response['reviews'] != null) {
+        return List<Review>.from(
+          response['reviews'].map((json) => Review.fromJson(json)),
+        );
+      } else {
+        throw Exception('No reviews data available');
+      }
+    } catch (e) {
+      throw Exception('Failed to load reviews: $e');
     }
   }
 
   Future<void> _deleteReview(BuildContext context, int reviewId) async {
-    // Accessing context before any await is safe
     final authProvider = context.read<AuthProvider>();
     final request = authProvider.cookieRequest;
 
@@ -60,46 +63,45 @@ class _ListReviewState extends State<ListReview> {
       if (!context.mounted) return;
 
       if (response["success"] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Review successfully deleted!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-
+        _showSnackBar('Review successfully deleted!', Colors.green);
         widget.refreshRestaurantDetailsCallback?.call();
 
-        if (context.mounted) {
+        if (mounted) {
           setState(() {
             _reviewsFuture = fetchReviews(widget.restaurantId);
           });
         }
-      } else if (response["success"] == false) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('You are not authorized to delete this review'),
-            backgroundColor: Colors.red,
-          ),
-        );
+      } else {
+        _showSnackBar(
+            'You are not authorized to delete this review', Colors.red);
       }
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to delete review'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _showSnackBar('Failed to delete review', Colors.red);
     }
   }
 
-  Widget buildStars(int rating) {
+  void _showSnackBar(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStars(int rating) {
     const int maxStars = 5;
     return Row(
       children: List.generate(maxStars, (index) {
         return Icon(
-          index < rating ? Icons.star : Icons.star_border,
-          color: index < rating ? Colors.amber : Colors.grey,
+          index < rating ? Icons.star_rounded : Icons.star_outline_rounded,
+          color: index < rating ? Colors.amber : Colors.grey[400],
           size: 20,
         );
       }),
@@ -125,23 +127,111 @@ class _ListReviewState extends State<ListReview> {
     });
   }
 
+  Widget _buildErrorState(String error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
+          const SizedBox(height: 16),
+          Text(
+            'Failed to load reviews',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            error,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () => setState(() {
+              _reviewsFuture = fetchReviews(widget.restaurantId);
+            }),
+            icon: const Icon(Icons.refresh),
+            label: const Text('Try Again'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange[700],
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(bool isCustomer) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.rate_review_outlined, size: 64, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            'No Reviews Yet',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isCustomer
+                ? 'Be the first to review this restaurant!'
+                : 'Waiting for customers to share their experience.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          ),
+          if (isCustomer) ...[
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: _goToAddReviewPage,
+              icon: const Icon(Icons.add),
+              label: const Text('Write a Review'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange[700],
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final isCustomer =
         authProvider.user != null && authProvider.user!.role == "C";
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (isCustomer)
           Padding(
-            padding: const EdgeInsets.symmetric(
-                vertical: 8.0), // Add vertical padding
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: ElevatedButton(
-                onPressed: _goToAddReviewPage,
-                child: const Text('Add Review'),
+            padding: const EdgeInsets.only(bottom: 16),
+            child: ElevatedButton.icon(
+              onPressed: _goToAddReviewPage,
+              icon: const Icon(Icons.rate_review),
+              label: const Text('Write a Review'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange[700],
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ),
@@ -149,108 +239,133 @@ class _ListReviewState extends State<ListReview> {
           future: _reviewsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Text(
-                'There are no reviews yet.',
-                style: TextStyle(fontSize: 18, color: Color(0xFFA8A8A8)),
+              return const Center(
+                child: CircularProgressIndicator(),
               );
-            } else {
-              final reviews = snapshot.data!;
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: reviews.length,
-                itemBuilder: (context, index) {
-                  final review = reviews[index];
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              review.user,
-                              style: const TextStyle(
-                                fontSize: 16,
+            }
+
+            if (snapshot.hasError) {
+              return _buildErrorState(snapshot.error.toString());
+            }
+
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return _buildEmptyState(isCustomer);
+            }
+
+            final reviews = snapshot.data!;
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: reviews.length,
+              itemBuilder: (context, index) {
+                final review = reviews[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        offset: const Offset(0, 2),
+                        blurRadius: 8,
+                        spreadRadius: 0,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.orange[100],
+                            child: Text(
+                              review.user[0].toUpperCase(),
+                              style: TextStyle(
+                                color: Colors.orange[700],
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const Spacer(),
-                            buildStars(review.rating),
-                            if (isCustomer)
-                              IconButton(
-                                icon: const Icon(Icons.delete, size: 20),
-                                color: Colors.red,
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                      title: const Text('Delete Review'),
-                                      content: const Text(
-                                        'Are you sure you want to delete this review?',
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Navigator.pop(ctx),
-                                          child: const Text('Cancel'),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pop(ctx);
-                                            _deleteReview(context, review.id);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.red,
-                                          ),
-                                          child: const Text(
-                                            'Delete',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          review.comment,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Posted on: ${review.createdAt.toLocal()}'
-                              .split('.')[0],
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
                           ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  review.user,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                _buildStars(review.rating),
+                              ],
+                            ),
+                          ),
+                          if (isCustomer)
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline),
+                              color: Colors.red[400],
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: const Text('Delete Review'),
+                                    content: const Text(
+                                      'Are you sure you want to delete this review?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(ctx),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(ctx);
+                                          _deleteReview(context, review.id);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red,
+                                        ),
+                                        child: const Text(
+                                          'Delete',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        review.comment,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[800],
+                          height: 1.5,
                         ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            }
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Posted on: ${review.createdAt.toLocal()}'
+                            .split('.')[0],
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
           },
         ),
       ],
