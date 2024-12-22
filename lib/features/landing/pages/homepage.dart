@@ -141,8 +141,8 @@ class Homepage extends StatelessWidget {
               const SizedBox(width: 12),
               _buildQuickActionButton(
                 icon: Icons.favorite_border,
-                label: 'Favorites',
-                onPressed: () => context.push('/favorites'),
+                label: 'Wishlist',
+                onPressed: () => context.push('/wishlist'),
               ),
               const SizedBox(width: 12),
               _buildQuickActionButton(

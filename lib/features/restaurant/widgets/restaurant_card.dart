@@ -9,12 +9,79 @@ class RestaurantCard extends StatelessWidget {
   final Restaurant restaurant;
   final VoidCallback? refreshRestaurantCallback;
   final bool isRestaurantOwner;
+  final bool isOnWishlist;
 
-  const RestaurantCard(
-      {super.key,
-      required this.restaurant,
-      required this.isRestaurantOwner,
-      this.refreshRestaurantCallback});
+  const RestaurantCard({
+    super.key,
+    required this.restaurant,
+    required this.isRestaurantOwner,
+    required this.isOnWishlist,
+    this.refreshRestaurantCallback,
+  });
+
+  Future<void> _removeFromWishlist(BuildContext context) async {
+    final authProvider = context.read<AuthProvider>();
+    final request = authProvider.cookieRequest;
+
+    try {
+      final response = await request.post(
+          '${AppConfig.apiUrl}/wishlist/remove_mobile/${restaurant.id}/', {});
+
+      if (context.mounted) {
+        if (response["status"] == "success") {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Restaurant removed from wishlist'),
+            backgroundColor: Colors.green,
+          ));
+          refreshRestaurantCallback?.call();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Failed to remove restaurant from wishlist'),
+            backgroundColor: Colors.red,
+          ));
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Failed to remove restaurant from wishlist'),
+          backgroundColor: Colors.red,
+        ));
+      }
+    }
+  }
+
+  Future<void> _addToWishlist(BuildContext context) async {
+    final authProvider = context.read<AuthProvider>();
+    final request = authProvider.cookieRequest;
+
+    try {
+      final response = await request.post(
+          '${AppConfig.apiUrl}/wishlist/add_mobile/${restaurant.id}/', {});
+
+      if (context.mounted) {
+        if (response["status"] == "success") {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Restaurant added to wishlist'),
+            backgroundColor: Colors.green,
+          ));
+          refreshRestaurantCallback?.call();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Failed to add restaurant to wishlist'),
+            backgroundColor: Colors.red,
+          ));
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Failed to add restaurant to wishlist'),
+          backgroundColor: Colors.red,
+        ));
+      }
+    }
+  }
 
   Future<void> _deleteRestaurant(BuildContext context) async {
     final authProvider = context.read<AuthProvider>();
@@ -51,6 +118,8 @@ class RestaurantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<AuthProvider>().user; // Ambil data user
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -65,7 +134,7 @@ class RestaurantCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Placeholder for restaurant image (you can replace with network image later)
+              // Placeholder untuk gambar restoran
               Container(
                 width: 80,
                 height: 80,
@@ -120,6 +189,25 @@ class RestaurantCard extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+              // Icon Love (Wishlist)
+              IconButton(
+                icon: Icon(
+                  isOnWishlist ? Icons.favorite : Icons.favorite_border,
+                  color: isOnWishlist ? Colors.red : Colors.grey[400],
+                  size: 20,
+                ),
+                onPressed: () {
+                  if (user != null) {
+                    if (isOnWishlist) {
+                      _removeFromWishlist(context);
+                    } else {
+                      _addToWishlist(context);
+                    }
+                  } else {
+                    context.push('/login');
+                  }
+                },
               ),
               if (isRestaurantOwner)
                 Column(
