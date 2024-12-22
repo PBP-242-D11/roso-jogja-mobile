@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
+import "package:go_router/go_router.dart";
 
 class AddReviewPage extends StatefulWidget {
   final String restaurantId;
@@ -36,7 +37,8 @@ class _AddReviewPageState extends State<AddReviewPage> {
     if (_rating == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please select a rating before submitting your review.'),
+          content:
+              Text('Please select a rating before submitting your review.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -66,7 +68,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
 
         widget.refreshRestaurantDetailsCallback?.call();
 
-        Navigator.pop(context);
+        context.pop();
       } else {
         final error = response['error'] ?? 'Failed to add review.';
         ScaffoldMessenger.of(context).showSnackBar(
@@ -99,7 +101,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
             color: _rating > index ? Colors.orange : Colors.grey,
           ),
           onPressed: _isLoading
-              ? null 
+              ? null
               : () {
                   setState(() {
                     _rating = index + 1;
@@ -132,10 +134,8 @@ class _AddReviewPageState extends State<AddReviewPage> {
                   ),
                 ),
                 const SizedBox(height: 24.0),
-
                 _buildStarRating(),
                 const SizedBox(height: 12.0),
-
                 TextFormField(
                   controller: _reviewController,
                   decoration: const InputDecoration(
@@ -144,7 +144,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
                     border: OutlineInputBorder(),
                   ),
                   maxLines: 5,
-                  maxLength: 500, 
+                  maxLength: 500,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Please write a review';
@@ -156,9 +156,8 @@ class _AddReviewPageState extends State<AddReviewPage> {
                   },
                 ),
                 const SizedBox(height: 24.0),
-
                 ElevatedButton(
-                  onPressed: _isLoading ? null : _submitReview, 
+                  onPressed: _isLoading ? null : _submitReview,
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50),
                   ),
@@ -167,7 +166,8 @@ class _AddReviewPageState extends State<AddReviewPage> {
                           height: 24,
                           width: 24,
                           child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
                             strokeWidth: 2.0,
                           ),
                         )

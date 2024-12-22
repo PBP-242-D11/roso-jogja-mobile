@@ -91,11 +91,11 @@ class FoodCard extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => context.pop(false),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => context.pop(true),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
               ),

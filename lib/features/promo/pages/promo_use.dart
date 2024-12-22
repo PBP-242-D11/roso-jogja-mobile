@@ -142,7 +142,8 @@ class _UsePromoPageState extends State<UsePromo> {
         children: [
           Icon(Icons.local_offer, color: Colors.orange[700]),
           const SizedBox(width: 8),
-          const Text('Promo Found', style: TextStyle(fontSize: 20)),
+          const Text('Promo Found',
+              style: TextStyle(fontSize: 20, color: Colors.black)),
         ],
       ),
       content: Column(
@@ -164,13 +165,13 @@ class _UsePromoPageState extends State<UsePromo> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _buildDialogButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               label: 'Back',
               backgroundColor: Colors.black87,
             ),
             _buildDialogButton(
               onPressed: () {
-                Navigator.pop(context); // Close dialog first
+                context.pop(); // Close dialog first
                 tagPromo(promoDetails['id']); // Then tag promo
               },
               label: 'Apply Promo',
@@ -214,7 +215,8 @@ class _UsePromoPageState extends State<UsePromo> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.search),
-              label: Text(isLoading ? 'Searching...' : 'Find Promo'),
+              label: Text(isLoading ? 'Searching...' : 'Find Promo',
+                  style: const TextStyle(fontSize: 16, color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange[700],
                 padding: const EdgeInsets.all(16),
