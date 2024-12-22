@@ -3,32 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 import 'package:roso_jogja_mobile/features/review/pages/add_review.dart';
-
-class Review {
-  final int id;
-  final String user;
-  final int rating;
-  final String comment;
-  final DateTime createdAt;
-
-  Review({
-    required this.id,
-    required this.user,
-    required this.rating,
-    required this.comment,
-    required this.createdAt,
-  });
-
-  factory Review.fromJson(Map<String, dynamic> json) {
-    return Review(
-      id: json['id'],
-      user: json['user'],
-      rating: json['rating'],
-      comment: json['comment'],
-      createdAt: DateTime.parse(json['created_at']),
-    );
-  }
-}
+import 'package:roso_jogja_mobile/features/review/models/review_model.dart';
 
 class ListReview extends StatefulWidget {
   final String restaurantId;
@@ -137,7 +112,8 @@ class _ListReviewState extends State<ListReview> {
       MaterialPageRoute(
         builder: (context) => AddReviewPage(
           restaurantId: widget.restaurantId,
-          refreshRestaurantDetailsCallback: widget.refreshRestaurantDetailsCallback,
+          refreshRestaurantDetailsCallback:
+              widget.refreshRestaurantDetailsCallback,
         ),
       ),
     ).then((_) {
@@ -152,13 +128,15 @@ class _ListReviewState extends State<ListReview> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
-    final isCustomer = authProvider.user != null && authProvider.user!.role == "C";
+    final isCustomer =
+        authProvider.user != null && authProvider.user!.role == "C";
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (isCustomer)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0), // Add vertical padding
+            padding: const EdgeInsets.symmetric(
+                vertical: 8.0), // Add vertical padding
             child: Align(
               alignment: Alignment.centerLeft,
               child: ElevatedButton(
@@ -167,7 +145,6 @@ class _ListReviewState extends State<ListReview> {
               ),
             ),
           ),
-
         FutureBuilder<List<Review>>(
           future: _reviewsFuture,
           builder: (context, snapshot) {
@@ -216,7 +193,6 @@ class _ListReviewState extends State<ListReview> {
                             ),
                             const Spacer(),
                             buildStars(review.rating),
-
                             if (isCustomer)
                               IconButton(
                                 icon: const Icon(Icons.delete, size: 20),
@@ -244,7 +220,8 @@ class _ListReviewState extends State<ListReview> {
                                           ),
                                           child: const Text(
                                             'Delete',
-                                            style: TextStyle(color: Colors.white),
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
                                         ),
                                       ],
@@ -261,7 +238,8 @@ class _ListReviewState extends State<ListReview> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Posted on: ${review.createdAt.toLocal()}'.split('.')[0],
+                          'Posted on: ${review.createdAt.toLocal()}'
+                              .split('.')[0],
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],

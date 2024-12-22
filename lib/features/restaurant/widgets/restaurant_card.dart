@@ -118,7 +118,7 @@ class RestaurantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().user; // Ambil data user
+    final authProvider = context.read<AuthProvider>();
 
     return Card(
       elevation: 4,
@@ -191,24 +191,21 @@ class RestaurantCard extends StatelessWidget {
                 ),
               ),
               // Icon Love (Wishlist)
-              IconButton(
-                icon: Icon(
-                  isOnWishlist ? Icons.favorite : Icons.favorite_border,
-                  color: isOnWishlist ? Colors.red : Colors.grey[400],
-                  size: 20,
-                ),
-                onPressed: () {
-                  if (user != null) {
+              if (authProvider.user != null)
+                IconButton(
+                  icon: Icon(
+                    isOnWishlist ? Icons.favorite : Icons.favorite_border,
+                    color: isOnWishlist ? Colors.red : Colors.grey[400],
+                    size: 20,
+                  ),
+                  onPressed: () {
                     if (isOnWishlist) {
                       _removeFromWishlist(context);
                     } else {
                       _addToWishlist(context);
                     }
-                  } else {
-                    context.push('/login');
-                  }
-                },
-              ),
+                  },
+                ),
               if (isRestaurantOwner)
                 Column(
                   children: [

@@ -206,24 +206,25 @@ class LeftDrawer extends StatelessWidget {
           title: 'Restaurants',
           onTap: () => context.go("/restaurant"),
         ),
-        _buildDrawerItem(
-          context,
-          icon: Icons.discount,
-          title: 'Offers',
-          onTap: () => context.go("/promo"),
-        ),
+        if (!isGuest && !isRestaurantOwner)
+          _buildDrawerItem(
+            context,
+            icon: Icons.discount,
+            title: 'Offers',
+            onTap: () => context.go("/promo"),
+          ),
         if (!isGuest && !isRestaurantOwner)
           _buildDrawerItem(
             context,
             icon: Icons.shopping_cart,
-            title: 'Your Cart',
+            title: 'Cart',
             onTap: () => context.go("/cart"),
           ),
         if (!isGuest && !isRestaurantOwner)
           _buildDrawerItem(
             context,
             icon: Icons.history,
-            title: 'History',
+            title: 'Orders',
             onTap: () => context.go("/order_history"),
           ),
         if (!isGuest && !isRestaurantOwner)

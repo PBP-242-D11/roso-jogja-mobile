@@ -23,8 +23,19 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
   static const int itemsPerPage = 8;
 
   Future<Map<String, dynamic>> fetchRestorantAndWishlist() async {
-    final restaurantData = await fetchRestaurants();
-    final wishlist = await fetchWishlist();
+    final authProvider = context.read<AuthProvider>();
+
+    final restaurantData = await fetchRestaurants(authProvider);
+
+    if (!authProvider.isLoggedIn) {
+      return {
+        'restaurants': restaurantData['restaurants'],
+        'wishlist': {},
+        'pagination': restaurantData['pagination']
+      };
+    }
+    final wishlist = await fetchWishlist(authProvider);
+
     return {
       'restaurants': restaurantData['restaurants'],
       'wishlist': wishlist,
@@ -32,8 +43,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
     };
   }
 
-  Future<Map<String, bool>> fetchWishlist() async {
-    final authProvider = context.read<AuthProvider>();
+  Future<Map<String, bool>> fetchWishlist(AuthProvider authProvider) async {
     final request = authProvider.cookieRequest;
     final idToWishlistMap = <String, bool>{};
     final response =
@@ -48,8 +58,8 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
     return idToWishlistMap;
   }
 
-  Future<Map<String, dynamic>> fetchRestaurants() async {
-    final authProvider = context.read<AuthProvider>();
+  Future<Map<String, dynamic>> fetchRestaurants(
+      AuthProvider authProvider) async {
     final request = authProvider.cookieRequest;
 
     final response = await request.get(
@@ -133,7 +143,9 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                           return RestaurantCard(
                             restaurant: restaurants[index],
                             isRestaurantOwner: isRestaurantOwner,
-                            isOnWishlist: data['wishlist'][restaurants[index].id] ?? false,
+                            isOnWishlist: data['wishlist']
+                                    [restaurants[index].id] ??
+                                false,
                             refreshRestaurantCallback: () {
                               setState(() {}); // Trigger a refresh
                             },
