@@ -6,6 +6,9 @@
 [![Build status](https://build.appcenter.ms/v0.1/apps/42cb4aac-3bd6-4dd4-a12e-e77eb18135bf/branches/main/badge)](https://appcenter.ms)
 
 ---
+Promotional Video:
+[YouTube](https://youtu.be/gvJ41rK6REs)
+---
 
 ## Nama Anggota Kelompok PBP-D11:
 1. Akhdan Taufiq Syofyan (2306152475)
