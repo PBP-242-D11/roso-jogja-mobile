@@ -12,13 +12,11 @@ import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 class FoodCard extends StatelessWidget {
   final Food food;
   final VoidCallback? refreshRestaurantDetailsCallback;
-  final bool isRestaurantOwner;
   final String restaurantId;
 
   const FoodCard({
     super.key,
     required this.food,
-    required this.isRestaurantOwner,
     required this.restaurantId,
     this.refreshRestaurantDetailsCallback,
   });
@@ -67,101 +65,112 @@ class FoodCard extends StatelessWidget {
     final authProvider = context.read<AuthProvider>();
     final request = authProvider.cookieRequest;
 
-      final cartResponse = await request.get('${AppConfig.apiUrl}/order/api/mobile_cart/');
+    final cartResponse =
+        await request.get('${AppConfig.apiUrl}/order/api/mobile_cart/');
 
-      if (cartResponse == null || cartResponse.isEmpty) {
-        throw Exception('Failed to fetch cart details.');
-      }
+    if (cartResponse == null || cartResponse.isEmpty) {
+      throw Exception('Failed to fetch cart details.');
+    }
 
-      if (cartResponse is! Map<String, dynamic>) {
-        throw Exception('Invalid cart response format.');
-      }
+    if (cartResponse is! Map<String, dynamic>) {
+      throw Exception('Invalid cart response format.');
+    }
 
-      final CartResponse currentCart = CartResponse.fromJson(cartResponse);
-      final String? currentRestaurantId = currentCart.restaurant?.id;
+    final CartResponse currentCart = CartResponse.fromJson(cartResponse);
+    final String? currentRestaurantId = currentCart.restaurant?.id;
 
-      if (currentRestaurantId == null || currentRestaurantId == restaurantId) {
-        await _proceedToAddToCart(context, request);
-      } else {
-        bool? shouldReplace = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Replace Cart'),
-            content: const Text(
-              'Your cart contains items from another restaurant. Do you want to replace the cart with items from this restaurant?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                ),
-                child: const Text(
-                  'Replace',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
+    if (currentRestaurantId == null || currentRestaurantId == restaurantId) {
+      await _proceedToAddToCart(context, request);
+    } else {
+      bool? shouldReplace = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Replace Cart'),
+          content: const Text(
+            'Your cart contains items from another restaurant. Do you want to replace the cart with items from this restaurant?',
           ),
-        );
-
-        if (shouldReplace == true) {
-          final clearResponse = await request.get('${AppConfig.apiUrl}/order/api/cart/clear/');
-
-          if (clearResponse['message'] == 'Successfully cleared the cart') {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Cart has been cleared. Adding new item.'),
-                backgroundColor: Colors.green,
-              ),
-            );
-
-            await _proceedToAddToCart(context, request);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(clearResponse['message'] ?? 'Failed to clear the cart.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
               ),
-            );
-          }
-        }
-      }
-  }
-
-  Future<void> _proceedToAddToCart(BuildContext context, CookieRequest request) async {
-      final response = await request.get(
-        '${AppConfig.apiUrl}/order/api/cart/add/${food.id}/?quantity=1',
+              child: const Text(
+                'Replace',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
       );
 
-      if (response['message'] == 'Food added successfully' ||
-          response['message'] == 'Item quantity updated successfully') {
-        if (context.mounted) {
+      if (shouldReplace == true) {
+        final clearResponse =
+            await request.get('${AppConfig.apiUrl}/order/api/cart/clear/');
+
+        if (clearResponse['message'] == 'Successfully cleared the cart') {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Food item added to cart successfully'),
+              content: Text('Cart has been cleared. Adding new item.'),
               backgroundColor: Colors.green,
             ),
           );
-        }
-      } else {
-        if (context.mounted) {
+
+          await _proceedToAddToCart(context, request);
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(response['error'] ?? 'Failed to add food item to cart'),
+              content:
+                  Text(clearResponse['message'] ?? 'Failed to clear the cart.'),
               backgroundColor: Colors.red,
             ),
           );
         }
       }
+    }
+  }
+
+  Future<void> _proceedToAddToCart(
+      BuildContext context, CookieRequest request) async {
+    final response = await request.get(
+      '${AppConfig.apiUrl}/order/api/cart/add/${food.id}/?quantity=1',
+    );
+
+    if (response['message'] == 'Food added successfully' ||
+        response['message'] == 'Item quantity updated successfully') {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Food item added to cart successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text(response['error'] ?? 'Failed to add food item to cart'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final isCustomer =
+        authProvider.user != null && authProvider.user!.role == 'C';
+    final isRestaurantOwner =
+        authProvider.user != null && authProvider.user!.role == 'R';
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -273,23 +282,23 @@ class FoodCard extends StatelessWidget {
                   ),
                 ],
               ),
-            
-            if (!isRestaurantOwner)
+
+            if (isCustomer)
               Padding(
-                padding: const EdgeInsets.only(left: 8.0), 
+                padding: const EdgeInsets.only(left: 8.0),
                 child: SizedBox(
                   width: 36,
-                  height: 36, 
+                  height: 36,
                   child: ElevatedButton(
                     onPressed: () async {
                       await addToCart(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange, 
+                      backgroundColor: Colors.orange,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      padding: EdgeInsets.zero, 
+                      padding: EdgeInsets.zero,
                     ),
                     child: const Icon(
                       Icons.add_shopping_cart,

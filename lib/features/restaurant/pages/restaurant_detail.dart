@@ -154,7 +154,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                       itemBuilder: (context, index) {
                         return FoodCard(
                             food: restaurant.foods![index],
-                            isRestaurantOwner: isRestaurantOwner,
                             restaurantId: restaurant.id,
                             refreshRestaurantDetailsCallback: () {
                               setState(() {});
