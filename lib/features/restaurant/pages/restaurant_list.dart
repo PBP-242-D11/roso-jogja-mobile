@@ -21,6 +21,15 @@ class RestaurantListPage extends StatefulWidget {
 class _RestaurantListPageState extends State<RestaurantListPage> {
   int currentPage = 1;
   static const int itemsPerPage = 8;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  bool _isSearching = false;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   Future<Map<String, dynamic>> fetchRestorantAndWishlist() async {
     final authProvider = context.read<AuthProvider>();
@@ -62,8 +71,10 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
       AuthProvider authProvider) async {
     final request = authProvider.cookieRequest;
 
+    final String searchParam =
+        _searchQuery.isNotEmpty ? '&search=$_searchQuery' : '';
     final response = await request.get(
-        '${AppConfig.apiUrl}/restaurant/api/restaurants/?page=$currentPage&page_size=$itemsPerPage');
+        '${AppConfig.apiUrl}/restaurant/api/restaurants/?page=$currentPage&page_size=$itemsPerPage$searchParam');
 
     return {
       'restaurants': (response["results"] as List)
@@ -78,94 +89,291 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
     };
   }
 
+  Widget _buildHeader(bool isRestaurantOwner) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.orange[50],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            isRestaurantOwner
+                ? 'Manage Your Restaurants'
+                : 'Find Your Next Favorite Place',
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isRestaurantOwner
+                ? 'Create and manage your restaurant listings'
+                : 'Discover the best dining experiences in Jogja',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Search Bar
+          TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Search restaurants...',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: _isSearching
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {
+                          _searchQuery = '';
+                          _isSearching = false;
+                        });
+                      },
+                    )
+                  : null,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            onChanged: (value) {
+              setState(() {
+                _searchQuery = value;
+                _isSearching = value.isNotEmpty;
+                currentPage = 1; // Reset to first page when searching
+              });
+            },
+          ),
+          if (isRestaurantOwner) ...[
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () async {
+                bool? result = await context.push('/restaurant/create');
+                if (result == true) {
+                  setState(() {});
+                }
+              },
+              icon: const Icon(Icons.add_business),
+              label: const Text('Create New Restaurant'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange[700],
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(bool isRestaurantOwner) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            isRestaurantOwner ? Icons.restaurant_menu : Icons.search_off,
+            size: 64,
+            color: Colors.grey[400],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            _searchQuery.isEmpty
+                ? (isRestaurantOwner
+                    ? 'No Restaurants Yet'
+                    : 'No Restaurants Found')
+                : 'No Results Found',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              _searchQuery.isEmpty
+                  ? (isRestaurantOwner
+                      ? 'Start by creating your first restaurant!'
+                      : 'Check back later for new restaurants')
+                  : 'Try different search terms',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+            ),
+          ),
+          if (isRestaurantOwner) ...[
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () async {
+                bool? result = await context.push('/restaurant/create');
+                if (result == true) {
+                  setState(() {});
+                }
+              },
+              icon: const Icon(Icons.add_business),
+              label: const Text('Create Restaurant'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange[700],
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().user;
     final isRestaurantOwner = user != null && user.role == "R";
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Available Restaurants')),
+      appBar: AppBar(
+        title: Text(
+          isRestaurantOwner ? 'Restaurant Management' : 'Explore Restaurants',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.orange[700],
+        elevation: 0,
+      ),
       drawer: const LeftDrawer(),
-      body: FutureBuilder(
-        future: fetchRestorantAndWishlist(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingIndicator();
-          }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {
+            currentPage = 1;
+          });
+        },
+        child: Column(
+          children: [
+            _buildHeader(isRestaurantOwner),
+            Expanded(
+              child: FutureBuilder(
+                future: fetchRestorantAndWishlist(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const LoadingIndicator();
+                  }
 
-          if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Failed to load restaurants: ${snapshot.error}'),
-                  ElevatedButton(
-                    onPressed: () => setState(() {}),
-                    child: const Text('Retry'),
-                  )
-                ],
-              ),
-            );
-          }
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 64,
+                            color: Colors.red[300],
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Oops! Something went wrong',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Error: ${snapshot.error}',
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton.icon(
+                            onPressed: () => setState(() {}),
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Try Again'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
 
-          if (!snapshot.hasData) {
-            return const Center(child: Text('No data available'));
-          }
+                  if (!snapshot.hasData) {
+                    return const Center(child: Text('No data available'));
+                  }
 
-          final data = snapshot.data!;
-          final List<Restaurant> restaurants = data['restaurants'];
-          final PaginationMetadata? paginationMetadata = data['pagination'];
+                  final data = snapshot.data!;
+                  final List<Restaurant> restaurants = data['restaurants'];
+                  final PaginationMetadata? paginationMetadata =
+                      data['pagination'];
 
-          return Column(
-            children: [
-              if (isRestaurantOwner)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      bool? result = await context.push('/restaurant/create');
+                  if (restaurants.isEmpty) {
+                    return _buildEmptyState(isRestaurantOwner);
+                  }
 
-                      if (result != null && result == true) {
-                        setState(() {});
-                      }
-                    },
-                    child: const Text('Create Restaurant'),
-                  ),
-                ),
-              Expanded(
-                child: restaurants.isEmpty
-                    ? Center(
-                        child: Text(
-                            'No restaurants found. ${isRestaurantOwner ? "Create one!" : ""}'))
-                    : ListView.builder(
-                        itemCount: restaurants.length,
-                        itemBuilder: (context, index) {
-                          return RestaurantCard(
-                            restaurant: restaurants[index],
-                            isRestaurantOwner: isRestaurantOwner,
-                            isOnWishlist: data['wishlist']
-                                    [restaurants[index].id] ??
-                                false,
-                            refreshRestaurantCallback: () {
-                              setState(() {}); // Trigger a refresh
-                            },
-                          );
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: restaurants.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: RestaurantCard(
+                                restaurant: restaurants[index],
+                                isRestaurantOwner: isRestaurantOwner,
+                                isOnWishlist: data['wishlist']
+                                        [restaurants[index].id] ??
+                                    false,
+                                refreshRestaurantCallback: () {
+                                  setState(() {});
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      PaginationControls(
+                        metadata: paginationMetadata,
+                        currentPage: currentPage,
+                        isLoading:
+                            snapshot.connectionState == ConnectionState.waiting,
+                        onPageChange: (newPage) {
+                          setState(() {
+                            currentPage = newPage;
+                          });
                         },
                       ),
-              ),
-              PaginationControls(
-                metadata: paginationMetadata,
-                currentPage: currentPage,
-                isLoading: snapshot.connectionState == ConnectionState.waiting,
-                onPageChange: (newPage) {
-                  setState(() {
-                    currentPage = newPage;
-                  });
+                    ],
+                  );
                 },
               ),
-            ],
-          );
-        },
+            ),
+          ],
+        ),
       ),
     );
   }

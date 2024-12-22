@@ -206,7 +206,7 @@ class LeftDrawer extends StatelessWidget {
           title: 'Restaurants',
           onTap: () => context.go("/restaurant"),
         ),
-        if (!isGuest && !isRestaurantOwner)
+        if (!isGuest)
           _buildDrawerItem(
             context,
             icon: Icons.discount,

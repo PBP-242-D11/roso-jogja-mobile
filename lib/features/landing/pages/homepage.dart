@@ -11,7 +11,7 @@ class Homepage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().user;
+    final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -27,7 +27,8 @@ class Homepage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // User Profile Header
-              if (user != null) _buildUserProfileHeader(context, user),
+              if (authProvider.user != null)
+                _buildUserProfileHeader(context, authProvider.user!),
 
               // Quick Actions Section
               Padding(
@@ -36,7 +37,7 @@ class Homepage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _buildQuickActionsSection(context),
+                    _buildQuickActionsSection(context, authProvider),
                     const SizedBox(height: 16),
                     _buildRecentActivitySection(context),
                     const SizedBox(height: 16),
@@ -117,7 +118,11 @@ class Homepage extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickActionsSection(BuildContext context) {
+  Widget _buildQuickActionsSection(
+      BuildContext context, AuthProvider authProvider) {
+    final isRestaurantOwner =
+        authProvider.user != null && authProvider.user!.role == "R";
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -138,12 +143,13 @@ class Homepage extends StatelessWidget {
                 label: 'Restaurants',
                 onPressed: () => context.push('/restaurant'),
               ),
-              const SizedBox(width: 12),
-              _buildQuickActionButton(
-                icon: Icons.favorite_border,
-                label: 'Wishlist',
-                onPressed: () => context.push('/wishlist'),
-              ),
+              if (!isRestaurantOwner) SizedBox(width: 12),
+              if (!isRestaurantOwner)
+                _buildQuickActionButton(
+                  icon: Icons.favorite_border,
+                  label: 'Wishlist',
+                  onPressed: () => context.push('/wishlist'),
+                ),
               const SizedBox(width: 12),
               _buildQuickActionButton(
                 icon: Icons.discount_outlined,
