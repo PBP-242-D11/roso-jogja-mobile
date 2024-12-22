@@ -17,8 +17,71 @@ class RestaurantCard extends StatelessWidget {
     required this.isRestaurantOwner,
     required this.isOnWishlist,
     this.refreshRestaurantCallback,
-
   });
+
+  Future<void> _removeFromWishlist(BuildContext context) async {
+    final authProvider = context.read<AuthProvider>();
+    final request = authProvider.cookieRequest;
+
+    try {
+      final response = await request.post(
+          '${AppConfig.apiUrl}/wishlist/remove_mobile/${restaurant.id}/', {});
+
+      if (context.mounted) {
+        if (response["status"] == "success") {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Restaurant removed from wishlist'),
+            backgroundColor: Colors.green,
+          ));
+          refreshRestaurantCallback?.call();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Failed to remove restaurant from wishlist'),
+            backgroundColor: Colors.red,
+          ));
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Failed to remove restaurant from wishlist'),
+          backgroundColor: Colors.red,
+        ));
+      }
+    }
+  }
+
+  Future<void> _addToWishlist(BuildContext context) async {
+    final authProvider = context.read<AuthProvider>();
+    final request = authProvider.cookieRequest;
+
+    try {
+      final response = await request.post(
+          '${AppConfig.apiUrl}/wishlist/add_mobile/${restaurant.id}/', {});
+
+      if (context.mounted) {
+        if (response["status"] == "success") {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Restaurant added to wishlist'),
+            backgroundColor: Colors.green,
+          ));
+          refreshRestaurantCallback?.call();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Failed to add restaurant to wishlist'),
+            backgroundColor: Colors.red,
+          ));
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Failed to add restaurant to wishlist'),
+          backgroundColor: Colors.red,
+        ));
+      }
+    }
+  }
 
   Future<void> _deleteRestaurant(BuildContext context) async {
     final authProvider = context.read<AuthProvider>();
@@ -135,14 +198,15 @@ class RestaurantCard extends StatelessWidget {
                   size: 20,
                 ),
                 onPressed: () {
-                  if (user == null) {
-                    // Jika user belum login
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Please login to manage your wishlist'),
-                      backgroundColor: Colors.red,
-                    ));
-                    return;
-                  };
+                  if (user != null) {
+                    if (isOnWishlist) {
+                      _removeFromWishlist(context);
+                    } else {
+                      _addToWishlist(context);
+                    }
+                  } else {
+                    context.push('/login');
+                  }
                 },
               ),
               if (isRestaurantOwner)
