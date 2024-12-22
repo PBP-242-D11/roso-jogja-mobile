@@ -261,7 +261,8 @@ class _PromoHomePageState extends State<PromoHome> {
         onRefresh: () async {
           setState(() {});
         },
-        child: FutureBuilder<Map<String, dynamic>?>(
+        child: 
+        FutureBuilder<Map<String, dynamic>?>(
           future: fetchPromo(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -278,14 +279,12 @@ class _PromoHomePageState extends State<PromoHome> {
 
             final data = snapshot.data!;
             final promos = (data['promos'] as List<dynamic>?)
-                    ?.where((promo) => promo is Map<String, dynamic>)
-                    .cast<Map<String, dynamic>>()
+                    ?.whereType<Map<String, dynamic>>()
                     .toList() ??
                 [];
 
             final otherPromos = (data['other_promos'] as List<dynamic>?)
-                    ?.where((promo) => promo is Map<String, dynamic>)
-                    .cast<Map<String, dynamic>>()
+                    ?.whereType<Map<String, dynamic>>()
                     .toList() ??
                 [];
 
@@ -312,8 +311,7 @@ class _PromoHomePageState extends State<PromoHome> {
                           ? promos[index]
                           : otherPromos[index - promos.length];
 
-                      if (!promo.containsKey('value') ||
-                          !promo.containsKey('type')) {
+                      if (!promo.containsKey('value') || !promo.containsKey('type')) {
                         return const SizedBox.shrink();
                       }
 
