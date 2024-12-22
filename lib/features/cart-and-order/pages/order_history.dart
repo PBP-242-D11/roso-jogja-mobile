@@ -114,7 +114,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                             value: orders.isEmpty
                                 ? 'Rp 0'
                                 : 'Rp ${data.totalSpent}',
-                            icon: Icons.attach_money,
+                            icon: Icons.payments,
                             theme: theme,
                           ),
                         ],
@@ -284,4 +284,3 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
     );
   }
 }
-

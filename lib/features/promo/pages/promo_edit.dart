@@ -89,7 +89,7 @@ class _EditPromoPageState extends State<EditPromoPage> {
     return response['exists'] != true;
   }
 
-  Future<void> _submitForm() async {
+  Future<void> _submitForm(AuthProvider authProvider) async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedRestaurants.isEmpty) {
       _showErrorSnackBar('Select at least one restaurant');
@@ -116,7 +116,6 @@ class _EditPromoPageState extends State<EditPromoPage> {
         }
       }
 
-      final authProvider = context.read<AuthProvider>();
       final response = await authProvider.cookieRequest.post(
         '${AppConfig.apiUrl}/promo/mobile_edit_promo/${widget.promo.id}/',
         {
@@ -296,7 +295,7 @@ class _EditPromoPageState extends State<EditPromoPage> {
   Widget _buildValueField() {
     return TextFormField(
       initialValue: _value,
-      decoration: _buildInputDecoration('Promo Value', Icons.attach_money),
+      decoration: _buildInputDecoration('Promo Value', Icons.payments),
       keyboardType: TextInputType.number,
       validator: (value) => value == null || value.isEmpty
           ? 'Please enter the promo value'
@@ -402,7 +401,8 @@ class _EditPromoPageState extends State<EditPromoPage> {
 
   Widget _buildSubmitButton() {
     return ElevatedButton(
-      onPressed: _isLoading ? null : _submitForm,
+      onPressed:
+          _isLoading ? null : () => _submitForm(context.read<AuthProvider>()),
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
         backgroundColor: Colors.orange[700],

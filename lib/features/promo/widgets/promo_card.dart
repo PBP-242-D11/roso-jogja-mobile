@@ -60,7 +60,7 @@ class PromoCard extends StatelessWidget {
         refreshPromoCallback?.call();
       } else {
         _showSnackBar(
-          context, 
+          context,
           response['message'] ?? 'An error occurred',
           isError: true,
         );
@@ -75,7 +75,8 @@ class PromoCard extends StatelessWidget {
     }
   }
 
-  void _showSnackBar(BuildContext context, String message, {bool isError = false}) {
+  void _showSnackBar(BuildContext context, String message,
+      {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -114,7 +115,7 @@ class PromoCard extends StatelessWidget {
         promo.type == "Percentage"
             ? Icons.percent
             : promo.type == "Currency"
-                ? Icons.attach_money
+                ? Icons.payments
                 : Icons.local_offer,
         color: Colors.orange[700],
         size: 24,
@@ -242,10 +243,13 @@ class PromoCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             "${formattedValue(promo.type, promo.value)} off",
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.orange[900],
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.orange[900],
+                                ),
                           ),
                         ),
                         _buildActionButtons(context),
@@ -255,16 +259,16 @@ class PromoCard extends StatelessWidget {
                     Text(
                       "Valid until ${_formatDate(promo.expiryDate)}",
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                            color: Colors.grey[600],
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       "Code: ${promo.promoCode}",
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w500,
-                      ),
+                            color: Colors.grey[700],
+                            fontWeight: FontWeight.w500,
+                          ),
                     ),
                     const SizedBox(height: 8),
                     _buildRestaurantChips(),
