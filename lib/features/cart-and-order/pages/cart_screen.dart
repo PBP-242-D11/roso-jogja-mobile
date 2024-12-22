@@ -26,6 +26,7 @@ class _CartPageState extends State<CartPage> {
     super.didChangeDependencies();
     _futureCart = fetchCartItems(context);
   }
+
   @override
   void initState() {
     super.initState();
@@ -42,7 +43,8 @@ class _CartPageState extends State<CartPage> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final request = authProvider.cookieRequest;
 
-    final response = await request.get('${AppConfig.apiUrl}/order/api/mobile_cart/');
+    final response =
+        await request.get('${AppConfig.apiUrl}/order/api/mobile_cart/');
 
     if (response is Map<String, dynamic>) {
       return CartResponse.fromJson(response);
@@ -56,8 +58,8 @@ class _CartPageState extends State<CartPage> {
     final request = authProvider.cookieRequest;
 
     try {
-      final response = await request.get(
-          '${AppConfig.apiUrl}/promo/remove_promo_usage/');
+      final response =
+          await request.get('${AppConfig.apiUrl}/promo/remove_promo_usage/');
 
       if (context.mounted) {
         if (response["status"] == "success") {
@@ -65,8 +67,7 @@ class _CartPageState extends State<CartPage> {
             content: Text('Promo removed successfully'),
             backgroundColor: Colors.green,
           ));
-          _refreshPromo(); 
-
+          _refreshPromo();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('Failed to remove promo'),
@@ -88,7 +89,8 @@ class _CartPageState extends State<CartPage> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final request = authProvider.cookieRequest;
 
-    final response = await request.get('${AppConfig.apiUrl}/order/api/show_promo_applied/');
+    final response =
+        await request.get('${AppConfig.apiUrl}/order/api/show_promo_applied/');
     return {
       'promo_cut': response["promo_cut"],
       'final_price': response["final_price"],
@@ -99,7 +101,8 @@ class _CartPageState extends State<CartPage> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final request = authProvider.cookieRequest;
 
-    final response = await request.get('${AppConfig.apiUrl}/order/api/cart/clear/');
+    final response =
+        await request.get('${AppConfig.apiUrl}/order/api/cart/clear/');
 
     if (response['message'] == 'Successfully cleared the cart') {
       if (context.mounted) {
@@ -128,17 +131,15 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-  Future<void> orderNow(BuildContext context, String paymentMethod, String notes) async {
+  Future<void> orderNow(
+      BuildContext context, String paymentMethod, String notes) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final request = authProvider.cookieRequest;
 
     request.headers['Content-Type'] = 'application/json';
 
-    final body = jsonEncode({
-      "notes": notes,
-      "payment_method": paymentMethod,
-      "final_price": 0
-    });
+    final body = jsonEncode(
+        {"notes": notes, "payment_method": paymentMethod, "final_price": 0});
 
     final response = await request.post(
       '${AppConfig.apiUrl}/order/api/mobile_create_order/',
@@ -178,7 +179,6 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -195,11 +195,11 @@ class _CartPageState extends State<CartPage> {
       backgroundColor: const Color(0xFFFFF7ED),
       drawer: const LeftDrawer(),
       body: FutureBuilder<CartResponse>(
-        
         future: _futureCart,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Colors.orange));
+            return const Center(
+                child: CircularProgressIndicator(color: Colors.orange));
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData) {
@@ -233,7 +233,10 @@ class _CartPageState extends State<CartPage> {
                             const SizedBox(width: 8),
                             Text(
                               'Restaurant:',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -243,19 +246,24 @@ class _CartPageState extends State<CartPage> {
                         const SizedBox(height: 4),
                         Text(
                           restaurant != null ? restaurant.name : '-',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
                         ),
                         const SizedBox(height: 16),
                         Row(
                           children: [
-                            const Icon(Icons.attach_money, color: Colors.white70),
+                            const Icon(Icons.attach_money,
+                                color: Colors.white70),
                             const SizedBox(width: 8),
                             Text(
                               'Total:',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -263,7 +271,10 @@ class _CartPageState extends State<CartPage> {
                             const Spacer(),
                             Text(
                               'Rp $total',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
@@ -276,27 +287,31 @@ class _CartPageState extends State<CartPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-
                 Divider(color: Colors.grey.shade300, thickness: 1),
                 const SizedBox(height: 2),
-
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFF7ED), // Background color
-                    foregroundColor: Colors.black87, // Text color for better contrast
+                    backgroundColor:
+                        const Color(0xFFFFF7ED), // Background color
+                    foregroundColor:
+                        Colors.black87, // Text color for better contrast
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8), // Smaller rounded corners
+                      borderRadius:
+                          BorderRadius.circular(8), // Smaller rounded corners
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16), // Reduced padding
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8, horizontal: 16), // Reduced padding
                     elevation: 2, // Lower elevation for a sleeker look
-                    shadowColor: Colors.black.withOpacity(0.05), // Shadow color directly defined
+                    shadowColor: Colors.black
+                        .withOpacity(0.05), // Shadow color directly defined
                   ),
                   onPressed: () {
                     if (restaurant == null || restaurant.id == null) {
                       // Show a SnackBar with a red background if restaurant or restaurant.id is null
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const Text("You have to input something in your cart first!"),
+                          content: const Text(
+                              "You have to input something in your cart first!"),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -306,7 +321,6 @@ class _CartPageState extends State<CartPage> {
                       context.go('/promo/use/$restaurantId/');
                     }
                   },
-
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -315,10 +329,12 @@ class _CartPageState extends State<CartPage> {
                         size: 18, // Smaller icon size
                         color: Colors.orange, // Icon color
                       ),
-                      const SizedBox(width: 4), // Reduced space between icon and text
+                      const SizedBox(
+                          width: 4), // Reduced space between icon and text
                       Builder(
                         builder: (context) {
-                          final theme = Theme.of(context); // Access the theme here
+                          final theme =
+                              Theme.of(context); // Access the theme here
                           return Text(
                             'Find a Promo', // Shortened text for a smaller button
                             style: theme.textTheme.labelLarge?.copyWith(
@@ -346,11 +362,13 @@ class _CartPageState extends State<CartPage> {
                       );
                     } else if (snapshot.hasData) {
                       final data = snapshot.data!;
-                      if (data.containsKey('message') && data['status'] != 'success') {
+                      if (data.containsKey('message') &&
+                          data['status'] != 'success') {
                         return Center(
                           child: Text(
                             data['message'] ?? 'An error occurred',
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                         );
                       }
@@ -360,7 +378,8 @@ class _CartPageState extends State<CartPage> {
                         return const Center(
                           child: Text(
                             'No promo applied.',
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                         );
                       }
@@ -373,7 +392,10 @@ class _CartPageState extends State<CartPage> {
                             children: [
                               Text(
                                 'Promo Cut:',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -381,7 +403,10 @@ class _CartPageState extends State<CartPage> {
                               const Spacer(),
                               Text(
                                 '- Rp $promoCut',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20,
@@ -395,7 +420,10 @@ class _CartPageState extends State<CartPage> {
                             children: [
                               Text(
                                 'Final Price:',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -403,84 +431,89 @@ class _CartPageState extends State<CartPage> {
                               const Spacer(),
                               Text(
                                 'Rp $finalPrice',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
                               ),
                             ],
                           ),
                           Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Remove Promo'),
-                                  content: const Text('Are you sure you want to remove this promo?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        _removePromo(context);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red,
+                            child: GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Remove Promo'),
+                                    content: const Text(
+                                        'Are you sure you want to remove this promo?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('Cancel'),
                                       ),
-                                      child: const Text(
-                                        'Remove',
-                                        style: TextStyle(color: Colors.white),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          _removePromo(context);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red,
+                                        ),
+                                        child: const Text(
+                                          'Remove',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.delete_outline, // Delete icon
-                                  size: 18, // Smaller icon size
-                                  color: Colors.orange, // Icon color
-                                ),
-                                const SizedBox(width: 10), // Reduced space between icon and text
-                                Builder(
-                                  builder: (context) {
-                                    final theme = Theme.of(context); // Access the theme here
-                                    return Text(
-                                      'Remove Promo', // Button label
-                                      style: theme.textTheme.labelLarge?.copyWith(
-                                        fontWeight: FontWeight.w600, // Bold text
-                                        fontSize: 16, // Smaller font size
-                                        color: Colors.black, // Text color matching the icon
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                );
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.delete_outline, // Delete icon
+                                    size: 18, // Smaller icon size
+                                    color: Colors.orange, // Icon color
+                                  ),
+                                  const SizedBox(
+                                      width:
+                                          10), // Reduced space between icon and text
+                                  Builder(
+                                    builder: (context) {
+                                      final theme = Theme.of(
+                                          context); // Access the theme here
+                                      return Text(
+                                        'Remove Promo', // Button label
+                                        style: theme.textTheme.labelLarge
+                                            ?.copyWith(
+                                          fontWeight:
+                                              FontWeight.w600, // Bold text
+                                          fontSize: 16, // Smaller font size
+                                          color: Colors
+                                              .black, // Text color matching the icon
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          ),
-
                         ],
                       );
                     }
                     return const SizedBox(); // If no data or waiting
                   },
                 ),
-
-
                 const SizedBox(height: 2),
-
                 Divider(color: Colors.grey.shade300, thickness: 1),
                 const SizedBox(height: 16),
-
                 Row(
                   children: [
                     Expanded(
@@ -500,13 +533,13 @@ class _CartPageState extends State<CartPage> {
                         },
                         child: const Text(
                           'Clear Cart',
-                          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold),
                         ),
                       ),
                   ],
                 ),
                 const SizedBox(height: 16),
-
                 if (items.isEmpty)
                   Column(
                     children: [
@@ -533,7 +566,8 @@ class _CartPageState extends State<CartPage> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: items.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final item = items[index];
                       final foodId = item.id;
@@ -561,9 +595,7 @@ class _CartPageState extends State<CartPage> {
                       );
                     },
                   ),
-
                 const SizedBox(height: 32),
-
                 Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -580,7 +612,10 @@ class _CartPageState extends State<CartPage> {
                             const SizedBox(width: 8),
                             Text(
                               'Checkout',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.grey.shade800,
                                   ),
@@ -588,7 +623,6 @@ class _CartPageState extends State<CartPage> {
                           ],
                         ),
                         const SizedBox(height: 16),
-
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -611,7 +645,6 @@ class _CartPageState extends State<CartPage> {
                           ],
                         ),
                         const SizedBox(height: 16),
-
                         Row(
                           children: [
                             const Icon(Icons.payment, color: Colors.orange),
@@ -627,10 +660,17 @@ class _CartPageState extends State<CartPage> {
                                   fillColor: Colors.grey.shade100,
                                 ),
                                 items: const [
-                                  DropdownMenuItem(value: 'SELECT', child: Text('Select Payment Method')),
-                                  DropdownMenuItem(value: 'CASH', child: Text('Cash on Delivery')),
-                                  DropdownMenuItem(value: 'CREDIT', child: Text('Credit Card')),
-                                  DropdownMenuItem(value: 'PAYPAL', child: Text('PayPal')),
+                                  DropdownMenuItem(
+                                      value: 'SELECT',
+                                      child: Text('Select Payment Method')),
+                                  DropdownMenuItem(
+                                      value: 'CASH',
+                                      child: Text('Cash on Delivery')),
+                                  DropdownMenuItem(
+                                      value: 'CREDIT',
+                                      child: Text('Credit Card')),
+                                  DropdownMenuItem(
+                                      value: 'PAYPAL', child: Text('PayPal')),
                                 ],
                                 onChanged: (value) {
                                   if (value != null) {
@@ -645,15 +685,16 @@ class _CartPageState extends State<CartPage> {
                           ],
                         ),
                         const SizedBox(height: 16),
-
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
-                            onPressed: items.isEmpty || paymentMethodValue == 'SELECT'
+                            onPressed: items.isEmpty ||
+                                    paymentMethodValue == 'SELECT'
                                 ? null
                                 : () async {
                                     final notes = notesController.text.trim();
-                                    await orderNow(context, paymentMethodValue, notes);
+                                    await orderNow(
+                                        context, paymentMethodValue, notes);
                                   },
                             icon: const Icon(
                               Icons.shopping_cart_checkout,
@@ -661,14 +702,17 @@ class _CartPageState extends State<CartPage> {
                             ),
                             label: const Text(
                               'Order Now',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.orange.shade700,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 16),
                               textStyle: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -676,10 +720,12 @@ class _CartPageState extends State<CartPage> {
                               elevation: 5,
                               shadowColor: Colors.orange.shade200,
                             ).copyWith(
-                              overlayColor: WidgetStateProperty.resolveWith<Color?>(
+                              overlayColor:
+                                  WidgetStateProperty.resolveWith<Color?>(
                                 (Set<WidgetState> states) {
-                                  if (states.contains(WidgetState.pressed)) return Colors.orange.shade800;
-                                  return null; 
+                                  if (states.contains(WidgetState.pressed))
+                                    return Colors.orange.shade800;
+                                  return null;
                                 },
                               ),
                             ),

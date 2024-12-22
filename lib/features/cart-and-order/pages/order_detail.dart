@@ -84,10 +84,12 @@ class OrderDetailPage extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           order.createdAt,
-                          style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                              color: Colors.white, fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 12),
-                        Divider(color: Colors.white.withOpacity(0.5), thickness: 1),
+                        Divider(
+                            color: Colors.white.withOpacity(0.5), thickness: 1),
                         const SizedBox(height: 12),
                         Text(
                           'Total:',
@@ -109,19 +111,12 @@ class OrderDetailPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-              
-
                 ],
               ),
-              
             ),
-
-
             const SizedBox(height: 32),
-
             _buildSectionTitle('Order Information', headingColor),
             const SizedBox(height: 16),
-
             _buildInfoCard(
               context: context,
               icon: Icons.sticky_note_2_outlined,
@@ -130,7 +125,6 @@ class OrderDetailPage extends StatelessWidget {
               backgroundColor: cardColor,
             ),
             const SizedBox(height: 12),
-
             _buildInfoCard(
               context: context,
               icon: Icons.credit_card,
@@ -139,7 +133,6 @@ class OrderDetailPage extends StatelessWidget {
               backgroundColor: cardColor,
             ),
             const SizedBox(height: 12),
-
             _buildInfoCard(
               context: context,
               icon: Icons.discount_outlined,
@@ -148,12 +141,12 @@ class OrderDetailPage extends StatelessWidget {
               backgroundColor: cardColor,
             ),
             const SizedBox(height: 32),
-
             _buildSectionTitle('Food Items', headingColor),
             const SizedBox(height: 16),
             if (order.orderItems.isEmpty)
               Center(
-                child: Text('No food items found.', style: TextStyle(color: Colors.grey[600])),
+                child: Text('No food items found.',
+                    style: TextStyle(color: Colors.grey[600])),
               )
             else
               Column(
@@ -187,14 +180,14 @@ class OrderDetailPage extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text(
                           'Rp ${item.priceAtOrder} x ${item.quantity}',
-                          style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[700]),
+                          style: theme.textTheme.bodySmall
+                              ?.copyWith(color: Colors.grey[700]),
                         ),
                       ],
                     ),
                   );
                 }).toList(),
               ),
-
             const SizedBox(height: 32),
           ],
         ),
@@ -257,7 +250,8 @@ class OrderDetailPage extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: value,
-                    style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black87),
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(color: Colors.black87),
                   ),
                 ],
               ),
@@ -268,3 +262,4 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 }
+

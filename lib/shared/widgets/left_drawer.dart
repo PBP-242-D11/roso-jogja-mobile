@@ -7,7 +7,6 @@ import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
-  
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +43,6 @@ class LeftDrawer extends StatelessWidget {
   }
 
   Widget _buildDrawerHeader(BuildContext context) {
-    
     return DrawerHeader(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -177,11 +175,12 @@ class LeftDrawer extends StatelessWidget {
   }
 
   Widget _buildNavigationSection(
-    
       BuildContext context, AuthProvider authProvider) {
-    final isRestaurantOwner = authProvider.user != null && authProvider.user!.role == "R";
+    final isRestaurantOwner =
+        authProvider.user != null && authProvider.user!.role == "R";
+
     final isGuest = !authProvider.isLoggedIn;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -239,8 +238,9 @@ class LeftDrawer extends StatelessWidget {
   }
 
   Widget _buildAdditionalOptionsSection(
-    BuildContext context, AuthProvider authProvider) {
+      BuildContext context, AuthProvider authProvider) {
     final isGuest = !authProvider.isLoggedIn;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
