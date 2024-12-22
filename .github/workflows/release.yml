@@ -33,6 +33,9 @@ jobs:
         with:
           channel: "stable"
 
+      - name: Create .env file with environment variables
+        run: echo "API_URL=$API_URL" > .env
+
       - name: Get packages
         run: flutter pub get
 
