@@ -52,12 +52,10 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
       body: FutureBuilder(
         future: fetchRestaurants(),
         builder: (context, snapshot) {
-          // Handle loading state
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const LoadingIndicator();
           }
 
-          // Handle error state
           if (snapshot.hasError) {
             return Center(
               child: Column(
@@ -73,12 +71,10 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
             );
           }
 
-          // Handle data state
           if (!snapshot.hasData) {
             return const Center(child: Text('No data available'));
           }
 
-          // Extract data from snapshot
           final data = snapshot.data!;
           final List<Restaurant> restaurants = data['restaurants'];
           final PaginationMetadata? paginationMetadata = data['pagination'];

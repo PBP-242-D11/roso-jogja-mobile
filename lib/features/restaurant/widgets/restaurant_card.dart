@@ -4,17 +4,19 @@ import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import '../models/restaurant.dart';
 import 'package:provider/provider.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
+import '../../wishlist/provider/wishlist_provider.dart';
 
 class RestaurantCard extends StatelessWidget {
   final Restaurant restaurant;
   final VoidCallback? refreshRestaurantCallback;
   final bool isRestaurantOwner;
 
-  const RestaurantCard(
-      {super.key,
-      required this.restaurant,
-      required this.isRestaurantOwner,
-      this.refreshRestaurantCallback});
+  const RestaurantCard({
+    super.key,
+    required this.restaurant,
+    required this.isRestaurantOwner,
+    this.refreshRestaurantCallback,
+  });
 
   Future<void> _deleteRestaurant(BuildContext context) async {
     final authProvider = context.read<AuthProvider>();
@@ -65,7 +67,7 @@ class RestaurantCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Placeholder for restaurant image (you can replace with network image later)
+              // Placeholder for restaurant image
               Container(
                 width: 80,
                 height: 80,
@@ -120,6 +122,29 @@ class RestaurantCard extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+              // Icon love
+              IconButton(
+                icon: Icon(
+                  context.watch<WishlistProvider>().isInWishlist(restaurant)
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color:
+                      context.watch<WishlistProvider>().isInWishlist(restaurant)
+                          ? Colors.red
+                          : Colors.grey,
+                ),
+                onPressed: () {
+                  final wishlistProvider = context.read<WishlistProvider>();
+
+                  if (wishlistProvider.isInWishlist(restaurant)) {
+                    wishlistProvider.removeFromWishlist(restaurant);
+                  } else {
+                    wishlistProvider.addToWishlist(restaurant);
+                  }
+
+                  refreshRestaurantCallback?.call();
+                },
               ),
               if (isRestaurantOwner)
                 Column(

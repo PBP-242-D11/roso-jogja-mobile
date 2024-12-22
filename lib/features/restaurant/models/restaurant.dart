@@ -20,6 +20,7 @@ class Restaurant {
   String categories;
   int placeholderImage;
   List<Food>? foods;
+  bool isFavorite;
 
   Restaurant({
     required this.id,
@@ -30,6 +31,7 @@ class Restaurant {
     required this.categories,
     required this.placeholderImage,
     this.foods,
+    this.isFavorite = false,
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
@@ -43,6 +45,7 @@ class Restaurant {
         foods: json["foods"] != null
             ? List<Food>.from(json["foods"].map((x) => Food.fromJson(x)))
             : null,
+        isFavorite: json["is_favorite"] ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -56,5 +59,6 @@ class Restaurant {
         "foods": foods != null
             ? List<dynamic>.from(foods!.map((x) => x.toJson()))
             : null,
+        "is_favorite": isFavorite,
       };
 }

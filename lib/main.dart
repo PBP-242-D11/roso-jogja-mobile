@@ -11,6 +11,7 @@ import "package:roso_jogja_mobile/features/auth/routes.dart";
 import "package:roso_jogja_mobile/features/restaurant/routes.dart";
 import "package:roso_jogja_mobile/features/cart-and-order/routes.dart";
 import 'package:roso_jogja_mobile/features/wishlist/pages/wishlist_page.dart';
+import 'package:roso_jogja_mobile/features/wishlist/provider/wishlist_provider.dart';
 
 final unprotectedRoutes = [
   "/",
@@ -31,8 +32,12 @@ void main() async {
   // Initialize authProvider
   await authProvider.init();
 
-  runApp(ChangeNotifierProvider(
-    create: (_) => authProvider,
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => authProvider),
+      ChangeNotifierProvider(
+          create: (_) => WishlistProvider()), // Tambahkan ini
+    ],
     child: const MyApp(),
   ));
 }
