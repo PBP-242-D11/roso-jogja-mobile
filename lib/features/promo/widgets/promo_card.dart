@@ -26,8 +26,8 @@ class PromoCard extends StatelessWidget {
     final request = authProvider.cookieRequest;
 
     try {
-      final response = await request.get(
-          '${AppConfig.apiUrl}/promo/mobile_delete_promo/${promo.id}/');
+      final response = await request
+          .get('${AppConfig.apiUrl}/promo/mobile_delete_promo/${promo.id}/');
 
       if (context.mounted) {
         if (response["status"] == "success") {
@@ -53,15 +53,17 @@ class PromoCard extends StatelessWidget {
       }
     }
   }
+
   String formattedValue(String promoType, int promoValue) {
     if (promoType == 'Fixed Price') {
-      return 'Rp ${promoValue.toString()}';  // Add 'Rp' for Fixed Price
+      return 'Rp ${promoValue.toString()}'; // Add 'Rp' for Fixed Price
     } else if (promoType == 'Percentage') {
-      return '${promoValue.toString()}%';  // Add '%' for Percentage
+      return '${promoValue.toString()}%'; // Add '%' for Percentage
     } else {
-      return promoValue.toString();  // Just the value if type is unknown
+      return promoValue.toString(); // Just the value if type is unknown
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -72,7 +74,8 @@ class PromoCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.go('/promo/${promo.id}'), // INI HARUS DIBIKIN DI PROMO_ROUTES
+        onTap: () => context
+            .go('/promo/${promo.id}'), // INI HARUS DIBIKIN DI PROMO_ROUTES
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(
@@ -96,7 +99,8 @@ class PromoCard extends StatelessWidget {
                             ? Icons.percent
                             : promo.type == "Currency"
                                 ? Icons.attach_money
-                                : Icons.money, // Default to a generic money icon
+                                : Icons
+                                    .money, // Default to a generic money icon
                         color: Colors.orange,
                       ),
                     ),
@@ -107,7 +111,10 @@ class PromoCard extends StatelessWidget {
                           // Promo value and type
                           Text(
                             "${formattedValue(promo.type, promo.value)} off",
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
                             maxLines: 2,
@@ -118,7 +125,10 @@ class PromoCard extends StatelessWidget {
                           // Expiry date
                           Text(
                             "Expiry Date: ${promo.expiryDate.toString()}",
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
                                   color: Colors.grey[700],
                                 ),
                             maxLines: 2,
@@ -129,7 +139,10 @@ class PromoCard extends StatelessWidget {
                           // Promo code
                           Text(
                             "Promo Code: ${promo.promoCode.toString()}",
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
                                   color: Colors.grey[700],
                                 ),
                             maxLines: 2,
@@ -143,14 +156,17 @@ class PromoCard extends StatelessWidget {
                             runSpacing: 4,
                             children: [
                               // Render up to 3 restaurants as chips
-                              ...promo.restaurants.take(3).map((category) => Chip(
-                                    label: Text(
-                                      category.trim(),
-                                      style: const TextStyle(fontSize: 10),
-                                    ),
-                                    backgroundColor: Colors.grey[400],
-                                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                  )),
+                              ...promo.restaurants
+                                  .take(3)
+                                  .map((category) => Chip(
+                                        label: Text(
+                                          category.trim(),
+                                          style: const TextStyle(fontSize: 10),
+                                        ),
+                                        backgroundColor: Colors.grey[400],
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4, vertical: 2),
+                                      )),
                               // Add a "+ X more" chip if there are more restaurants
                               if (promo.restaurants.length > 3)
                                 Chip(
@@ -159,7 +175,8 @@ class PromoCard extends StatelessWidget {
                                     style: const TextStyle(fontSize: 10),
                                   ),
                                   backgroundColor: Colors.grey[400],
-                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4, vertical: 2),
                                 ),
                             ],
                           ),
@@ -169,7 +186,6 @@ class PromoCard extends StatelessWidget {
                   ],
                 ),
               ),
-
               if (isRestaurantOwner)
                 Column(
                   children: [
@@ -177,8 +193,8 @@ class PromoCard extends StatelessWidget {
                       icon: const Icon(Icons.edit, size: 20),
                       color: Colors.blue,
                       onPressed: () async {
-                        bool? result = await context.push('/promo/edit', 
-                            extra: promo);
+                        bool? result =
+                            await context.push('/promo/edit', extra: promo);
                         if (result != null && result == true) {
                           refreshPromoCallback?.call();
                         }
@@ -226,9 +242,10 @@ class PromoCard extends StatelessWidget {
                   onPressed: () async {
                     final authProvider = context.read<AuthProvider>();
                     final request = authProvider.cookieRequest;
-                    
+
                     try {
-                      final response = await request.get('${AppConfig.apiUrl}/promo/tag_promo/?promo_id=${promoId}');
+                      final response = await request.get(
+                          '${AppConfig.apiUrl}/promo/tag_promo/?promo_id=$promoId');
 
                       if (response['status'] == 'success') {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -242,7 +259,8 @@ class PromoCard extends StatelessWidget {
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(response['message'] ?? 'An error occurred'),
+                            content: Text(
+                                response['message'] ?? 'An error occurred'),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -250,14 +268,14 @@ class PromoCard extends StatelessWidget {
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('An error occurred while tagging the promo'),
+                          content:
+                              Text('An error occurred while tagging the promo'),
                           backgroundColor: Colors.red,
                         ),
                       );
                     }
                   },
                 ),
-
             ],
           ),
         ),
@@ -271,19 +289,18 @@ class OtherPromoCard extends StatelessWidget {
   final VoidCallback? refreshPromoCallback;
 
   const OtherPromoCard(
-      {super.key,
-      required this.promo,
-      this.refreshPromoCallback});
+      {super.key, required this.promo, this.refreshPromoCallback});
 
   String formattedValue(String promoType, int promoValue) {
     if (promoType == 'Fixed Price') {
-      return 'Rp ${promoValue.toString()}';  // Add 'Rp' for Fixed Price
+      return 'Rp ${promoValue.toString()}'; // Add 'Rp' for Fixed Price
     } else if (promoType == 'Percentage') {
-      return '${promoValue.toString()}%';  // Add '%' for Percentage
+      return '${promoValue.toString()}%'; // Add '%' for Percentage
     } else {
-      return promoValue.toString();  // Just the value if type is unknown
+      return promoValue.toString(); // Just the value if type is unknown
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -294,7 +311,7 @@ class OtherPromoCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.go('/promo/${promo.id}'), 
+        onTap: () => context.go('/promo/${promo.id}'),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(
@@ -328,7 +345,10 @@ class OtherPromoCard extends StatelessWidget {
                           // Promo value and type
                           Text(
                             "${formattedValue(promo.type, promo.value)} off",
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
                             maxLines: 2,
@@ -339,7 +359,10 @@ class OtherPromoCard extends StatelessWidget {
                           // Expiry date
                           Text(
                             "Expiry Date: ${promo.expiryDate.toString()}",
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
                                   color: Colors.grey[700],
                                 ),
                             maxLines: 2,
@@ -350,7 +373,10 @@ class OtherPromoCard extends StatelessWidget {
                           // Promo code
                           Text(
                             "Promo Code: ${promo.promoCode.toString()}",
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
                                   color: Colors.grey[700],
                                 ),
                             maxLines: 2,
@@ -364,14 +390,17 @@ class OtherPromoCard extends StatelessWidget {
                             runSpacing: 4,
                             children: [
                               // Render up to 3 restaurants as chips
-                              ...promo.restaurants.take(3).map((category) => Chip(
-                                    label: Text(
-                                      category.trim(),
-                                      style: const TextStyle(fontSize: 10),
-                                    ),
-                                    backgroundColor: Colors.grey[400],
-                                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                  )),
+                              ...promo.restaurants
+                                  .take(3)
+                                  .map((category) => Chip(
+                                        label: Text(
+                                          category.trim(),
+                                          style: const TextStyle(fontSize: 10),
+                                        ),
+                                        backgroundColor: Colors.grey[400],
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4, vertical: 2),
+                                      )),
                               // Add a "+ X more" chip if there are more restaurants
                               if (promo.restaurants.length > 3)
                                 Chip(
@@ -380,7 +409,8 @@ class OtherPromoCard extends StatelessWidget {
                                     style: const TextStyle(fontSize: 10),
                                   ),
                                   backgroundColor: Colors.grey[400],
-                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4, vertical: 2),
                                 ),
                             ],
                           ),
@@ -390,7 +420,6 @@ class OtherPromoCard extends StatelessWidget {
                   ],
                 ),
               ),
-
             ],
           ),
         ),
@@ -398,3 +427,4 @@ class OtherPromoCard extends StatelessWidget {
     );
   }
 }
+
