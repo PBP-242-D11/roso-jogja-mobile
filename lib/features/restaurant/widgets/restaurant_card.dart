@@ -9,12 +9,15 @@ class RestaurantCard extends StatelessWidget {
   final Restaurant restaurant;
   final VoidCallback? refreshRestaurantCallback;
   final bool isRestaurantOwner;
+  final bool isOnWishlist;
 
   const RestaurantCard({
     super.key,
     required this.restaurant,
     required this.isRestaurantOwner,
+    required this.isOnWishlist,
     this.refreshRestaurantCallback,
+
   });
 
   Future<void> _deleteRestaurant(BuildContext context) async {
@@ -127,8 +130,9 @@ class RestaurantCard extends StatelessWidget {
               // Icon Love (Wishlist)
               IconButton(
                 icon: Icon(
-                   Icons.favorite
-                  
+                  isOnWishlist ? Icons.favorite : Icons.favorite_border,
+                  color: isOnWishlist ? Colors.red : Colors.grey[400],
+                  size: 20,
                 ),
                 onPressed: () {
                   if (user == null) {

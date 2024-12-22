@@ -73,6 +73,7 @@ class _WishlistPageState extends State<WishlistPage> {
               return RestaurantCard(
                 restaurant: wishlist[index] as Restaurant,
                 isRestaurantOwner: false, // Wishlist tidak membedakan role
+                isOnWishlist: true,
                 refreshRestaurantCallback: () {
                   setState(() {}); // Refresh data
                 },

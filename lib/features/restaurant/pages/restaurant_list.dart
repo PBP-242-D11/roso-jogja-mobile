@@ -9,6 +9,7 @@ import '../../../shared/config/app_config.dart';
 import '../../../shared/widgets/left_drawer.dart';
 import '../../auth/provider/auth_provider.dart';
 import "package:go_router/go_router.dart";
+import 'package:roso_jogja_mobile/features/wishlist/models/wishlist_item.dart';
 
 class RestaurantListPage extends StatefulWidget {
   const RestaurantListPage({super.key});
@@ -20,6 +21,32 @@ class RestaurantListPage extends StatefulWidget {
 class _RestaurantListPageState extends State<RestaurantListPage> {
   int currentPage = 1;
   static const int itemsPerPage = 8;
+
+  Future<Map<String, dynamic>> fetchRestorantAndWishlist() async {
+    final restaurantData = await fetchRestaurants();
+    final wishlist = await fetchWishlist();
+    return {
+      'restaurants': restaurantData['restaurants'],
+      'wishlist': wishlist,
+      'pagination': restaurantData['pagination']
+    };
+  }
+
+  Future<Map<String, bool>> fetchWishlist() async {
+    final authProvider = context.read<AuthProvider>();
+    final request = authProvider.cookieRequest;
+    final idToWishlistMap = <String, bool>{};
+    final response =
+        await request.get('${AppConfig.apiUrl}/wishlist/mobile_wishlist/');
+    final wishlistItems = response['wishlist'];
+    final wishlist = (wishlistItems as List)
+        .map((restaurant) => WishlistItem.fromJson(restaurant))
+        .toList();
+    for (final item in wishlist) {
+      idToWishlistMap[item.id] = true;
+    }
+    return idToWishlistMap;
+  }
 
   Future<Map<String, dynamic>> fetchRestaurants() async {
     final authProvider = context.read<AuthProvider>();
@@ -50,7 +77,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
       appBar: AppBar(title: const Text('Available Restaurants')),
       drawer: const LeftDrawer(),
       body: FutureBuilder(
-        future: fetchRestaurants(),
+        future: fetchRestorantAndWishlist(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const LoadingIndicator();
@@ -106,6 +133,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                           return RestaurantCard(
                             restaurant: restaurants[index],
                             isRestaurantOwner: isRestaurantOwner,
+                            isOnWishlist: data['wishlist'][restaurants[index].id] ?? false,
                             refreshRestaurantCallback: () {
                               setState(() {}); // Trigger a refresh
                             },
