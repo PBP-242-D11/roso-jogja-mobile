@@ -10,8 +10,7 @@ import 'package:go_router/go_router.dart';
 import "package:roso_jogja_mobile/features/auth/routes.dart";
 import "package:roso_jogja_mobile/features/restaurant/routes.dart";
 import "package:roso_jogja_mobile/features/cart-and-order/routes.dart";
-import 'package:roso_jogja_mobile/features/wishlist/pages/wishlist_page.dart';
-import 'package:roso_jogja_mobile/features/wishlist/provider/wishlist_provider.dart';
+import "package:roso_jogja_mobile/features/wishlist/routes.dart";
 
 final unprotectedRoutes = [
   "/",
@@ -32,12 +31,8 @@ void main() async {
   // Initialize authProvider
   await authProvider.init();
 
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_) => authProvider),
-      ChangeNotifierProvider(
-          create: (_) => WishlistProvider()), // Tambahkan ini
-    ],
+  runApp(ChangeNotifierProvider(
+    create: (_) => authProvider,
     child: const MyApp(),
   ));
 }
@@ -60,10 +55,10 @@ final _router = GoRouter(
       GoRoute(path: "/", builder: (context, state) => const LandingPage()),
       GoRoute(path: "/home", builder: (context, state) => const Homepage()),
       GoRoute(path: "/about", builder: (context, state) => const AboutPage()),
-      GoRoute(path: '/wishlist', builder: (context, state) => WishlistPage(),),
       ...authRoutes,
       ...restaurantRoutes,
       ...orderRoutes,
+      ...wishlistRoutes,
     ]);
 
 class MyApp extends StatelessWidget {

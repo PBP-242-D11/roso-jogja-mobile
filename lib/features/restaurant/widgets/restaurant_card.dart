@@ -4,7 +4,6 @@ import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import '../models/restaurant.dart';
 import 'package:provider/provider.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
-import '../../wishlist/provider/wishlist_provider.dart';
 
 class RestaurantCard extends StatelessWidget {
   final Restaurant restaurant;
@@ -53,6 +52,8 @@ class RestaurantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<AuthProvider>().user; // Ambil data user
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -67,7 +68,7 @@ class RestaurantCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Placeholder for restaurant image
+              // Placeholder untuk gambar restoran
               Container(
                 width: 80,
                 height: 80,
@@ -123,29 +124,21 @@ class RestaurantCard extends StatelessWidget {
                   ],
                 ),
               ),
-              // Icon love
+              // Icon Love (Wishlist)
               IconButton(
                 icon: Icon(
-                  context.watch<WishlistProvider>().isInWishlist(restaurant)
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  color:
-                      context.watch<WishlistProvider>().isInWishlist(restaurant)
-                          ? Colors.red
-                          : Colors.grey,
+                   Icons.favorite
+                  
                 ),
                 onPressed: () {
-                  final wishlistProvider = context.read<WishlistProvider>();
-
-                  if (wishlistProvider.isInWishlist(restaurant)) {
-                    wishlistProvider.removeFromWishlist(restaurant);
-                  } else {
-                    wishlistProvider.addToWishlist(restaurant);
-                  }
-
-                  // Sinkronisasi properti lokal
-                  restaurant.isFavorite =
-                  wishlistProvider.isInWishlist(restaurant);
+                  if (user == null) {
+                    // Jika user belum login
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Please login to manage your wishlist'),
+                      backgroundColor: Colors.red,
+                    ));
+                    return;
+                  };
                 },
               ),
               if (isRestaurantOwner)
