@@ -448,6 +448,126 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
+  Widget _buildPricingSummary(CartResponse cart) {
+    return Card(
+      elevation: 0,
+      color: Colors.orange.shade50,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.calculate_outlined, color: Colors.orange.shade700),
+                const SizedBox(width: 12),
+                Text(
+                  'Order Summary',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.orange.shade900,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Subtotal:',
+                  style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  'Rp ${cart.total}',
+                  style: TextStyle(
+                    color: Colors.grey.shade900,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+            FutureBuilder<Map<String, dynamic>>(
+              future: _promoFuture,
+              builder: (context, promoSnapshot) {
+                if (promoSnapshot.hasData &&
+                    promoSnapshot.data!['promo_cut'] != null) {
+                  final promoCut = promoSnapshot.data!['promo_cut'];
+                  final finalPrice = promoSnapshot.data!['final_price'];
+                  return Column(
+                    children: [
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Promo Discount:',
+                            style: TextStyle(
+                              color: Colors.grey.shade700,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            '- Rp $promoCut',
+                            style: TextStyle(
+                              color: Colors.green.shade700,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () => _removePromo(context),
+                        icon: const Icon(Icons.close,
+                            color: Colors.red, size: 18),
+                        label: const Text(
+                          'Remove Promo',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Final Total:',
+                            style: TextStyle(
+                              color: Colors.grey.shade900,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          Text(
+                            'Rp $finalPrice',
+                            style: TextStyle(
+                              color: Colors.orange.shade700,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -537,98 +657,7 @@ class _CartPageState extends State<CartPage> {
                   const SizedBox(height: 24),
                   if (restaurant != null) _buildPromoSection(restaurant.id!),
                   const SizedBox(height: 24),
-                  FutureBuilder<Map<String, dynamic>>(
-                    future: _promoFuture,
-                    builder: (context, promoSnapshot) {
-                      if (promoSnapshot.hasData &&
-                          promoSnapshot.data!['promo_cut'] != null) {
-                        final promoCut = promoSnapshot.data!['promo_cut'];
-                        final finalPrice = promoSnapshot.data!['final_price'];
-                        return Card(
-                          elevation: 0,
-                          color: Colors.green.shade50,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.check_circle,
-                                        color: Colors.green.shade700),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      'Promo Applied!',
-                                      style: TextStyle(
-                                        color: Colors.green.shade700,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    TextButton.icon(
-                                      onPressed: () => _removePromo(context),
-                                      icon: const Icon(Icons.close,
-                                          color: Colors.red, size: 18),
-                                      label: const Text(
-                                        'Remove',
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const Divider(),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Discount:',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade700,
-                                      ),
-                                    ),
-                                    Text(
-                                      '- Rp $promoCut',
-                                      style: TextStyle(
-                                        color: Colors.green.shade700,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Final Price:',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade700,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Rp $finalPrice',
-                                      style: TextStyle(
-                                        color: Colors.green.shade700,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
+                  _buildPricingSummary(cart), // Add the pricing summary here
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
