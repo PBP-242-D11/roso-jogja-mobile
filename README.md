@@ -1,5 +1,7 @@
 # RosoJogja Mobile
 
+[![Build status](https://build.appcenter.ms/v0.1/apps/42cb4aac-3bd6-4dd4-a12e-e77eb18135bf/branches/main/badge)](https://appcenter.ms)
+
 ---
 
 ## Nama Anggota Kelompok PBP-D11:
