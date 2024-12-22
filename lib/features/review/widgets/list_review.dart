@@ -4,6 +4,7 @@ import 'package:roso_jogja_mobile/features/auth/provider/auth_provider.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 import 'package:roso_jogja_mobile/features/review/pages/add_review.dart';
 import 'package:roso_jogja_mobile/features/review/models/review_model.dart';
+import "package:go_router/go_router.dart";
 
 class ListReview extends StatefulWidget {
   final String restaurantId;
@@ -320,12 +321,12 @@ class _ListReviewState extends State<ListReview> {
                                     ),
                                     actions: [
                                       TextButton(
-                                        onPressed: () => Navigator.pop(ctx),
+                                        onPressed: () => ctx.pop(),
                                         child: const Text('Cancel'),
                                       ),
                                       ElevatedButton(
                                         onPressed: () {
-                                          Navigator.pop(ctx);
+                                          ctx.pop();
                                           _deleteReview(context, review.id);
                                         },
                                         style: ElevatedButton.styleFrom(

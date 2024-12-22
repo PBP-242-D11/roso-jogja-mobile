@@ -141,20 +141,20 @@ class Homepage extends StatelessWidget {
               _buildQuickActionButton(
                 icon: Icons.restaurant_menu,
                 label: 'Restaurants',
-                onPressed: () => context.push('/restaurant'),
+                onPressed: () => context.go('/restaurant'),
               ),
               if (!isRestaurantOwner) SizedBox(width: 12),
               if (!isRestaurantOwner)
                 _buildQuickActionButton(
                   icon: Icons.favorite_border,
                   label: 'Wishlist',
-                  onPressed: () => context.push('/wishlist'),
+                  onPressed: () => context.go('/wishlist'),
                 ),
               const SizedBox(width: 12),
               _buildQuickActionButton(
                 icon: Icons.discount_outlined,
                 label: 'Promos',
-                onPressed: () => context.push('/promo'),
+                onPressed: () => context.go('/promo'),
               ),
             ],
           ),
