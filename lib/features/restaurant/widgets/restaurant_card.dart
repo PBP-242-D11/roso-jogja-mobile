@@ -143,7 +143,9 @@ class RestaurantCard extends StatelessWidget {
                     wishlistProvider.addToWishlist(restaurant);
                   }
 
-                  refreshRestaurantCallback?.call();
+                  // Sinkronisasi properti lokal
+                  restaurant.isFavorite =
+                  wishlistProvider.isInWishlist(restaurant);
                 },
               ),
               if (isRestaurantOwner)
