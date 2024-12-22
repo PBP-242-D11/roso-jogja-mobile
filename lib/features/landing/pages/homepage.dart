@@ -106,7 +106,7 @@ class Homepage extends StatelessWidget {
                 Text(
                   user.role == "R" ? "Restaurant Owner" : "Customer",
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Color.fromRGBO(255, 255, 255, 0.8),
                     fontSize: 14,
                   ),
                 ),
@@ -271,7 +271,7 @@ class Homepage extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Color.fromRGBO(169, 169, 169, 0.2),
             spreadRadius: 1,
             blurRadius: 5,
           ),

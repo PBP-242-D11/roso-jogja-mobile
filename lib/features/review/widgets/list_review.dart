@@ -267,7 +267,7 @@ class _ListReviewState extends State<ListReview> {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Color.fromRGBO(255, 255, 255, 0.05),
                         offset: const Offset(0, 2),
                         blurRadius: 8,
                         spreadRadius: 0,

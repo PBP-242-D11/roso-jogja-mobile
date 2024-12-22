@@ -9,7 +9,8 @@ import 'package:roso_jogja_mobile/shared/widgets/left_drawer.dart';
 import 'dart:convert';
 
 Future<OrderResponse> fetchOrderResponse(CookieRequest request) async {
-  final response = await request.get('${AppConfig.apiUrl}/order/api/show_orders/');
+  final response =
+      await request.get('${AppConfig.apiUrl}/order/api/show_orders/');
   return orderResponseFromJson(jsonEncode(response));
 }
 
@@ -58,7 +59,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
         future: _futureData,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Colors.orange));
+            return const Center(
+                child: CircularProgressIndicator(color: Colors.orange));
           } else if (snapshot.hasError) {
             return Center(
               child: Text(
@@ -100,14 +102,18 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                         children: [
                           _buildSummaryCard(
                             title: 'Total Orders',
-                            value: orders.isEmpty ? '0' : data.totalOrder.toString(),
+                            value: orders.isEmpty
+                                ? '0'
+                                : data.totalOrder.toString(),
                             icon: Icons.shopping_bag,
                             theme: theme,
                           ),
                           const SizedBox(width: 16),
                           _buildSummaryCard(
                             title: 'Total Spent',
-                            value: orders.isEmpty ? 'Rp 0' : 'Rp ${data.totalSpent}',
+                            value: orders.isEmpty
+                                ? 'Rp 0'
+                                : 'Rp ${data.totalSpent}',
                             icon: Icons.attach_money,
                             theme: theme,
                           ),
@@ -117,7 +123,6 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
@@ -184,7 +189,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => OrderDetailPage(order: order)),
+            MaterialPageRoute(
+                builder: (context) => OrderDetailPage(order: order)),
           );
         },
         child: Padding(
@@ -202,23 +208,28 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             ),
             title: Text(
               order.restaurant,
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   order.createdAt,
-                  style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Rp ${order.totalPrice}',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.orange.shade800, fontWeight: FontWeight.w600),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                      color: Colors.orange.shade800,
+                      fontWeight: FontWeight.w600),
                 ),
               ],
             ),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+            trailing: const Icon(Icons.arrow_forward_ios,
+                size: 16, color: Colors.grey),
           ),
         ),
       ),
@@ -235,7 +246,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       child: Container(
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
+          color: Color.fromRGBO(0, 0, 0, 0.2),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -243,7 +254,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
+                color: Color.fromRGBO(0, 0, 0, 0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(icon, color: Colors.white),
@@ -273,3 +284,4 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
     );
   }
 }
+

@@ -35,7 +35,7 @@ class _WishlistPageState extends State<WishlistPage> {
         color: Colors.orange[50],
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Color.fromRGBO(0, 0, 0, 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),

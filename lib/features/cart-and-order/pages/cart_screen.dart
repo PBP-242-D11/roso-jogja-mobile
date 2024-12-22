@@ -190,7 +190,7 @@ class _CartPageState extends State<CartPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.3),
+            color: Color.fromRGBO(255, 165, 0, 0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -205,7 +205,7 @@ class _CartPageState extends State<CartPage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Color.fromRGBO(255, 255, 255, 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(Icons.restaurant, color: Colors.white),
@@ -218,7 +218,7 @@ class _CartPageState extends State<CartPage> {
                     Text(
                       'Ordering from',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Color.fromRGBO(255, 255, 255, 0.9),
                         fontSize: 14,
                       ),
                     ),

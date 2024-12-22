@@ -105,7 +105,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
               end: Alignment.bottomCenter,
               colors: [
                 Colors.transparent,
-                Colors.black.withOpacity(0.7),
+                Color.fromRGBO(0, 0, 0, 0.7),
               ],
             ),
           ),

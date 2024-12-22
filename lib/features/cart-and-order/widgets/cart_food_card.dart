@@ -22,7 +22,6 @@ class CartFoodCard extends StatelessWidget {
   });
 
   Future<void> _updateQuantity(BuildContext context, int newQuantity) async {
-
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final request = authProvider.cookieRequest;
 
@@ -42,7 +41,7 @@ class CartFoodCard extends StatelessWidget {
         );
         onUpdate();
       }
-    }else {
+    } else {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -58,7 +57,8 @@ class CartFoodCard extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final request = authProvider.cookieRequest;
 
-    final response = await request.get('${AppConfig.apiUrl}/order/api/cart/remove/$foodId/');
+    final response =
+        await request.get('${AppConfig.apiUrl}/order/api/cart/remove/$foodId/');
 
     if (response['message'] == 'Item removed from cart') {
       if (context.mounted) {
@@ -70,7 +70,6 @@ class CartFoodCard extends StatelessWidget {
         );
         onRemove();
       }
-      
     } else {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -93,7 +92,7 @@ class CartFoodCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Color.fromRGBO(0, 0, 0, 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           )
@@ -134,7 +133,6 @@ class CartFoodCard extends StatelessWidget {
               ],
             ),
           ),
-
           Row(
             children: [
               IconButton(
@@ -168,3 +166,4 @@ class CartFoodCard extends StatelessWidget {
     );
   }
 }
+

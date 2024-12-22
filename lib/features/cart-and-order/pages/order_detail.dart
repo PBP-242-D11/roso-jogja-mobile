@@ -12,7 +12,7 @@ class OrderDetailPage extends StatelessWidget {
     final accentColor = Colors.orange.shade700;
     final headingColor = Colors.grey.shade800;
     final cardColor = Colors.white;
-    final shadowColor = Colors.black.withOpacity(0.05);
+    final shadowColor = Color.fromRGBO(0, 0, 0, 0.05);
 
     return Scaffold(
       appBar: AppBar(
@@ -68,7 +68,7 @@ class OrderDetailPage extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(12.0),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Color.fromRGBO(255, 255, 255, 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
@@ -89,7 +89,8 @@ class OrderDetailPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         Divider(
-                            color: Colors.white.withOpacity(0.5), thickness: 1),
+                            color: Color.fromRGBO(255, 255, 255, 0.5),
+                            thickness: 1),
                         const SizedBox(height: 12),
                         Text(
                           'Total:',
@@ -159,7 +160,7 @@ class OrderDetailPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Color.fromRGBO(0, 0, 0, 0.04),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -228,7 +229,7 @@ class OrderDetailPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Color.fromRGBO(0, 0, 0, 0.05),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),
@@ -262,4 +263,3 @@ class OrderDetailPage extends StatelessWidget {
     );
   }
 }
-

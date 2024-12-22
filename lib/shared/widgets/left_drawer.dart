@@ -317,7 +317,7 @@ class LeftDrawer extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
-      hoverColor: Colors.orange.withOpacity(0.1),
+      hoverColor: Color.fromRGBO(255, 165, 0, 0.1),
     );
   }
 }

@@ -190,7 +190,7 @@ class LandingPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
+            color: Color.fromRGBO(169, 169, 169, 0.3),
             spreadRadius: 1,
             blurRadius: 7,
             offset: const Offset(0, 3),
