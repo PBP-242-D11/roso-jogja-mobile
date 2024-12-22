@@ -30,6 +30,9 @@ jobs:
         with:
           channel: "stable"
 
+      - name: Create .env file
+        run: touch .env
+
       - name: Get packages
         run: flutter pub get
 
