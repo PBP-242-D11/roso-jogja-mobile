@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:roso_jogja_mobile/shared/config/app_config.dart';
 

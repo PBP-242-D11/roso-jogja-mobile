@@ -312,8 +312,7 @@ class _PromoHomePageState extends State<PromoHome> {
                           ? promos[index]
                           : otherPromos[index - promos.length];
 
-                      if (promo == null ||
-                          !promo.containsKey('value') ||
+                      if (!promo.containsKey('value') ||
                           !promo.containsKey('type')) {
                         return const SizedBox.shrink();
                       }

@@ -47,32 +47,34 @@ class _EditPromoPageState extends State<EditPromoPage> {
     final request = authProvider.cookieRequest;
 
     try {
-      final response = await request.get('${AppConfig.apiUrl}/promo/owned_resto/');
+      final response =
+          await request.get('${AppConfig.apiUrl}/promo/owned_resto/');
       if (response == null || response.isEmpty) {
         throw Exception("Empty response from the server");
       }
       setState(() {
         _restaurants = response["restos"] as List<dynamic>? ?? [];
         // Initialize _selectedRestaurants with all restaurant IDs
-        _selectedRestaurants = _restaurants.map((restaurant) => restaurant['id'] as String).toList();
+        _selectedRestaurants = _restaurants
+            .map((restaurant) => restaurant['id'] as String)
+            .toList();
       });
       return _restaurants;
     } catch (e) {
       throw Exception("Error fetching restaurants: $e");
     }
-}
-
+  }
 
   Future<bool> isPromoCodeUnique(String promoCode) async {
     final authProvider = context.read<AuthProvider>();
     final request = authProvider.cookieRequest;
 
-    final response =
-        await request.get('${AppConfig.apiUrl}/promo/check_promo_code/$promoCode/?promo_id=${widget.promo.id}');
+    final response = await request.get(
+        '${AppConfig.apiUrl}/promo/check_promo_code/$promoCode/?promo_id=${widget.promo.id}');
     return response['exists'] != true;
   }
 
-  void _submitForm() async {
+  void _submitForm(AuthProvider authProvider) async {
     if (_formKey.currentState!.validate()) {
       if (_selectedRestaurants.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -89,10 +91,6 @@ class _EditPromoPageState extends State<EditPromoPage> {
 
       _formKey.currentState!.save();
 
-      if (_shownToPublic == null) {
-        _shownToPublic = false;
-      }
-
       if ((_promoCode == null || _promoCode!.isEmpty)) {
         if (!_shownToPublic) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -103,18 +101,17 @@ class _EditPromoPageState extends State<EditPromoPage> {
       }
 
       // Validate promo code uniqueness
-      if (_promoCode != null && _promoCode != ""){
+      if (_promoCode != null && _promoCode != "") {
         bool isUnique = await isPromoCodeUnique(_promoCode!);
         if (!isUnique) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Promo code already exists. Please enter a different one.')),
+            const SnackBar(
+                content: Text(
+                    'Promo code already exists. Please enter a different one.')),
           );
           return;
         }
       }
-
-      final authProvider = context.read<AuthProvider>();
-      final request = authProvider.cookieRequest;
 
       final response = await authProvider.cookieRequest.post(
         '${AppConfig.apiUrl}/promo/mobile_edit_promo/${widget.promo.id}/',
@@ -129,7 +126,6 @@ class _EditPromoPageState extends State<EditPromoPage> {
           'shown_to_public': _shownToPublic.toString(),
         },
       );
-
 
       if (context.mounted) {
         if (response['status'] == 'success') {
@@ -163,8 +159,10 @@ class _EditPromoPageState extends State<EditPromoPage> {
                   value: _type,
                   decoration: const InputDecoration(labelText: 'Promo Type'),
                   items: const [
-                    DropdownMenuItem(value: 'Percentage', child: Text('Percentage')),
-                    DropdownMenuItem(value: 'Fixed Price', child: Text('Fixed Price')),
+                    DropdownMenuItem(
+                        value: 'Percentage', child: Text('Percentage')),
+                    DropdownMenuItem(
+                        value: 'Fixed Price', child: Text('Fixed Price')),
                   ],
                   onChanged: (value) => setState(() => _type = value!),
                   validator: (value) => value == null || value.isEmpty
@@ -176,17 +174,20 @@ class _EditPromoPageState extends State<EditPromoPage> {
                   initialValue: _value,
                   decoration: const InputDecoration(labelText: 'Promo Value'),
                   keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Please enter the promo value' : null,
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Please enter the promo value'
+                      : null,
                   onSaved: (value) => _value = value!,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   initialValue: _minPayment,
-                  decoration: const InputDecoration(labelText: 'Minimum Payment'),
+                  decoration:
+                      const InputDecoration(labelText: 'Minimum Payment'),
                   keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Please enter the minimum payment' : null,
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Please enter the minimum payment'
+                      : null,
                   onSaved: (value) => _minPayment = value!,
                 ),
                 const SizedBox(height: 16),
@@ -214,7 +215,8 @@ class _EditPromoPageState extends State<EditPromoPage> {
                 const SizedBox(height: 16),
                 TextFormField(
                   initialValue: _promoCode,
-                  decoration: const InputDecoration(labelText: 'Promo Code (Optional)'),
+                  decoration:
+                      const InputDecoration(labelText: 'Promo Code (Optional)'),
                   onSaved: (value) => _promoCode = value,
                 ),
                 const SizedBox(height: 16),
@@ -229,7 +231,9 @@ class _EditPromoPageState extends State<EditPromoPage> {
                 const SizedBox(height: 16),
                 TextFormField(
                   initialValue: _maxUsage,
-                  decoration: const InputDecoration(labelText: 'Max Usage (negative value for unlimited usage)'),
+                  decoration: const InputDecoration(
+                      labelText:
+                          'Max Usage (negative value for unlimited usage)'),
                   keyboardType: TextInputType.number,
                   validator: (value) => int.tryParse(value!) == null
                       ? 'Enter a valid number'
@@ -244,10 +248,9 @@ class _EditPromoPageState extends State<EditPromoPage> {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: _submitForm,
+                  onPressed: () => _submitForm(context.read<AuthProvider>()),
                   child: const Text('Update Promo'),
                 ),
-
               ],
             ),
           ),

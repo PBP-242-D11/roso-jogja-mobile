@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -20,8 +18,7 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
   String _type = 'Percentage'; // Default value
   String _value = '';
   String _minPayment = '';
-  List<String> _selectedRestaurants = [];
-  List<dynamic> _restaurants = [];
+  final List<String> _selectedRestaurants = [];
   String? _promoCode;
   String _expiryDate = '';
   String _maxUsage = '';
@@ -33,7 +30,8 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
     final request = authProvider.cookieRequest;
 
     try {
-      final response = await request.get('${AppConfig.apiUrl}/promo/owned_resto/');
+      final response =
+          await request.get('${AppConfig.apiUrl}/promo/owned_resto/');
       if (response == null || response.isEmpty) {
         throw Exception("Empty response from the server");
       }
@@ -43,17 +41,18 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
       throw Exception("Error fetching restaurants: $e");
     }
   }
+
   Future<bool> isPromoCodeUnique(String promoCode) async {
     final authProvider = context.read<AuthProvider>();
     final request = authProvider.cookieRequest;
-    final response = await request.get('${AppConfig.apiUrl}/promo/check_promo_code/${promoCode}/');
+    final response = await request
+        .get('${AppConfig.apiUrl}/promo/check_promo_code/$promoCode/');
 
     if (response['exists'] == true) {
       return false; // Promo code already exists
     }
     return true; // Promo code is unique
   }
-
 
   @override
   void initState() {
@@ -144,7 +143,8 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
                 const SizedBox(height: 16),
 
                 // Restaurant Checklist
-                const Text('Select Restaurants:', style: TextStyle(fontSize: 16)),
+                const Text('Select Restaurants:',
+                    style: TextStyle(fontSize: 16)),
                 FutureBuilder<List<dynamic>>(
                   future: fetchRestaurants(),
                   builder: (context, snapshot) {
@@ -267,32 +267,33 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
                     if (_formKey.currentState!.validate()) {
                       if (_selectedRestaurants.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Select at least one restaurant')),
+                          const SnackBar(
+                              content: Text('Select at least one restaurant')),
                         );
                         return;
                       }
 
                       _formKey.currentState!.save();
 
-                      if (_shownToPublic == null) {
-                        _shownToPublic = false;
-                      }
-
                       if ((_promoCode == null || _promoCode!.isEmpty)) {
                         if (!_shownToPublic) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Enter a promo code if not public')),
+                            const SnackBar(
+                                content:
+                                    Text('Enter a promo code if not public')),
                           );
                           return;
                         }
                       }
 
                       // Validate promo code uniqueness
-                      if (_promoCode != null && _promoCode != ""){
+                      if (_promoCode != null && _promoCode != "") {
                         bool isUnique = await isPromoCodeUnique(_promoCode!);
                         if (!isUnique) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Promo code already exists. Please enter a different one.')),
+                            const SnackBar(
+                                content: Text(
+                                    'Promo code already exists. Please enter a different one.')),
                           );
                           return;
                         }
@@ -315,18 +316,19 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
                       if (context.mounted) {
                         if (response['status'] == 'success') {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Promo created successfully.')),
+                            const SnackBar(
+                                content: Text('Promo created successfully.')),
                           );
                           context.pop(true);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Failed to create promo.')),
+                            const SnackBar(
+                                content: Text('Failed to create promo.')),
                           );
                         }
                       }
                     }
                   },
-
                   child: const Text('Create Promo'),
                 ),
               ],
@@ -336,5 +338,4 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
       ),
     );
   }
-
 }

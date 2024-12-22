@@ -24,27 +24,24 @@ class _PromoDetailPageState extends State<PromoDetailPage> {
 
   String formattedValue(String promoType, int promoValue) {
     if (promoType == 'Fixed Price') {
-      return 'Rp ${promoValue.toString()}';  // Add 'Rp' for Fixed Price
+      return 'Rp ${promoValue.toString()}'; // Add 'Rp' for Fixed Price
     } else if (promoType == 'Percentage') {
-      return '${promoValue.toString()}%';  // Add '%' for Percentage
+      return '${promoValue.toString()}%'; // Add '%' for Percentage
     } else {
-      return promoValue.toString();  // Just the value if type is unknown
+      return promoValue.toString(); // Just the value if type is unknown
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
-    final isRestaurantOwner =
-        authProvider.user != null && authProvider.user!.role == "R";
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Promo Detail'),
       ),
       body: FutureBuilder<PromoElement>(
-        future: fetchPromoDetail(
-            authProvider.cookieRequest, widget.promoId),
+        future: fetchPromoDetail(authProvider.cookieRequest, widget.promoId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -60,7 +57,6 @@ class _PromoDetailPageState extends State<PromoDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   // Promo Name
                   Text(
                     "${formattedValue(promo.type, promo.value)} off",
@@ -73,8 +69,7 @@ class _PromoDetailPageState extends State<PromoDetailPage> {
                   // Promo Payment
                   Row(
                     children: [
-                      const Icon(Icons.payment,
-                          size: 16, color: Colors.grey),
+                      const Icon(Icons.payment, size: 16, color: Colors.grey),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
@@ -112,8 +107,7 @@ class _PromoDetailPageState extends State<PromoDetailPage> {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      const Icon(Icons.key,
-                          size: 16, color: Colors.grey),
+                      const Icon(Icons.key, size: 16, color: Colors.grey),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
