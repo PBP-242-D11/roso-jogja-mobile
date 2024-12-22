@@ -1,5 +1,8 @@
 # RosoJogja Mobile
 
+[![Staging](https://github.com/PBP-242-D11/roso-jogja-mobile/actions/workflows/staging.yml/badge.svg)](https://github.com/PBP-242-D11/roso-jogja-mobile/actions/workflows/staging.yml)
+[![Staging](https://github.com/PBP-242-D11/roso-jogja-mobile/actions/workflows/staging.yml/badge.svg)](https://github.com/PBP-242-D11/roso-jogja-mobile/actions/workflows/staging.yml)
+[![Staging](https://github.com/PBP-242-D11/roso-jogja-mobile/actions/workflows/staging.yml/badge.svg)](https://github.com/PBP-242-D11/roso-jogja-mobile/actions/workflows/staging.yml)
 [![Build status](https://build.appcenter.ms/v0.1/apps/42cb4aac-3bd6-4dd4-a12e-e77eb18135bf/branches/main/badge)](https://appcenter.ms)
 
 ---
