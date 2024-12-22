@@ -82,6 +82,22 @@ class _EditPromoPageState extends State<EditPromoPage> {
     }
   }
 
+  Future<void> _selectDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.tryParse(_expiryDate) ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+
+    if (picked != null && mounted) {
+      setState(() {
+        _expiryDate =
+            "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+      });
+    }
+  }
+
   Future<bool> _isPromoCodeUnique(String promoCode) async {
     final authProvider = context.read<AuthProvider>();
     final response = await authProvider.cookieRequest.get(
@@ -92,26 +108,25 @@ class _EditPromoPageState extends State<EditPromoPage> {
   Future<void> _submitForm(AuthProvider authProvider) async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedRestaurants.isEmpty) {
-      _showErrorSnackBar('Select at least one restaurant');
+      _showErrorSnackBar('Please select at least one restaurant');
       return;
     }
 
     _formKey.currentState!.save();
 
     if (!_shownToPublic && (_promoCode == null || _promoCode!.isEmpty)) {
-      _showErrorSnackBar('Enter a promo code if not public');
+      _showErrorSnackBar('Private promos require a promo code');
       return;
     }
 
     setState(() => _isLoading = true);
 
     try {
-      // Validate promo code uniqueness
       if (_promoCode != null && _promoCode!.isNotEmpty) {
         final isUnique = await _isPromoCodeUnique(_promoCode!);
-        if (!isUnique) {
-          _showErrorSnackBar(
-              'Promo code already exists. Please enter a different one.');
+        if (!isUnique && mounted) {
+          _showErrorSnackBar('Promo code already exists');
+          setState(() => _isLoading = false);
           return;
         }
       }
@@ -133,10 +148,14 @@ class _EditPromoPageState extends State<EditPromoPage> {
       if (!mounted) return;
 
       if (response['status'] == 'success') {
-        _showSuccessSnackBar('Promo updated successfully.');
+        _showSuccessSnackBar('Promo updated successfully');
         context.pop(true);
       } else {
-        _showErrorSnackBar('Failed to update promo.');
+        _showErrorSnackBar('Failed to update promo');
+      }
+    } catch (e) {
+      if (mounted) {
+        _showErrorSnackBar('Error: $e');
       }
     } finally {
       if (mounted) {
@@ -146,21 +165,21 @@ class _EditPromoPageState extends State<EditPromoPage> {
   }
 
   void _showErrorSnackBar(String message) {
-    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.red[700],
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
 
   void _showSuccessSnackBar(String message) {
-    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.orange[700],
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
@@ -177,99 +196,35 @@ class _EditPromoPageState extends State<EditPromoPage> {
       ),
       body: _isLoading && _restaurants.isEmpty
           ? const Center(child: CircularProgressIndicator())
-          : SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Card(
-                          elevation: 8,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Basic Information',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                _buildDropdownField(),
-                                const SizedBox(height: 16),
-                                _buildValueField(),
-                                const SizedBox(height: 16),
-                                _buildMinPaymentField(),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Card(
-                          elevation: 8,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Promo Settings',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                _buildPromoCodeField(),
-                                const SizedBox(height: 16),
-                                _buildExpiryDateField(),
-                                const SizedBox(height: 16),
-                                _buildMaxUsageField(),
-                                const SizedBox(height: 16),
-                                _buildPublicSwitch(),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Card(
-                          elevation: 8,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Applicable Restaurants',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                _buildRestaurantsList(),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        _buildSubmitButton(),
-                      ],
+          : Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Theme.of(context).primaryColor.withAlpha(204),
+                    Colors.white,
+                  ],
+                ),
+              ),
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildBasicInfoCard(),
+                          const SizedBox(height: 20),
+                          _buildPromoSettingsCard(),
+                          const SizedBox(height: 20),
+                          _buildRestaurantsCard(),
+                          const SizedBox(height: 24),
+                          _buildSubmitButton(),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -278,124 +233,205 @@ class _EditPromoPageState extends State<EditPromoPage> {
     );
   }
 
-  Widget _buildDropdownField() {
-    return DropdownButtonFormField<String>(
-      value: _type,
-      decoration: _buildInputDecoration('Promo Type', Icons.local_offer),
-      items: const [
-        DropdownMenuItem(value: 'Percentage', child: Text('Percentage')),
-        DropdownMenuItem(value: 'Fixed Price', child: Text('Fixed Price')),
-      ],
-      onChanged: (value) => setState(() => _type = value!),
-      validator: (value) =>
-          value == null || value.isEmpty ? 'Please select a promo type' : null,
-    );
-  }
-
-  Widget _buildValueField() {
-    return TextFormField(
-      initialValue: _value,
-      decoration: _buildInputDecoration('Promo Value', Icons.payments),
-      keyboardType: TextInputType.number,
-      validator: (value) => value == null || value.isEmpty
-          ? 'Please enter the promo value'
-          : null,
-      onSaved: (value) => _value = value!,
-    );
-  }
-
-  Widget _buildMinPaymentField() {
-    return TextFormField(
-      initialValue: _minPayment,
-      decoration: _buildInputDecoration('Minimum Payment', Icons.payment),
-      keyboardType: TextInputType.number,
-      validator: (value) => value == null || value.isEmpty
-          ? 'Please enter the minimum payment'
-          : null,
-      onSaved: (value) => _minPayment = value!,
-    );
-  }
-
-  Widget _buildPromoCodeField() {
-    return TextFormField(
-      initialValue: _promoCode,
-      decoration: _buildInputDecoration('Promo Code (Optional)', Icons.code),
-      onSaved: (value) => _promoCode = value,
-    );
-  }
-
-  Widget _buildExpiryDateField() {
-    return TextFormField(
-      initialValue: _expiryDate,
-      decoration: _buildInputDecoration('Expiry Date', Icons.calendar_today),
-      validator: (value) => DateTime.tryParse(value!) == null
-          ? 'Enter a valid date (YYYY-MM-DD)'
-          : null,
-      onSaved: (value) => _expiryDate = value!,
-    );
-  }
-
-  Widget _buildMaxUsageField() {
-    return TextFormField(
-      initialValue: _maxUsage,
-      decoration: _buildInputDecoration(
-        'Max Usage',
-        Icons.repeat,
-        hint: 'Negative value for unlimited usage',
+  Widget _buildBasicInfoCard() {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
       ),
-      keyboardType: TextInputType.number,
-      validator: (value) =>
-          int.tryParse(value!) == null ? 'Enter a valid number' : null,
-      onSaved: (value) => _maxUsage = value!,
-    );
-  }
-
-  Widget _buildPublicSwitch() {
-    return SwitchListTile(
-      title: const Text('Show to Public'),
-      subtitle: Text(
-        _shownToPublic
-            ? 'Promo will be visible to all users'
-            : 'Only users with promo code can access',
-        style: TextStyle(
-          color: Colors.grey[600],
-          fontSize: 12,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Basic Information',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            DropdownButtonFormField<String>(
+              value: _type,
+              decoration:
+                  _buildInputDecoration('Promo Type', Icons.local_offer),
+              items: const [
+                DropdownMenuItem(
+                    value: 'Percentage', child: Text('Percentage Discount')),
+                DropdownMenuItem(
+                    value: 'Fixed Price', child: Text('Fixed Price Discount')),
+              ],
+              onChanged: (value) => setState(() => _type = value!),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              initialValue: _value,
+              decoration: _buildInputDecoration(
+                'Promo Value',
+                _type == 'Percentage' ? Icons.percent : Icons.payments,
+                hint:
+                    _type == 'Percentage' ? 'Enter percentage' : 'Enter amount',
+              ),
+              keyboardType: TextInputType.number,
+              validator: (value) => value == null || value.isEmpty
+                  ? 'Please enter the promo value'
+                  : null,
+              onSaved: (value) => _value = value!,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              initialValue: _minPayment,
+              decoration:
+                  _buildInputDecoration('Minimum Payment', Icons.payment),
+              keyboardType: TextInputType.number,
+              validator: (value) => value == null || value.isEmpty
+                  ? 'Please enter the minimum payment'
+                  : null,
+              onSaved: (value) => _minPayment = value!,
+            ),
+          ],
         ),
       ),
-      value: _shownToPublic,
-      activeColor: Colors.orange[700],
-      onChanged: (value) => setState(() => _shownToPublic = value),
     );
   }
 
-  Widget _buildRestaurantsList() {
-    if (_error != null) {
-      return Center(
-          child: Text(_error!, style: const TextStyle(color: Colors.red)));
-    }
+  Widget _buildPromoSettingsCard() {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Promo Settings',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              initialValue: _promoCode,
+              decoration: _buildInputDecoration(
+                'Promo Code',
+                Icons.code,
+                hint: 'Optional for public promos',
+              ),
+              onSaved: (value) => _promoCode = value?.trim(),
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: _selectDate,
+              child: AbsorbPointer(
+                child: TextFormField(
+                  controller: TextEditingController(text: _expiryDate),
+                  decoration: _buildInputDecoration(
+                      'Expiry Date', Icons.calendar_today),
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Please select an expiry date'
+                      : null,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              initialValue: _maxUsage,
+              decoration: _buildInputDecoration(
+                'Maximum Usage',
+                Icons.repeat,
+                hint: 'Enter -1 for unlimited',
+              ),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the maximum usage';
+                }
+                final maxUsage = int.tryParse(value);
+                if (maxUsage == null || maxUsage < -1) {
+                  return 'Max usage cannot be less than -1';
+                }
+                return null;
+              },
+              onSaved: (value) => _maxUsage = value!,
+            ),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: const Text('Show to Public'),
+              subtitle: Text(
+                _shownToPublic
+                    ? 'Promo will be visible to all users'
+                    : 'Promo will require a code',
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                ),
+              ),
+              value: _shownToPublic,
+              activeColor: Colors.orange[700],
+              onChanged: (value) => setState(() => _shownToPublic = value),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-    return Column(
-      children: _restaurants.map((restaurant) {
-        final id = restaurant['id'];
-        return CheckboxListTile(
-          title: Text(restaurant['name']),
-          subtitle: Text(
-            restaurant['address'],
-            style: TextStyle(color: Colors.grey[600], fontSize: 12),
-          ),
-          value: _selectedRestaurants.contains(id),
-          activeColor: Colors.orange[700],
-          onChanged: (selected) {
-            setState(() {
-              if (selected == true) {
-                _selectedRestaurants.add(id);
-              } else {
-                _selectedRestaurants.remove(id);
-              }
-            });
-          },
-        );
-      }).toList(),
+  Widget _buildRestaurantsCard() {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Applicable Restaurants',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (_error != null)
+              Center(
+                child: Text(
+                  _error!,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              )
+            else
+              ..._restaurants.map((restaurant) {
+                final id = restaurant['id'];
+                return CheckboxListTile(
+                  title: Text(restaurant['name']),
+                  subtitle: Text(
+                    restaurant['address'],
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
+                  value: _selectedRestaurants.contains(id),
+                  activeColor: Colors.orange[700],
+                  onChanged: (selected) {
+                    setState(() {
+                      if (selected == true) {
+                        _selectedRestaurants.add(id);
+                      } else {
+                        _selectedRestaurants.remove(id);
+                      }
+                    });
+                  },
+                );
+              }),
+          ],
+        ),
+      ),
     );
   }
 
@@ -410,6 +446,7 @@ class _EditPromoPageState extends State<EditPromoPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
+        elevation: 4,
       ),
       child: _isLoading
           ? const SizedBox(
@@ -448,6 +485,17 @@ class _EditPromoPageState extends State<EditPromoPage> {
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: Colors.orange[700]!),
       ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.red),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.red),
+      ),
+      filled: true,
+      fillColor: Colors.grey[50],
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     );
   }
 }

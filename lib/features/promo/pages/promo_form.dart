@@ -13,8 +13,9 @@ class CreatePromoPage extends StatefulWidget {
 
 class _CreatePromoPageState extends State<CreatePromoPage> {
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+  String? _error;
 
-  // Form fields
   String _type = 'Percentage';
   String _value = '';
   String _minPayment = '';
@@ -24,28 +25,40 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
   String _maxUsage = '';
   bool _shownToPublic = false;
 
-  // Loading state
-  bool _isLoading = false;
+  List<dynamic> _restaurants = [];
 
-  // Fetch restaurants from API
-  Future<List<dynamic>> fetchRestaurants(AuthProvider authProvider) async {
-    try {
-      final response = await authProvider.cookieRequest
-          .get('${AppConfig.apiUrl}/promo/owned_resto/');
-      if (response == null || response.isEmpty) {
-        throw Exception("Empty response from the server");
-      }
-      return response["restos"] as List<dynamic>? ?? [];
-    } catch (e) {
-      throw Exception("Error fetching restaurants: $e");
-    }
+  @override
+  void initState() {
+    super.initState();
+    _fetchRestaurants();
   }
 
-  Future<bool> isPromoCodeUnique(
-      AuthProvider authProvider, String promoCode) async {
-    final response = await authProvider.cookieRequest
-        .get('${AppConfig.apiUrl}/promo/check_promo_code/$promoCode/');
-    return response['exists'] != true;
+  Future<void> _fetchRestaurants() async {
+    setState(() => _isLoading = true);
+    try {
+      final authProvider = context.read<AuthProvider>();
+      final response = await authProvider.cookieRequest
+          .get('${AppConfig.apiUrl}/promo/owned_resto/');
+
+      if (!mounted) return;
+
+      if (response != null && response.isNotEmpty) {
+        setState(() {
+          _restaurants = response["restos"] as List<dynamic>? ?? [];
+          _error = null;
+        });
+      } else {
+        setState(() => _error = "No restaurants found");
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _error = "Failed to load restaurants");
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   Future<void> _selectDate() async {
@@ -55,7 +68,8 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
-    if (picked != null) {
+
+    if (picked != null && mounted) {
       setState(() {
         _expiryDate =
             "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
@@ -63,320 +77,24 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create New Promo'),
-        elevation: 0,
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Theme.of(context)
-                        .primaryColor
-                        .withAlpha(204), // change to from rgb
-                    Colors.white,
-                  ],
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                  key: _formKey,
-                  child: SingleChildScrollView(
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            // Promo Type
-                            Card(
-                              elevation: 0,
-                              color: Colors.grey[100],
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12.0),
-                                child: DropdownButtonFormField<String>(
-                                  value: _type,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Promo Type',
-                                    border: InputBorder.none,
-                                  ),
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value: 'Percentage',
-                                      child: Text('Percentage Discount'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'Fixed Price',
-                                      child: Text('Fixed Price Discount'),
-                                    ),
-                                  ],
-                                  onChanged: (value) =>
-                                      setState(() => _type = value!),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Promo Value
-                            TextFormField(
-                              decoration: InputDecoration(
-                                labelText: 'Promo Value',
-                                hintText: _type == 'Percentage'
-                                    ? 'Enter percentage'
-                                    : 'Enter amount',
-                                prefixIcon: Icon(_type == 'Percentage'
-                                    ? Icons.percent
-                                    : Icons.payments),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter the promo value';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) => _value = value!,
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Minimum Payment
-                            TextFormField(
-                              decoration: InputDecoration(
-                                labelText: 'Minimum Payment',
-                                hintText: 'Enter minimum payment amount',
-                                prefixIcon: const Icon(Icons.payment),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter the minimum payment';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) => _minPayment = value!,
-                            ),
-                            const SizedBox(height: 24),
-
-                            // Restaurant Selection
-                            const Text(
-                              'Available Restaurants',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            FutureBuilder<List<dynamic>>(
-                              future: fetchRestaurants(authProvider),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Center(
-                                      child: CircularProgressIndicator());
-                                }
-                                if (snapshot.hasError) {
-                                  return Card(
-                                    color: Colors.red[100],
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Text(
-                                        'Error: ${snapshot.error}',
-                                        style:
-                                            const TextStyle(color: Colors.red),
-                                      ),
-                                    ),
-                                  );
-                                }
-                                if (!snapshot.hasData ||
-                                    snapshot.data!.isEmpty) {
-                                  return const Card(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(16.0),
-                                      child: Text('No restaurants available'),
-                                    ),
-                                  );
-                                }
-
-                                return Card(
-                                  elevation: 0,
-                                  color: Colors.grey[100],
-                                  child: Column(
-                                    children: snapshot.data!.map((restaurant) {
-                                      final id = restaurant['id'];
-                                      final name = restaurant['name'];
-                                      return CheckboxListTile(
-                                        title: Text(name),
-                                        value:
-                                            _selectedRestaurants.contains(id),
-                                        onChanged: (selected) {
-                                          setState(() {
-                                            if (selected == true) {
-                                              _selectedRestaurants.add(id);
-                                            } else {
-                                              _selectedRestaurants.remove(id);
-                                            }
-                                          });
-                                        },
-                                      );
-                                    }).toList(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Promo Code
-                            TextFormField(
-                              decoration: InputDecoration(
-                                labelText: 'Promo Code',
-                                hintText: 'Optional for public promos',
-                                prefixIcon: const Icon(Icons.code),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              onSaved: (value) => _promoCode = value?.trim(),
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Expiry Date
-                            GestureDetector(
-                              onTap: _selectDate,
-                              child: AbsorbPointer(
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                    labelText: 'Expiry Date',
-                                    hintText: 'Select expiry date',
-                                    prefixIcon:
-                                        const Icon(Icons.calendar_today),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  controller:
-                                      TextEditingController(text: _expiryDate),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please select an expiry date';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Max Usage
-                            TextFormField(
-                              decoration: InputDecoration(
-                                labelText: 'Maximum Usage',
-                                hintText: 'Enter -1 for unlimited',
-                                prefixIcon: const Icon(Icons.tag),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter the maximum usage';
-                                }
-                                final maxUsage = int.tryParse(value);
-                                if (maxUsage == null || maxUsage < -1) {
-                                  return 'Max usage cannot be less than -1';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) => _maxUsage = value!,
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Public Switch
-                            Card(
-                              elevation: 0,
-                              color: Colors.grey[100],
-                              child: SwitchListTile(
-                                title: const Text('Show to Public'),
-                                subtitle: Text(
-                                  _shownToPublic
-                                      ? 'Promo will be visible to all users'
-                                      : 'Promo will require a code',
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                value: _shownToPublic,
-                                onChanged: (value) =>
-                                    setState(() => _shownToPublic = value),
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-
-                            // Submit Button
-                            ElevatedButton(
-                              onPressed: _isLoading
-                                  ? null
-                                  : () => _submitForm(authProvider),
-                              style: ElevatedButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: const Text(
-                                'Create Promo',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-    );
+  Future<bool> _isPromoCodeUnique(String promoCode) async {
+    final authProvider = context.read<AuthProvider>();
+    final response = await authProvider.cookieRequest
+        .get('${AppConfig.apiUrl}/promo/check_promo_code/$promoCode/');
+    return response['exists'] != true;
   }
 
   Future<void> _submitForm(AuthProvider authProvider) async {
     if (!_formKey.currentState!.validate()) return;
-
     if (_selectedRestaurants.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select at least one restaurant')),
-      );
+      _showErrorSnackBar('Please select at least one restaurant');
       return;
     }
 
     _formKey.currentState!.save();
 
     if (!_shownToPublic && (_promoCode == null || _promoCode!.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Private promos require a promo code')),
-      );
+      _showErrorSnackBar('Private promos require a promo code');
       return;
     }
 
@@ -384,11 +102,10 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
 
     try {
       if (_promoCode != null && _promoCode!.isNotEmpty) {
-        bool isUnique = await isPromoCodeUnique(authProvider, _promoCode!);
-        if (mounted && !isUnique) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Promo code already exists')),
-          );
+        final isUnique = await _isPromoCodeUnique(_promoCode!);
+        if (!isUnique && mounted) {
+          _showErrorSnackBar('Promo code already exists');
+          setState(() => _isLoading = false);
           return;
         }
       }
@@ -407,28 +124,353 @@ class _CreatePromoPageState extends State<CreatePromoPage> {
         },
       );
 
-      if (mounted) {
-        if (response['status'] == 'success') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Promo created successfully')),
-          );
-          context.pop(true);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to create promo')),
-          );
-        }
+      if (!mounted) return;
+
+      if (response['status'] == 'success') {
+        _showSuccessSnackBar('Promo created successfully');
+        context.pop(true);
+      } else {
+        _showErrorSnackBar('Failed to create promo');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        _showErrorSnackBar('Error: $e');
       }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red[700],
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.orange[700],
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Create Promo',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      body: _isLoading && _restaurants.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Theme.of(context).primaryColor.withAlpha(204),
+                    Colors.white,
+                  ],
+                ),
+              ),
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildBasicInfoCard(),
+                          const SizedBox(height: 20),
+                          _buildPromoSettingsCard(),
+                          const SizedBox(height: 20),
+                          _buildRestaurantsCard(),
+                          const SizedBox(height: 24),
+                          _buildSubmitButton(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+    );
+  }
+
+  Widget _buildBasicInfoCard() {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Basic Information',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            DropdownButtonFormField<String>(
+              value: _type,
+              decoration:
+                  _buildInputDecoration('Promo Type', Icons.local_offer),
+              items: const [
+                DropdownMenuItem(
+                    value: 'Percentage', child: Text('Percentage Discount')),
+                DropdownMenuItem(
+                    value: 'Fixed Price', child: Text('Fixed Price Discount')),
+              ],
+              onChanged: (value) => setState(() => _type = value!),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              decoration: _buildInputDecoration(
+                'Promo Value',
+                _type == 'Percentage' ? Icons.percent : Icons.payments,
+                hint:
+                    _type == 'Percentage' ? 'Enter percentage' : 'Enter amount',
+              ),
+              keyboardType: TextInputType.number,
+              validator: (value) => value == null || value.isEmpty
+                  ? 'Please enter a value'
+                  : null,
+              onSaved: (value) => _value = value!,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              decoration:
+                  _buildInputDecoration('Minimum Payment', Icons.payment),
+              keyboardType: TextInputType.number,
+              validator: (value) => value == null || value.isEmpty
+                  ? 'Please enter the minimum payment'
+                  : null,
+              onSaved: (value) => _minPayment = value!,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPromoSettingsCard() {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Promo Settings',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              decoration: _buildInputDecoration(
+                'Promo Code',
+                Icons.code,
+                hint: 'Optional for public promos',
+              ),
+              onSaved: (value) => _promoCode = value?.trim(),
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: _selectDate,
+              child: AbsorbPointer(
+                child: TextFormField(
+                  controller: TextEditingController(text: _expiryDate),
+                  decoration: _buildInputDecoration(
+                      'Expiry Date', Icons.calendar_today),
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Please select an expiry date'
+                      : null,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              decoration: _buildInputDecoration(
+                'Maximum Usage',
+                Icons.repeat,
+                hint: 'Enter -1 for unlimited',
+              ),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the maximum usage';
+                }
+                final maxUsage = int.tryParse(value);
+                if (maxUsage == null || maxUsage < -1) {
+                  return 'Max usage cannot be less than -1';
+                }
+                return null;
+              },
+              onSaved: (value) => _maxUsage = value!,
+            ),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: const Text('Show to Public'),
+              subtitle: Text(
+                _shownToPublic
+                    ? 'Promo will be visible to all users'
+                    : 'Promo will require a code',
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                ),
+              ),
+              value: _shownToPublic,
+              activeColor: Colors.orange[700],
+              onChanged: (value) => setState(() => _shownToPublic = value),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRestaurantsCard() {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Applicable Restaurants',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (_error != null)
+              Center(
+                child: Text(
+                  _error!,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              )
+            else
+              ..._restaurants.map((restaurant) {
+                final id = restaurant['id'];
+                return CheckboxListTile(
+                  title: Text(restaurant['name']),
+                  subtitle: Text(
+                    restaurant['address'],
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
+                  value: _selectedRestaurants.contains(id),
+                  activeColor: Colors.orange[700],
+                  onChanged: (selected) {
+                    setState(() {
+                      if (selected == true) {
+                        _selectedRestaurants.add(id);
+                      } else {
+                        _selectedRestaurants.remove(id);
+                      }
+                    });
+                  },
+                );
+              }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return ElevatedButton(
+      onPressed:
+          _isLoading ? null : () => _submitForm(context.read<AuthProvider>()),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.orange[700],
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 4,
+      ),
+      child: _isLoading
+          ? const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
+          : const Text(
+              'Create Promo',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+    );
+  }
+
+  InputDecoration _buildInputDecoration(String label, IconData icon,
+      {String? hint}) {
+    return InputDecoration(
+      labelText: label,
+      hintText: hint,
+      prefixIcon: Icon(icon, color: Colors.orange[700]),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey[300]!),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey[300]!),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.orange[700]!),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.red),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.red),
+      ),
+      filled: true,
+      fillColor: Colors.grey[50],
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    );
   }
 }
