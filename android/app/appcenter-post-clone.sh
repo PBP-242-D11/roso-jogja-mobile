@@ -23,7 +23,7 @@ echo "Installed flutter to `pwd`/flutter"
 echo "$KEY_JKS" | base64 --decode > release-keystore.jks
 
 # Generate .env file with App Center environment variables
-echo "API_KEY=$API_KEY" > .env
+echo "API_URL=$API_URL" > .env
 echo "DEBUG=False" >> .env
 
 # Display generated .env file for debugging (optional)
