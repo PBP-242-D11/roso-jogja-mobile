@@ -179,17 +179,290 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  Widget _buildRestaurantHeader(String? restaurantName) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.orange.shade700, Colors.orange.shade500],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.orange.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.restaurant, color: Colors.white),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Ordering from',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      restaurantName ?? '-',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPromoSection(String restaurantId) {
+    return Card(
+      elevation: 0,
+      color: Colors.orange.shade50,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Icon(Icons.local_offer_outlined, color: Colors.orange.shade700),
+                const SizedBox(width: 12),
+                Text(
+                  'Promotional Offers',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.orange.shade900,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              onPressed: () => context.go('/promo/use/$restaurantId/'),
+              icon: const Icon(Icons.search, size: 18),
+              label: const Text('Find Available Promos'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.orange.shade700,
+                elevation: 0,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  side: BorderSide(color: Colors.orange.shade200),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyCart() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/images/no_order.png',
+            width: 200,
+            height: 200,
+            opacity: const AlwaysStoppedAnimation<double>(0.8),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Your cart is empty',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade800,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Add some delicious items to get started!',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey.shade600,
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () => context.go('/restaurant'),
+            icon: const Icon(Icons.restaurant_menu),
+            label: const Text('Browse Restaurants'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange.shade700,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCheckoutSection() {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white, Colors.orange.shade50],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Checkout Details',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade800,
+              ),
+            ),
+            const SizedBox(height: 24),
+            TextField(
+              controller: notesController,
+              decoration: InputDecoration(
+                labelText: 'Special Instructions',
+                hintText: 'Any special requests for your order?',
+                prefixIcon: const Icon(Icons.note_alt_outlined),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      BorderSide(color: Colors.orange.shade700, width: 2),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 20),
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                labelText: 'Payment Method',
+                prefixIcon: const Icon(Icons.payment),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      BorderSide(color: Colors.orange.shade700, width: 2),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              value: paymentMethodValue,
+              items: const [
+                DropdownMenuItem(
+                    value: 'SELECT', child: Text('Select Payment Method')),
+                DropdownMenuItem(
+                    value: 'CASH', child: Text('Cash on Delivery')),
+                DropdownMenuItem(value: 'CREDIT', child: Text('Credit Card')),
+                DropdownMenuItem(value: 'PAYPAL', child: Text('PayPal')),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => paymentMethodValue = value);
+                }
+              },
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton.icon(
+                  onPressed: paymentMethodValue == 'SELECT'
+                      ? null
+                      : () async {
+                          final notes = notesController.text.trim();
+                          await orderNow(context, paymentMethodValue, notes);
+                        },
+                  icon: const Icon(Icons.shopping_cart_checkout),
+                  label: const Text('Place Order'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange.shade700,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    shadowColor: Colors.orange.shade200,
+                  )),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
         title: const Text(
-          'Your Cart',
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+          'My Cart',
+          style: TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          ),
         ),
         centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black87),
       ),
       backgroundColor: const Color(0xFFFFF7ED),
@@ -199,369 +472,187 @@ class _CartPageState extends State<CartPage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-                child: CircularProgressIndicator(color: Colors.orange));
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData) {
-            return const Center(child: Text('No data found.'));
+              child: CircularProgressIndicator(color: Colors.orange),
+            );
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline,
+                      size: 64, color: Colors.red.shade300),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Oops! Something went wrong',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade800,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    snapshot.error.toString(),
+                    style: TextStyle(color: Colors.grey.shade600),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () => setState(() {}),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Try Again'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange.shade700,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
 
           final cart = snapshot.data!;
           final items = cart.items;
-          final total = cart.total;
           final restaurant = cart.restaurant;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  color: Colors.orange.shade700,
-                  elevation: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.restaurant, color: Colors.white70),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Restaurant:',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: Colors.white70,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+          if (items.isEmpty) {
+            return _buildEmptyCart();
+          }
+
+          return RefreshIndicator(
+            onRefresh: () async {
+              setState(() {
+                _futureCart = fetchCartItems(context);
+                _promoFuture = fetchPromoApplied();
+              });
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildRestaurantHeader(restaurant?.name),
+                  const SizedBox(height: 24),
+                  if (restaurant != null) _buildPromoSection(restaurant.id!),
+                  const SizedBox(height: 24),
+                  FutureBuilder<Map<String, dynamic>>(
+                    future: _promoFuture,
+                    builder: (context, promoSnapshot) {
+                      if (promoSnapshot.hasData &&
+                          promoSnapshot.data!['promo_cut'] != null) {
+                        final promoCut = promoSnapshot.data!['promo_cut'];
+                        final finalPrice = promoSnapshot.data!['final_price'];
+                        return Card(
+                          elevation: 0,
+                          color: Colors.green.shade50,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.check_circle,
+                                        color: Colors.green.shade700),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Promo Applied!',
+                                      style: TextStyle(
+                                        color: Colors.green.shade700,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    TextButton.icon(
+                                      onPressed: () => _removePromo(context),
+                                      icon: const Icon(Icons.close,
+                                          color: Colors.red, size: 18),
+                                      label: const Text(
+                                        'Remove',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Divider(),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Discount:',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade700,
+                                      ),
+                                    ),
+                                    Text(
+                                      '- Rp $promoCut',
+                                      style: TextStyle(
+                                        color: Colors.green.shade700,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Final Price:',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade700,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Rp $finalPrice',
+                                      style: TextStyle(
+                                        color: Colors.green.shade700,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          restaurant != null ? restaurant.name : '-',
-                          style:
-                              Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                  ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            const Icon(Icons.attach_money,
-                                color: Colors.white70),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Total:',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: Colors.white70,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              'Rp $total',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
                   ),
-                ),
-                const SizedBox(height: 24),
-                Divider(color: Colors.grey.shade300, thickness: 1),
-                const SizedBox(height: 2),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        const Color(0xFFFFF7ED), // Background color
-                    foregroundColor:
-                        Colors.black87, // Text color for better contrast
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(8), // Smaller rounded corners
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 8, horizontal: 16), // Reduced padding
-                    elevation: 2, // Lower elevation for a sleeker look
-                    shadowColor: Colors.black
-                        .withOpacity(0.05), // Shadow color directly defined
-                  ),
-                  onPressed: () {
-                    if (restaurant == null || restaurant.id == null) {
-                      // Show a SnackBar with a red background if restaurant or restaurant.id is null
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text(
-                              "You have to input something in your cart first!"),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    } else {
-                      // Navigate to the route with the restaurant ID if not null
-                      final String restaurantId = restaurant.id!;
-                      context.go('/promo/use/$restaurantId/');
-                    }
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(
-                        Icons.local_offer_outlined,
-                        size: 18, // Smaller icon size
-                        color: Colors.orange, // Icon color
+                      Text(
+                        'Order Items',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade800,
+                        ),
                       ),
-                      const SizedBox(
-                          width: 4), // Reduced space between icon and text
-                      Builder(
-                        builder: (context) {
-                          final theme =
-                              Theme.of(context); // Access the theme here
-                          return Text(
-                            'Find a Promo', // Shortened text for a smaller button
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w600, // Bold text
-                              fontSize: 16, // Smaller font size
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                FutureBuilder<Map<String, dynamic>>(
-                  future: _promoFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          'Error: ${snapshot.error}',
+                      TextButton.icon(
+                        onPressed: () => clearCart(context),
+                        icon: const Icon(Icons.remove_shopping_cart,
+                            color: Colors.red, size: 20),
+                        label: const Text(
+                          'Clear All',
                           style: TextStyle(color: Colors.red),
                         ),
-                      );
-                    } else if (snapshot.hasData) {
-                      final data = snapshot.data!;
-                      if (data.containsKey('message') &&
-                          data['status'] != 'success') {
-                        return Center(
-                          child: Text(
-                            data['message'] ?? 'An error occurred',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
-                          ),
-                        );
-                      }
-                      final promoCut = snapshot.data!['promo_cut'];
-                      final finalPrice = snapshot.data!['final_price'];
-                      if (promoCut == null || finalPrice == null) {
-                        return const Center(
-                          child: Text(
-                            'No promo applied.',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
-                          ),
-                        );
-                      }
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Promo Cut:',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                              ),
-                              const Spacer(),
-                              Text(
-                                '- Rp $promoCut',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                    ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Final Price:',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                              ),
-                              const Spacer(),
-                              Text(
-                                'Rp $finalPrice',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                    ),
-                              ),
-                            ],
-                          ),
-                          Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('Remove Promo'),
-                                    content: const Text(
-                                        'Are you sure you want to remove this promo?'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text('Cancel'),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                          _removePromo(context);
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.red,
-                                        ),
-                                        child: const Text(
-                                          'Remove',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.delete_outline, // Delete icon
-                                    size: 18, // Smaller icon size
-                                    color: Colors.orange, // Icon color
-                                  ),
-                                  const SizedBox(
-                                      width:
-                                          10), // Reduced space between icon and text
-                                  Builder(
-                                    builder: (context) {
-                                      final theme = Theme.of(
-                                          context); // Access the theme here
-                                      return Text(
-                                        'Remove Promo', // Button label
-                                        style: theme.textTheme.labelLarge
-                                            ?.copyWith(
-                                          fontWeight:
-                                              FontWeight.w600, // Bold text
-                                          fontSize: 16, // Smaller font size
-                                          color: Colors
-                                              .black, // Text color matching the icon
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    }
-                    return const SizedBox(); // If no data or waiting
-                  },
-                ),
-                const SizedBox(height: 2),
-                Divider(color: Colors.grey.shade300, thickness: 1),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Your Items',
-                        style: TextStyle(
-                          color: Colors.grey.shade800,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    if (items.isNotEmpty)
-                      TextButton(
-                        onPressed: () async {
-                          await clearCart(context);
-                        },
-                        child: const Text(
-                          'Clear Cart',
-                          style: TextStyle(
-                              color: Colors.red, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                if (items.isEmpty)
-                  Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      Opacity(
-                        opacity: 0.7,
-                        child: Image.asset(
-                          'assets/images/no_order.png',
-                          width: 150,
-                          height: 150,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Your cart is empty.',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey[600],
-                            ),
                       ),
                     ],
-                  )
-                else
+                  ),
+                  const SizedBox(height: 16),
                   ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -570,16 +661,11 @@ class _CartPageState extends State<CartPage> {
                         const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final item = items[index];
-                      final foodId = item.id;
-                      final name = item.name;
-                      final price = item.price;
-                      final quantity = item.quantity;
-
                       return CartFoodCard(
-                        foodId: foodId,
-                        name: name,
-                        price: price,
-                        quantity: quantity,
+                        foodId: item.id,
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity,
                         onUpdate: () {
                           setState(() {
                             _futureCart = fetchCartItems(context);
@@ -595,148 +681,11 @@ class _CartPageState extends State<CartPage> {
                       );
                     },
                   ),
-                const SizedBox(height: 32),
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.payment, color: Colors.orange),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Checkout',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey.shade800,
-                                  ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(Icons.note, color: Colors.orange),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: TextField(
-                                controller: notesController,
-                                decoration: InputDecoration(
-                                  labelText: 'Notes',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.grey.shade100,
-                                ),
-                                maxLines: 3,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            const Icon(Icons.payment, color: Colors.orange),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: DropdownButtonFormField<String>(
-                                decoration: InputDecoration(
-                                  labelText: 'Payment Method',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.grey.shade100,
-                                ),
-                                items: const [
-                                  DropdownMenuItem(
-                                      value: 'SELECT',
-                                      child: Text('Select Payment Method')),
-                                  DropdownMenuItem(
-                                      value: 'CASH',
-                                      child: Text('Cash on Delivery')),
-                                  DropdownMenuItem(
-                                      value: 'CREDIT',
-                                      child: Text('Credit Card')),
-                                  DropdownMenuItem(
-                                      value: 'PAYPAL', child: Text('PayPal')),
-                                ],
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      paymentMethodValue = value;
-                                    });
-                                  }
-                                },
-                                value: paymentMethodValue,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: items.isEmpty ||
-                                    paymentMethodValue == 'SELECT'
-                                ? null
-                                : () async {
-                                    final notes = notesController.text.trim();
-                                    await orderNow(
-                                        context, paymentMethodValue, notes);
-                                  },
-                            icon: const Icon(
-                              Icons.shopping_cart_checkout,
-                              color: Colors.white,
-                            ),
-                            label: const Text(
-                              'Order Now',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange.shade700,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 16),
-                              textStyle: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              elevation: 5,
-                              shadowColor: Colors.orange.shade200,
-                            ).copyWith(
-                              overlayColor:
-                                  WidgetStateProperty.resolveWith<Color?>(
-                                (Set<WidgetState> states) {
-                                  if (states.contains(WidgetState.pressed))
-                                    return Colors.orange.shade800;
-                                  return null;
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ],
+                  const SizedBox(height: 32),
+                  _buildCheckoutSection(),
+                  const SizedBox(height: 32),
+                ],
+              ),
             ),
           );
         },
