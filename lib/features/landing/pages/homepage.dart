@@ -147,7 +147,7 @@ class Homepage extends StatelessWidget {
               const SizedBox(width: 12),
               _buildQuickActionButton(
                 icon: Icons.discount_outlined,
-                label: 'Offers',
+                label: 'Promos',
                 onPressed: () => context.push('/promo'),
               ),
             ],
